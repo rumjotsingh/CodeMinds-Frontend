@@ -7,11 +7,13 @@ import {
   logoutUser,
   loadUserFromStorage,
 } from "../redux/slices/authSlice";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { user, loading } = useSelector((state) => state.auth);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -35,6 +37,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     dispatch(logoutUser());
+    router.push("/");
   };
 
   return (

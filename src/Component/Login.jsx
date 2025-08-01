@@ -29,6 +29,7 @@ export default function LoginPage() {
   const onSubmit = (data) => {
     dispatch(loginUser(data));
   };
+  console.log(user);
 
   useEffect(() => {
     if (user) {
@@ -48,7 +49,7 @@ export default function LoginPage() {
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>

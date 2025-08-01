@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../config/axios";
+import { act } from "react";
 
 // Initial State
 const initialState = {
@@ -7,6 +8,7 @@ const initialState = {
   token: null,
   streaks: {}, // date: count format
   loading: false,
+  profile: null,
   error: null,
 };
 
@@ -79,7 +81,8 @@ export const getUserProfile = createAsyncThunk(
   "auth/getUserProfile",
   async (_, thunkAPI) => {
     try {
-      const res = await axiosInstance.get("/auth/profile");
+      const res = await axiosInstance.get("/api/v1/user/profile");
+
       return res.data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -94,7 +97,7 @@ export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
   async (updatedData, thunkAPI) => {
     try {
-      const res = await axiosInstance.put("/auth/profile", updatedData);
+      const res = await axiosInstance.put("/api/v1/user/profile", updatedData);
       return res.data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -190,8 +193,8 @@ const authSlice = createSlice({
       })
       .addCase(getUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        localStorage.setItem("user", JSON.stringify(action.payload));
+
+        state.profile = action.payload;
       })
       .addCase(getUserProfile.rejected, (state, action) => {
         state.loading = false;
@@ -206,8 +209,7 @@ const authSlice = createSlice({
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        localStorage.setItem("user", JSON.stringify(action.payload));
+        state.profile = action.payload;
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;

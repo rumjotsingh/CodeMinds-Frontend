@@ -68,7 +68,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center bg-gray-100 px-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <h1 className="text-2xl font-bold text-center">Register</h1>

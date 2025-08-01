@@ -30,11 +30,14 @@ export default function RootLayout({ children }) {
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
         >
           <Provider store={store}>
-            <Navbar />
-            <Toaster />
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <Navbar />
+              <Toaster position="top-center" />
+              {children}
+
+              <FooterWrapper />
+            </AuthProvider>
           </Provider>
-          <FooterWrapper />
         </GoogleOAuthProvider>
       </body>
     </html>
