@@ -6,57 +6,57 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { format, subDays, startOfWeek } from "date-fns";
+import { format, subDays, eachDayOfInterval } from "date-fns";
 
 export default function CalendarHeatmap({ data = {} }) {
   const today = new Date();
-  const startDate = subDays(today, 364); // Last 52 weeks
-
-  // Create 53 weeks × 7 days (each week is a column)
-  const weeks = Array.from({ length: 53 }, (_, weekIndex) => {
-    return Array.from({ length: 7 }, (_, dayIndex) => {
-      const date = subDays(
-        today,
-        364 - (weekIndex * 7 + dayIndex)
-      );
-      const formatted = format(date, "yyyy-MM-dd");
-
-      return {
-        date: formatted,
-        count: data[formatted] || 0,
-      };
-    });
+  const days = eachDayOfInterval({
+    start: subDays(today, 364),
+    end: today,
   });
 
-  const colorScale = (val) => {
+  // Chunk into weeks (7-day arrays)
+  const weeks = [];
+  for (let i = 0; i < days.length; i += 7) {
+    weeks.push(days.slice(i, i + 7));
+  }
+
+  const colorScale = (val: number) => {
+    if (val >= 10) return "bg-green-700";
     if (val >= 5) return "bg-green-600";
-    if (val >= 3) return "bg-green-500";
-    if (val >= 1) return "bg-green-300";
+    if (val >= 3) return "bg-green-400";
+    if (val >= 1) return "bg-green-200";
     return "bg-gray-200";
   };
 
   return (
-    <div>
-      <h3 className="font-semibold mb-4">Streak Calendar</h3>
-      <div className="flex gap-1 overflow-x-auto">
+    <div className="max-w-full overflow-x-auto">
+      <h3 className="text-lg font-semibold mb-4">Submission Calendar</h3>
+      <div className="flex gap-[2px]">
         {weeks.map((week, wIdx) => (
-          <div key={wIdx} className="flex flex-col gap-1">
-            {week.map(({ date, count }, dIdx) => (
-              <TooltipProvider key={date}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={`w-3.5 h-3.5 rounded-sm transition-colors duration-200 ${colorScale(count)}`}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      {count} problem{count !== 1 ? "s" : ""} on {date}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
+          <div key={wIdx} className="flex flex-col gap-[2px]">
+            {week.map((date) => {
+              const formatted = format(date, "yyyy-MM-dd");
+              const count = data[formatted] || 0;
+
+              return (
+                <TooltipProvider key={formatted}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={`w-4 h-4 sm:w-4 sm:h-4 rounded-sm ${colorScale(count)} transition-all`}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="center">
+                      <p>
+                        {count} problem{count !== 1 ? "s" : ""} on{" "}
+                        {format(date, "MMM d, yyyy")}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            })}
           </div>
         ))}
       </div>
