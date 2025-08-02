@@ -14,6 +14,7 @@ import { Eye, EyeOff } from 'lucide-react'; // Eye icons
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const {
     register,
@@ -26,18 +27,26 @@ export default function LoginPage() {
 
   const { user, loading, error } = useSelector((state) => state.auth);
 
+  // Handle navigation when authenticated
+  useEffect(() => {
+    if (user && !isNavigating) {
+      setIsNavigating(true);
+      router.replace(user.role === 'admin' ? '/dashboard/admin' : '/dashboard/user');
+    }
+  }, [user, isNavigating, router]);
+
   const onSubmit = (data) => {
     dispatch(loginUser(data));
   };
-  console.log(user);
 
   useEffect(() => {
     if (user) {
       toast('Login successful!');
+      setIsNavigating(true);
       if (user.role === 'admin') {
-        router.push('/admin/dashboard');
+        router.replace('/dashboard/admin');
       } else {
-        router.push('/user/dashboard');
+        router.replace('/dashboard/user');
       }
     }
   }, [user, router]);
@@ -45,6 +54,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (error) {
       toast(error);
+      setIsNavigating(false);
     }
   }, [error]);
 

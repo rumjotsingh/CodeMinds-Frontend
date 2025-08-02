@@ -61,7 +61,7 @@ export default function RegisterForm() {
     if (loginWithGoogle.fulfilled.match(res)) {
       const role = res.payload?.user?.role;
       toast("Google login successful");
-      router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
+      router.push(role === "admin" ? "/dashboard/admin" : "/dashboard/user");
     } else {
       toast.error(res.payload || "Google login failed");
     }

@@ -25,7 +25,7 @@ export default function Navbar() {
   const authNavItems = [
     {
       label: "Dashboard",
-      href: user?.role === "admin" ? "/admin/dashboard" : "/user/dashboard",
+      href: user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user",
     },
     { label: "Profile", href: "/profile" },
   ];
@@ -36,7 +36,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    toast.success("Logged out successfully!");
+    toast("Logged out successfully!");
     setIsOpen(false);
   };
 
@@ -54,7 +54,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-gray-900 text-white shadow-md px-6 py-4">
+    <nav className="bg-gray-900 max-w-7xl mx-auto text-white shadow-md px-6 py-4">
       <div className="flex justify-between items-center max-w-7xl mx-auto">
         {/* Logo */}
         <div className="text-xl font-bold tracking-tight text-yellow-400">

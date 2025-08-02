@@ -27,6 +27,7 @@ import { Textarea } from '@/components/ui/textarea'; // Add if you have this com
 import { useForm } from 'react-hook-form';
 import { getUserProfile, updateUserProfile } from '../../redux/slices/authSlice';
 import { toast } from 'sonner';
+import { fetchDashboard } from './../../redux/slices/DashbordSlice';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -50,8 +51,14 @@ const ProfilePage = () => {
   });
 
   useEffect(() => {
+     dispatch(fetchDashboard());
     dispatch(getUserProfile());
   }, [dispatch]);
+    
+   const dashboard = useSelector((state) => state.dashboard.data);
+   
+  
+    
 
   useEffect(() => {
     if (profile) {
@@ -75,13 +82,11 @@ const ProfilePage = () => {
   };
 
   // Format join date for display if exists
-  const joinDate = profile?.createdAt
-    ? new Date(profile.createdAt).toLocaleDateString()
-    : null;
+
 
   if (loading) {
     return (
-      <Card className="max-w-md min-h-[600px] mx-auto mt-10 p-4">
+      <Card className="max-w-md min-h-[400px] mx-auto mt-10 mb-10 p-4">
         <Skeleton className="h-20 w-20 rounded-full mb-4 mx-auto" />
         <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
         <Skeleton className="h-4 w-1/2 mx-auto" />
@@ -98,16 +103,14 @@ const ProfilePage = () => {
   }
 
   return (
-    <Card className="max-w-md mx-auto mt-10">
+    <Card className="max-w-md mx-auto mt-10 mb-10">
       <CardHeader className="flex flex-col items-center justify-center">
         <Avatar className="h-24 w-24 mb-6 ring-4 ring-yellow-400">
           <AvatarImage src={profile?.avatarUrl} alt={profile?.name} />
           <AvatarFallback className="text-4xl">{profile?.name?.charAt(0)}</AvatarFallback>
         </Avatar>
         <CardTitle className="text-3xl font-semibold mb-1">{profile?.name}</CardTitle>
-        <p className="text-gray-400 text-sm mb-4">
-          Joined on {joinDate || 'N/A'}
-        </p>
+       
         <Button variant="outline" className="mb-2" onClick={() => setOpen(true)}>
           Edit Profile
         </Button>
@@ -140,11 +143,40 @@ const ProfilePage = () => {
             Account Stats
           </h3>
           {/* Placeholder stats: replace with real data if you have */}
-          <ul className="text-gray-300 list-disc list-inside space-y-1">
-            <li>Total Problems Solved: {profile?.totalSolved ?? '0'}</li>
-            <li>Contests Participated: {profile?.contestCount ?? '0'}</li>
-            <li>Ranking: {profile?.rank ?? 'N/A'}</li>
-          </ul>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Solved</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">
+              {dashboard?.totalProblemsSolved || 0}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Submissions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">
+              {dashboard?.totalSubmissions || 0}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Correct</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold">
+              {dashboard?.totalCorrect || 0}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
         </section>
       </CardContent>
 

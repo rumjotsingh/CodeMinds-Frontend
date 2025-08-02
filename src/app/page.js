@@ -122,8 +122,9 @@ export default function HomePage() {
               <Image
                 src={logo.src}
                 alt={logo.name}
-                width={100}
-                height={60}
+                width={100} // sets width
+                height={100} // or omit height
+                layout="intrinsic" // keeps aspect ratio
                 className="transition duration-300"
               />
             </div>

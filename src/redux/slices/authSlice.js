@@ -92,6 +92,28 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
+// Load User from Storage
+export const loadUserFromStorage = createAsyncThunk(
+  "auth/loadUserFromStorage",
+  async (_, thunkAPI) => {
+    try {
+      const user = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+      
+      if (!user || !token) {
+        return thunkAPI.rejectWithValue("No user data in storage");
+      }
+
+      return {
+        user: JSON.parse(user),
+        token: token
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to load user data");
+    }
+  }
+);
+
 // Update User Info
 export const updateUserProfile = createAsyncThunk(
   "auth/updateUserProfile",
@@ -120,11 +142,9 @@ const authSlice = createSlice({
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     },
-    loadUserFromStorage: (state) => {
-      const user = localStorage.getItem("user");
-      const token = localStorage.getItem("token");
-      if (user) state.user = JSON.parse(user);
-      if (token) state.token = token;
+    setUserFromStorage: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
     },
     updateUserStreak: (state, action) => {
       const date = action.payload;
@@ -215,12 +235,30 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+
+    // Load User from Storage
+    builder
+      .addCase(loadUserFromStorage.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadUserFromStorage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+      })
+      .addCase(loadUserFromStorage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.user = null;
+        state.token = null;
+      });
   },
 });
 
 export const {
   logoutUser,
-  loadUserFromStorage,
+  setUserFromStorage,
   updateUserStreak,
   setUserStreaks,
 } = authSlice.actions;

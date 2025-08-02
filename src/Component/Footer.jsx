@@ -1,3 +1,4 @@
+'use client'
 export default function Footer() {
   return (
  <footer className="bg-gray-900  max-w-7xl mx-auto text-white py-8 px-12 ">
@@ -11,12 +12,12 @@ export default function Footer() {
     {/* Navigation Links - vertical on mobile, horizontal on desktop */}
     <ul className="flex flex-col justify-center items-center space-y-4 md:flex-row md:space-y-0 md:space-x-8 ">
       <li>
-        <a href="/about" className="hover:underline">
+        <a href="/about-us" className="hover:underline">
           About Us
         </a>
       </li>
       <li>
-        <a href="/careers" className="hover:underline">
+        <a href="/carrer" className="hover:underline">
           Careers
         </a>
       </li>

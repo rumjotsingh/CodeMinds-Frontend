@@ -1,4 +1,5 @@
 "use client";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/authContext";
@@ -7,8 +8,9 @@ import { Provider } from "react-redux";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/Component/Navbar";
-import Footer from "@/Component/Footer";
 import FooterWrapper from "@/Component/FooterWrapper";
+
+// custom theme file
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +36,6 @@ export default function RootLayout({ children }) {
               <Navbar />
               <Toaster position="top-center" />
               {children}
-
               <FooterWrapper />
             </AuthProvider>
           </Provider>
