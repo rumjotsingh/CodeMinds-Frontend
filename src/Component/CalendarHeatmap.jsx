@@ -21,7 +21,7 @@ export default function CalendarHeatmap({ data = {} }) {
     weeks.push(days.slice(i, i + 7));
   }
 
-  const colorScale = (val: number) => {
+  const colorScale = (val) => {
     if (val >= 10) return "bg-green-700";
     if (val >= 5) return "bg-green-600";
     if (val >= 3) return "bg-green-400";
