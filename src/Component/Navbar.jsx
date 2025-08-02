@@ -74,7 +74,7 @@ export default function Navbar() {
           {isAuthenticated && (
             <button
               onClick={handleLogout}
-              className="hover:text-yellow-300 font-semibold"
+              className="hover:text-yellow-300 font-semibold cursor-pointer"
             >
               Logout
             </button>

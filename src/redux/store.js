@@ -4,6 +4,7 @@ import authReducer from "../redux/slices/authSlice";
 import problemReducer from "../redux/slices/problemSlice";
 import dashboardReducer from "../redux/slices/DashbordSlice";
 import streakReducer from "../redux/slices/StreaksSlice";
+import playlistReducer from "../redux/slices/playlistSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,5 +12,6 @@ export const store = configureStore({
     problem: problemReducer,
     dashboard: dashboardReducer,
     streaks: streakReducer,
+    playlists: playlistReducer,
   },
 });

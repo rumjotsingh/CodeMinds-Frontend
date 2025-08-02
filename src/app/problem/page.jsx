@@ -3,6 +3,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProblems, fetchTags } from "../../redux/slices/problemSlice";
+import {
+  fetchAllPlaylists,
+  createPlaylist,
+  addProblemToPlaylist
+} from "../../redux/slices/playlistSlice";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +22,37 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 export default function ProblemsList() {
   const dispatch = useDispatch();
   const { items: problems, status, tags, error } = useSelector(
     (state) => state.problem
   );
+  const { playlists = [], loading: playlistLoading = false } = useSelector(
+    (state) => state.playlists || {}
+  );
+
+  const [selectedProblem, setSelectedProblem] = useState(null);
+  const [isCreateMode, setIsCreateMode] = useState(false);
+  const [newPlaylist, setNewPlaylist] = useState({
+    title: "",
+    description: ""
+  });
+  console.log(playlists);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
 
   const [difficultyFilter, setDifficultyFilter] = useState({
     EASY: false,
@@ -37,11 +67,73 @@ export default function ProblemsList() {
 
   const [difficultyTouched, setDifficultyTouched] = useState(false);
   const [statusTouched, setStatusTouched] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (status === "idle") dispatch(fetchProblems());
     dispatch(fetchTags());
+    dispatch(fetchAllPlaylists());
   }, [status, dispatch]);
+
+  const handleCreatePlaylist = async () => {
+    if (!newPlaylist.title.trim() || !selectedProblem) return;
+
+    const result = await dispatch(createPlaylist(newPlaylist));
+    if (result.payload?._id) {
+      // Add the problem to the newly created playlist
+      await dispatch(addProblemToPlaylist({
+        playlistId: result.payload._id,
+        problemId: selectedProblem._id
+      }));
+    }
+    setOpen(false);
+
+    setNewPlaylist({ title: "", description: "" });
+    setIsCreateMode(false);
+    setSelectedProblem(null);
+  };
+
+  const handleAddToPlaylist = async () => {
+    if (!selectedPlaylistId || !selectedProblem) return;
+
+    await dispatch(addProblemToPlaylist({
+      playlistId: selectedPlaylistId,
+      problemId: selectedProblem._id
+    }));
+    toast("Problem added to playlist");
+
+
+    setSelectedProblem(null);
+    setOpen(false);
+    setSelectedPlaylistId("");
+  };
+
+  const handleQuickAddToDPPlaylist = async (problem) => {
+    // Check if "Dynamic Programming" playlist exists
+    const dpPlaylist = playlists.find(p => p.title === "Dynamic Programming");
+
+    if (dpPlaylist) {
+      // If exists, add problem to it
+      await dispatch(addProblemToPlaylist({
+        playlistId: dpPlaylist._id,
+        problemId: problem._id
+      }));
+    } else {
+      // If doesn't exist, create it first
+      const result = await dispatch(createPlaylist({
+        title: "Dynamic Programming",
+        description: "All important DP problems"
+      }));
+
+      if (result.payload?._id) {
+        // Then add the problem to it
+        await dispatch(addProblemToPlaylist({
+          playlistId: result.payload._id,
+          problemId: problem._id
+        }));
+      }
+    }
+  };
 
   const getBadgeColor = (difficulty) => {
     switch (difficulty) {
@@ -76,7 +168,7 @@ export default function ProblemsList() {
   }, [problems, difficultyFilter, statusFilter]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen max-w-7xl mx-auto">
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* Sidebar */}
         <aside className="w-full md:w-64 bg-gray-100 p-4 border-b md:border-b-0 md:border-r overflow-y-auto">
@@ -201,9 +293,100 @@ export default function ProblemsList() {
                               <Badge variant="outline">Unsolved</Badge>
                             </TableCell>
                             <TableCell>
-                              <Button variant="secondary" size="sm">
-                                Add
-                              </Button>
+                              <div className="flex gap-2">
+                                <Dialog open={open} onOpenChange={setOpen}>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={() => {
+                                        setSelectedProblem(problem);
+                                        setOpen(true);
+                                      }}
+                                    >
+                                      Add to Playlist
+                                    </Button>
+                                  </DialogTrigger>
+
+                                  <DialogContent >
+                                    <DialogHeader>
+                                      <DialogTitle>Add to Playlist</DialogTitle>
+                                      <DialogDescription>
+                                        Add "{selectedProblem?.title}" to an existing playlist or create a new one.
+                                      </DialogDescription>
+                                    </DialogHeader>
+
+                                    {!isCreateMode ? (
+                                      <>
+                                        <div className="space-y-4 py-4">
+                                          <div className="space-y-2">
+                                            <Label>Select Playlist</Label>
+                                            <select
+                                              className="w-full p-2 border rounded-md"
+                                              value={selectedPlaylistId}
+                                              onChange={(e) => setSelectedPlaylistId(e.target.value)}
+                                            >
+                                              <option value="">Select a playlist...</option>
+                                              {playlists.map((item) => (
+                                                <option key={item?.playlist?._id} value={item?.playlist?._id}>
+                                                  {item?.playlist?.title}
+                                                </option>
+                                              ))}
+                                            </select>
+                                          </div>
+                                          <Button type="button" variant="outline" onClick={() => setIsCreateMode(true)}>
+                                            Create New Playlist
+                                          </Button>
+                                        </div>
+                                        <DialogFooter>
+                                          <Button type="button" onClick={handleAddToPlaylist} disabled={!selectedPlaylistId}>
+                                            Add to Playlist
+                                          </Button>
+                                        </DialogFooter>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <div className="space-y-4 py-4">
+                                          <div className="space-y-2">
+                                            <Label>Playlist Title</Label>
+                                            <Input
+                                              value={newPlaylist.title}
+                                              onChange={(e) =>
+                                                setNewPlaylist((prev) => ({ ...prev, title: e.target.value }))
+                                              }
+                                              placeholder="Enter playlist title"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <Label>Description</Label>
+                                            <Textarea
+                                              value={newPlaylist.description}
+                                              onChange={(e) =>
+                                                setNewPlaylist((prev) => ({ ...prev, description: e.target.value }))
+                                              }
+                                              placeholder="Enter playlist description"
+                                            />
+                                          </div>
+                                        </div>
+                                        <DialogFooter>
+                                          <Button type="button" variant="outline" onClick={() => setIsCreateMode(false)}>
+                                            Back
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            onClick={handleCreatePlaylist}
+                                            disabled={!newPlaylist.title.trim()}
+                                          >
+                                            Create & Add
+                                          </Button>
+                                        </DialogFooter>
+                                      </>
+                                    )}
+                                  </DialogContent>
+                                </Dialog>
+
+
+                              </div>
                             </TableCell>
                             <TableCell>
                               <Button asChild size="sm">
@@ -243,10 +426,109 @@ export default function ProblemsList() {
                           <Badge variant="outline">Unsolved</Badge>
                         </div>
 
-                        <div className="flex space-x-3">
-                          <Button variant="secondary" size="sm" className="flex-1">
-                            Add
-                          </Button>
+                        <div className="flex space-x-2">
+
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => setSelectedProblem(problem)}
+                              >
+                                Add to Playlist
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Add to Playlist</DialogTitle>
+                                <DialogDescription>
+                                  Add "{problem.title}" to an existing playlist or create a new one.
+                                </DialogDescription>
+                              </DialogHeader>
+
+                              {!isCreateMode ? (
+                                <>
+                                  <div className="space-y-4 py-4">
+                                    <div className="space-y-2">
+                                      <Label>Select Playlist</Label>
+                                      <select
+                                        className="w-full p-2 border rounded-md"
+                                        value={selectedPlaylistId}
+                                        onChange={(e) => setSelectedPlaylistId(e.target.value)}
+                                      >
+                                        <option value="">Select a playlist...</option>
+                                        {playlists.map((playlist) => (
+                                          <option key={playlist._id} value={playlist._id}>
+                                            {playlist.title}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => setIsCreateMode(true)}
+                                    >
+                                      Create New Playlist
+                                    </Button>
+                                  </div>
+                                  <DialogFooter>
+                                    <Button
+                                      type="button"
+                                      onClick={handleAddToPlaylist}
+                                      disabled={!selectedPlaylistId}
+                                    >
+                                      Add to Playlist
+                                    </Button>
+                                  </DialogFooter>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="space-y-4 py-4">
+                                    <div className="space-y-2">
+                                      <Label>Playlist Title</Label>
+                                      <Input
+                                        value={newPlaylist.title}
+                                        onChange={(e) => setNewPlaylist(prev => ({
+                                          ...prev,
+                                          title: e.target.value
+                                        }))}
+                                        placeholder="Enter playlist title"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Description</Label>
+                                      <Textarea
+                                        value={newPlaylist.description}
+                                        onChange={(e) => setNewPlaylist(prev => ({
+                                          ...prev,
+                                          description: e.target.value
+                                        }))}
+                                        placeholder="Enter playlist description"
+                                      />
+                                    </div>
+                                  </div>
+                                  <DialogFooter>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => setIsCreateMode(false)}
+                                    >
+                                      Back
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      onClick={handleCreatePlaylist}
+                                      disabled={!newPlaylist.title.trim()}
+                                    >
+                                      Create & Add
+                                    </Button>
+                                  </DialogFooter>
+                                </>
+                              )}
+                            </DialogContent>
+                          </Dialog>
                           <Button asChild size="sm" className="flex-1">
                             <a
                               href={`/problem/${problem._id}`}
