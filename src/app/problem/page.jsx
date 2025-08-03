@@ -35,9 +35,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { useAuth } from "../../context/authContext";
+import { useRouter } from "next/navigation";
+
 
 export default function ProblemsList() {
   const dispatch = useDispatch();
+    const { isAuthenticated, loading: authLoading } = useAuth();
+const router = useRouter();
+  useEffect(() => {
+  if (!authLoading && !isAuthenticated) {
+    toast("You must be logged in to view problems");
+    router.push("/login");
+  }
+}, [authLoading, isAuthenticated, router]);
   const { items: problems, status, tags, error } = useSelector(
     (state) => state.problem
   );
@@ -51,7 +62,9 @@ export default function ProblemsList() {
     title: "",
     description: ""
   });
-  console.log(playlists);
+
+
+
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
 
   const [difficultyFilter, setDifficultyFilter] = useState({

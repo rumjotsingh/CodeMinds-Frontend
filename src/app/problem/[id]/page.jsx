@@ -26,6 +26,7 @@ import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import CodeEditor from "../../../Component/CodeEditer";
 import { Skeleton } from "@/components/ui/skeleton";
+import CommentSection from "../../../Component/Commnets";
 
 function markdownToHtml(md) {
   return md
@@ -97,18 +98,18 @@ export default function ProblemDetailsPage() {
 
   useEffect(() => {
     if (problem?.codeSnippets) {
-      const codes = Object.keys(problem.codeSnippets).map((l) => l.toUpperCase());
-      const firstAvailableLang = availableLangs.find((l) => codes.includes(l));
+      const codes = Object.keys(problem?.codeSnippets).map((l) => l.toUpperCase());
+      const firstAvailableLang = availableLangs?.find((l) => codes.includes(l));
       if (firstAvailableLang && firstAvailableLang !== lang) {
         setLang(firstAvailableLang);
       }
-      setSourceCode(problem.codeSnippets[firstAvailableLang] || "");
+      setSourceCode(problem?.codeSnippets[firstAvailableLang] || "");
     }
   }, [problem]);
 
   useEffect(() => {
     if (!problem) return;
-    const code = problem.codeSnippets?.[lang] || "";
+    const code = problem?.codeSnippets?.[lang] || "";
     setSourceCode(code);
   }, [lang, problem]);
 
@@ -445,9 +446,7 @@ export default function ProblemDetailsPage() {
               value="comments"
               className="flex-grow overflow-auto px-4 py-4 rounded bg-background/70 border border-border"
             >
-              <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-lg">
-                Comment system coming soon!
-              </div>
+              <CommentSection problemId={id}/>
             </TabsContent>
 
             {/* SOLUTIONS TAB */}
