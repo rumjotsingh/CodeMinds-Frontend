@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Link from "next/link";
 
 export default function RecentSubmissions({ submissions }) {
   const [isMobile, setIsMobile] = useState(false);
-
+ 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -36,15 +37,18 @@ export default function RecentSubmissions({ submissions }) {
             {submissions.map((s, idx) => (
               <TableRow key={idx}>
                 <TableCell>{new Date(s.createdAt || s.date || "").toLocaleString()}</TableCell>
-                <TableCell>{s.problemTitle}</TableCell>
+                <TableCell>{s.problemId.title}</TableCell>
                 <TableCell>
                   <Badge variant={s.result === "Accepted" ? "default" : "destructive"}>
                     {s.result}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <a href="#" className="text-blue-600 hover:underline">View Solution</a>
-                </TableCell>
+  <Link href={`/solutions/?submissionId=${s._id}`} className="text-blue-600 hover:underline">
+    View Solution
+  </Link>
+</TableCell>
+
               </TableRow>
             ))}
           </TableBody>

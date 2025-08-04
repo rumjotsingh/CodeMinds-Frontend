@@ -6,7 +6,7 @@ import dashboardReducer from "../redux/slices/DashbordSlice";
 import streakReducer from "../redux/slices/StreaksSlice";
 import playlistReducer from "../redux/slices/playlistSlice";
 import commentsReducer from "../redux/slices/commentsSlice";
-
+import submissionsReducer from "../redux/slices/submissionSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -15,5 +15,6 @@ export const store = configureStore({
     streaks: streakReducer,
     playlists: playlistReducer,
     comments: commentsReducer,
+    submissions: submissionsReducer,
   },
 });
