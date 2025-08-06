@@ -1,7 +1,9 @@
 import axiosInstance from "@/config/axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Thunk to fetch problems
+// --- Thunks --- //
+
+// Fetch all problems
 export const fetchProblems = createAsyncThunk(
   "problems/fetchProblems",
   async (_, { rejectWithValue }) => {
@@ -16,12 +18,12 @@ export const fetchProblems = createAsyncThunk(
   }
 );
 
+// Fetch problem by ID
 export const fetchProblemsById = createAsyncThunk(
   "problems/fetchProblemsById",
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/api/v1/problems/${id}`);
-
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -31,7 +33,7 @@ export const fetchProblemsById = createAsyncThunk(
   }
 );
 
-// Thunk to fetch tags
+// Fetch tags
 export const fetchTags = createAsyncThunk(
   "problems/fetchTags",
   async (_, { rejectWithValue }) => {
@@ -45,6 +47,8 @@ export const fetchTags = createAsyncThunk(
     }
   }
 );
+
+// Run code
 export const runCode = createAsyncThunk(
   "problem/runCode",
   async ({ problemId, languageId, sourceCode }, { rejectWithValue }) => {
@@ -54,13 +58,14 @@ export const runCode = createAsyncThunk(
         languageId,
         sourceCode,
       });
-      return response.data; // expect your result JSON here
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
+// Submit code
 export const submitCode = createAsyncThunk(
   "problem/submitCode",
   async ({ problemId, languageId, sourceCode }, { rejectWithValue }) => {
@@ -77,6 +82,52 @@ export const submitCode = createAsyncThunk(
   }
 );
 
+// Create new problem
+export const createProblem = createAsyncThunk(
+  "problems/createProblem",
+  async (problemData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/api/v1/problems",
+        problemData
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Update problem
+export const updateProblem = createAsyncThunk(
+  "problems/updateProblem",
+  async ({ id, updatedData }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch(
+        `/api/v1/problems/${id}`,
+        updatedData
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// Delete problem
+export const deleteProblem = createAsyncThunk(
+  "problems/deleteProblem",
+  async (id, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`/api/v1/problems/${id}`);
+      return id; // just return the id for local state update
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+// --- Slice --- //
 const problemsSlice = createSlice({
   name: "problems",
   initialState: {
@@ -85,16 +136,26 @@ const problemsSlice = createSlice({
     error: null,
     getById: null,
 
+    // Tags
     tags: [],
     tagsStatus: "idle",
     tagsError: null,
 
-    runStatus: "idle", // loading state for run
+    // Code run/submit
+    runStatus: "idle",
     runError: null,
-    runResult: null, // store run code response
-    submitStatus: "idle", // loading state for submit
+    runResult: null,
+    submitStatus: "idle",
     submitError: null,
     submitResult: null,
+
+    // Create/Update/Delete
+    createStatus: "idle",
+    createError: null,
+    updateStatus: "idle",
+    updateError: null,
+    deleteStatus: "idle",
+    deleteError: null,
   },
   reducers: {
     clearRunResult: (state) => {
@@ -110,7 +171,7 @@ const problemsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Problems
+      // Fetch problems
       .addCase(fetchProblems.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -122,9 +183,9 @@ const problemsSlice = createSlice({
       .addCase(fetchProblems.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      });
-    builder
-      // Problems
+      })
+
+      // Fetch problem by id
       .addCase(fetchProblemsById.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -138,7 +199,7 @@ const problemsSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Tags
+      // Fetch tags
       .addCase(fetchTags.pending, (state) => {
         state.tagsStatus = "loading";
         state.tagsError = null;
@@ -150,9 +211,9 @@ const problemsSlice = createSlice({
       .addCase(fetchTags.rejected, (state, action) => {
         state.tagsStatus = "failed";
         state.tagsError = action.payload;
-      });
-    builder
-      // RunCode Thunk
+      })
+
+      // Run code
       .addCase(runCode.pending, (state) => {
         state.runStatus = "loading";
         state.runError = null;
@@ -167,7 +228,7 @@ const problemsSlice = createSlice({
         state.runError = action.payload;
       })
 
-      // SubmitCode Thunk
+      // Submit code
       .addCase(submitCode.pending, (state) => {
         state.submitStatus = "loading";
         state.submitError = null;
@@ -180,8 +241,58 @@ const problemsSlice = createSlice({
       .addCase(submitCode.rejected, (state, action) => {
         state.submitStatus = "failed";
         state.submitError = action.payload;
+      })
+
+      // Create
+      .addCase(createProblem.pending, (state) => {
+        state.createStatus = "loading";
+        state.createError = null;
+      })
+      .addCase(createProblem.fulfilled, (state, action) => {
+        state.createStatus = "succeeded";
+        state.items.push(action.payload);
+      })
+      .addCase(createProblem.rejected, (state, action) => {
+        state.createStatus = "failed";
+        state.createError = action.payload;
+      })
+
+      // Update
+      .addCase(updateProblem.pending, (state) => {
+        state.updateStatus = "loading";
+        state.updateError = null;
+      })
+      .addCase(updateProblem.fulfilled, (state, action) => {
+        state.updateStatus = "succeeded";
+        const idx = state.items.findIndex((p) => p._id === action.payload._id);
+        if (idx !== -1) state.items[idx] = action.payload;
+        if (state.getById && state.getById._id === action.payload._id) {
+          state.getById = action.payload;
+        }
+      })
+      .addCase(updateProblem.rejected, (state, action) => {
+        state.updateStatus = "failed";
+        state.updateError = action.payload;
+      })
+
+      // Delete
+      .addCase(deleteProblem.pending, (state) => {
+        state.deleteStatus = "loading";
+        state.deleteError = null;
+      })
+      .addCase(deleteProblem.fulfilled, (state, action) => {
+        state.deleteStatus = "succeeded";
+        state.items = state.items.filter((p) => p._id !== action.payload);
+        if (state.getById && state.getById._id === action.payload) {
+          state.getById = null;
+        }
+      })
+      .addCase(deleteProblem.rejected, (state, action) => {
+        state.deleteStatus = "failed";
+        state.deleteError = action.payload;
       });
   },
 });
+
 export const { clearRunResult, clearSubmitResult } = problemsSlice.actions;
 export default problemsSlice.reducer;

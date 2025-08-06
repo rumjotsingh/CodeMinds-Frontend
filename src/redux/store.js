@@ -5,6 +5,10 @@ import problemReducer from "../redux/slices/problemSlice";
 import dashboardReducer from "../redux/slices/DashbordSlice";
 import streakReducer from "../redux/slices/StreaksSlice";
 import playlistReducer from "../redux/slices/playlistSlice";
+import commentsReducer from "../redux/slices/commentsSlice";
+import submissionsReducer from "../redux/slices/submissionSlice";
+import announcementReducer from "../redux/slices/announcementSlice";
+import contestReducer from "../redux/slices/contestSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,5 +17,9 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     streaks: streakReducer,
     playlists: playlistReducer,
+    comments: commentsReducer,
+    submissions: submissionsReducer,
+    announcement: announcementReducer,
+    contest: contestReducer,
   },
 });

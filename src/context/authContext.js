@@ -45,8 +45,13 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(newIsAuthenticated);
 
       // Redirect if on auth pages while authenticated
-      if (newIsAuthenticated && (pathname === "/login" || pathname === "/register")) {
-        router.replace(user.role === "admin" ? "/dashboard/admin" : "/dashboard/user");
+      if (
+        newIsAuthenticated &&
+        (pathname === "/login" || pathname === "/register")
+      ) {
+        router.replace(
+          user.role === "admin" ? "/dashboard/admin" : "/dashboard/user"
+        );
       }
     }
   }, [user, loading, router, pathname]);
@@ -70,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setIsAuthenticated(false);
-    router.replace("/login");
+    router.push("/login");
     setLoading(false);
   };
 
@@ -82,11 +87,7 @@ export const AuthProvider = ({ children }) => {
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

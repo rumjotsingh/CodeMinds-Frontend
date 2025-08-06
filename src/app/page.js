@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
+import AnnouncementsList from "@/Component/AnnouncementsList";
 
 // LOGOS (use your real paths!)
 const faangLogos = [
@@ -63,6 +64,7 @@ export default function HomePage() {
       style={{ overflowX: "hidden" }}
     >
       {/* HERO */}
+
       <motion.section
         className="text-center mb-24"
         initial={{ opacity: 0, y: 50 }}
@@ -131,8 +133,6 @@ export default function HomePage() {
           ))}
         </motion.div>
       </section>
-
-      <Separator className="my-20 border-yellow-600" />
 
       {/* DETAILED FEATURES */}
       <motion.section
@@ -225,6 +225,7 @@ export default function HomePage() {
       </motion.section>
 
       <Separator className="my-20 border-yellow-600" />
+      <AnnouncementsList />
 
       {/* Testimonials */}
       <motion.section
