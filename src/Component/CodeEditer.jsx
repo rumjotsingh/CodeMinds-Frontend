@@ -10,7 +10,7 @@ export default function CodeEditor({
   value = "// write your code here",
   onChange,
   className,
-  height = "400px",
+  height = "350px",
 }) {
   const [code, setCode] = useState(value);
 

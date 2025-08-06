@@ -8,6 +8,7 @@ import {
   submitCode,
   clearRunResult,
   clearSubmitResult,
+  fetchAllSubmission,
 } from "../../../redux/slices/problemSlice";
 import { fetchComments } from "../../../redux/slices/commentsSlice";
 import { useParams } from "next/navigation";
@@ -65,6 +66,16 @@ function getLanguageId(lang) {
       return 0;
   }
 }
+// utils/getDefaultLanguage.js or top of your component file
+function getDefaultLanguage(problem, availableLangs) {
+  if (!problem) return "C++";
+  const codes = Object.keys(problem?.codeSnippets || {}).map((l) =>
+    l.toUpperCase()
+  );
+  const firstAvailableLang = availableLangs.find((l) => codes.includes(l));
+  return firstAvailableLang || "C++";
+}
+
 
 export default function ProblemDetailsPage() {
   const { id } = useParams();
@@ -78,12 +89,14 @@ export default function ProblemDetailsPage() {
     runError,
     submitStatus,
     submitResult,
+    submitResultId,
+    submitResulStatus,
     submitError,
   } = useSelector((state) => state.problem);
 
     const { comments, loading } = useSelector((state) => state.comments);
   const availableLangs = ["C++", "PYTHON"];
-  const [leftTab, setLeftTab] = useState("problem");
+ 
   const [rightTab, setRightTab] = useState("problem");
   const [lang, setLang] = useState(() => {
     if (!problem) return "C++";
@@ -93,6 +106,11 @@ export default function ProblemDetailsPage() {
     const firstAvailableLang = availableLangs.find((l) => codes.includes(l));
     return firstAvailableLang || "C++";
   });
+// you can pass this as a prop too
+
+const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(problem, availableLangs));
+  
+
 
   const [sourceCode, setSourceCode] = useState("");
   useEffect(() => {
@@ -104,6 +122,13 @@ export default function ProblemDetailsPage() {
       document.body.style.overflow = 'auto';
     };
   }, []);
+  useEffect(() => {
+  if (submitResultId?.length > 0) {
+    setRightTab("result");
+  }
+ 
+}, [submitResultId]);
+
 
 
   useEffect(() => {
@@ -132,7 +157,15 @@ export default function ProblemDetailsPage() {
 
   useEffect(() => {
     if (id) dispatch(fetchProblemsById(id));
+        fetchAllSubmission();
   }, [id, dispatch]);
+  useEffect(() => {
+  if (submitResultId) {
+    fetchAllSubmission();
+    setTab("result");
+  }
+}, [submitResultId]);
+
 
   useEffect(() => {
     if (submitStatus === "succeeded") {
@@ -208,6 +241,8 @@ export default function ProblemDetailsPage() {
         sourceCode,
       })
     );
+    toast("The Code is Submitted");
+      setRightTab("result");
   }
  
   function onCodeChange(newCode) {
@@ -227,6 +262,8 @@ export default function ProblemDetailsPage() {
               <TabsTrigger value="problem">Problem</TabsTrigger>
               <TabsTrigger value="comments">Comments</TabsTrigger>
               <TabsTrigger value="solutions">Solutions</TabsTrigger>
+              <TabsTrigger value="submission">Submissions</TabsTrigger>
+              <TabsTrigger value="result">Result</TabsTrigger>
           </TabsList>
            
            
@@ -284,7 +321,7 @@ export default function ProblemDetailsPage() {
             </TabsContent>
             
 
-        <TabsContent
+            <TabsContent
   value="comments"
   className="flex-grow overflow-auto px-4 py-4  max-h-[600px]" // Adjust height as needed
 >
@@ -308,25 +345,26 @@ export default function ProblemDetailsPage() {
           <p className="text-gray-500">No comments yet. Be the first to comment!</p>
         )}
       </div>
-</TabsContent>
+            </TabsContent>
 
-            <TabsContent value="solutions" className="flex flex-col h-full">
+            <TabsContent value="solutions" className="flex flex-col h-full overflow-auto ml-2 p-2">
               <Section title="Reference Solutions">
                 <div className="flex gap-2 mb-4 flex-wrap">
                   {availableLangs.map((l) => (
-                    <Button
-                      key={l}
-                      size="sm"
-                      variant={lang === l ? "default" : "outline"}
-                      className="rounded px-4"
-                      onClick={() => setLang(l)}
-                    >
-                      {l}
-                    </Button>
-                  ))}
+  <Button
+    key={l}
+    size="sm"
+    variant={solutionLang === l ? "default" : "outline"}
+    className=" px-4"
+    onClick={() => setSolutionLang(l)}
+  >
+    {l}
+  </Button>
+))}
+
                 </div>
 
-                <Card className="shadow-sm border flex-grow overflow-auto">
+                <Card className="  flex-grow overflow-auto">
                   <CardContent className="p-4 relative">
                     <Button
                       size="icon"
@@ -335,27 +373,144 @@ export default function ProblemDetailsPage() {
                       title="Copy Solution"
                       tabIndex={-1}
                       onClick={() =>
-                        copyToClipboard(problem?.referenceSolutions?.[lang] || "")
+                        copyToClipboard(  problem?.referenceSolutions?.[solutionLang]
+    ?.replace(/int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\}/, '')
+    ?.trim() || "")
                       }
                     >
                       <Copy className="w-4 h-4" />
                     </Button>
-                    <pre className="bg-background rounded text-sm leading-6 overflow-x-auto p-4 font-mono whitespace-pre-wrap">
-                      {problem?.referenceSolutions?.[lang]}
-                    </pre>
+               <pre className=" text-sm leading-6 overflow-x-auto p-4 font-mono whitespace-pre-wrap">
+  {problem?.referenceSolutions?.[solutionLang]
+    ?.replace(/int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\}/, '')
+    ?.trim()}
+</pre>
+
+
                   </CardContent>
                 </Card>
               </Section>
             </TabsContent>
+           <TabsContent value="result" className="flex flex-col h-full overflow-auto ml-2 p-2">
+  {/* --- Submission Result Section --- */}
+  {submitResult ? (
+    <Section title="Submission Result" className="mb-6">
+      <div
+        className={`mb-4 px-4 py-3 rounded border font-medium text-sm ${
+          submitResult.isCorrect
+            ? "bg-green-50 border-green-300 text-green-800"
+            : "bg-red-50 border-red-300 text-red-800"
+        }`}
+      >
+        {submitResult.isCorrect ? (
+          <>✅ Accepted — Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases.</>
+        ) : (
+          <>❌ Failed — Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases.</>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2">
+        {submitResult.testResults.map((test, idx) => (
+          <div
+            key={idx}
+            className={`rounded border px-4 py-3 shadow-sm transition-all duration-300 ${
+              test.passed
+                ? "border-green-300 bg-green-50 text-green-800"
+                : "border-red-300 bg-red-50 text-red-800"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-semibold text-sm">Test Case #{idx + 1}</h4>
+              <span className="text-sm font-medium">
+                {test.passed ? "✅ Passed" : "❌ Failed"}
+              </span>
+            </div>
+
+            <div className="text-sm space-y-1">
+              <div>
+                <span className="font-semibold">Input:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Expected:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Actual:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  ) : (
+    <div className="text-muted-foreground text-sm">No submission data available.</div>
+  )}
+
+  {/* --- Reference Solution Section --- */}
+
+          </TabsContent>
+         <TabsContent value="submission" className="flex flex-col h-full overflow-auto ml-2 p-2">
+  {/* --- Submission Result Section --- */}
+ {submitResultId?.length === 0 ? (
+  <div className="text-muted-foreground">No test results available.</div>
+) : (
+  <div className="space-y-4  overflow-y-auto pr-2">
+    {submitResultId?.map((submission, sIdx) => (
+      <Card key={submission.id || sIdx} className="border group relative">
+        <CardContent className="space-y-3 pt-4">
+          <p className="font-semibold">
+            ✅ Passed {submission?.passedTestcases} of {submission?.totalTestcases} testcases
+          </p>
+
+          {submission?.testResults?.map((test, idx) => (
+            <div
+              key={idx}
+              className={`p-3 rounded-md border ${
+                test?.passed ? "border-green-300 bg-green-50" : "border-red-300 bg-red-50"
+              }`}
+            >
+              <div>
+                <span className="font-bold">Input:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+              </div>
+              <div>
+                <span className="font-bold">Expected:</span>{" "}
+                <code className="font-mono">{test.expectedOutput}</code>
+              </div>
+              <div>
+                <span className="font-bold">Actual:</span>{" "}
+                <code className="font-mono">{test.actualOutput}</code>
+              </div>
+              <div className="text-sm text-muted-foreground mt-1">
+                {test.passed ? "✅ Passed" : "❌ Failed"} — Time: {test.time}s, Memory: {test.memory}KB
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+)}
+
+
+  {/* --- Reference Solution Section --- */}
+
+          </TabsContent>
+
 
          </Tabs>
 
         {/* RIGHT SIDE */}
-        <main className="w-[60%] p-8 flex flex-col h-full overflow-auto  border border-[#e3e3e3]">
+        <main className="w-[60%] p-1  flex flex-col h-full overflow-auto  border  border-[#e3e3e3]">
          
             {/* PROBLEM TAB */}
           
-              <div className="mb-6 flex items-center gap-4">
+              <div className="mb-6 flex items-center mt-4 gap-4">
                 <label htmlFor="language-select" className="font-semibold">
                   Language:
                 </label>
@@ -405,95 +560,99 @@ export default function ProblemDetailsPage() {
                     onChange={onCodeChange}
                   />
                
-               <Section title="Examples" className="mt-6">
-                {visibleCases?.length === 0 && (
-                  <div className="text-muted-foreground">No public test cases.</div>
-                )}
-                <div className="space-y-3 mt-2 max-h-[320px] overflow-y-auto pr-2">
-                  {visibleCases?.map((t, idx) => (
-                    <Card
-                      key={t._id || idx}
-                      className="!shadow-xs group relative border"
-                    >
-                      <CardContent className="py-2 pr-8 pl-4">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 z-10"
-                          title="Copy Input & Output"
-                          tabIndex={-1}
-                          onClick={() =>
-                            copyToClipboard(`Input:\n${t.input}\nOutput:\n${t.output}`)
-                          }
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <div className="pb-1.5">
-                          <span className="font-bold">Input</span>:{" "}
-                          <code className="font-mono">{t.input.replace(/\n/g, "  ")}</code>
-                        </div>
-                        <div>
-                          <span className="font-bold">Output</span>:{" "}
-                          <code className="font-mono">{t.output}</code>
-                        </div>
-                        {t.explanation && (
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            <span className="font-bold">Explanation</span>: {t.explanation}
-                          </div>
-                        )}
-                        <Badge
-                          variant={t.passed ? "success" : "destructive"}
-                          className="absolute bottom-2 right-4 text-xs px-2 py-0.5"
-                        >
-                          {t.passed ? "Passed" : "Failed"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </Section>
+           
 
-              {/* Display Run Results */}
-              {runResult && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-300 rounded">
-                  <p className="font-medium mb-2">
-                    Passed {runResult.passedTestcases} of {runResult.totalTestcases} visible testcases.
-                  </p>
-                  <ul className="max-h-32 overflow-auto list-decimal ml-5 text-sm space-y-1">
-                    {runResult.testResults.map((test, idx) => (
-                      <li
-                        key={idx}
-                        className={test.passed ? "text-green-700" : "text-red-600"}
-                      >
-                        Input: {test.input}, Expected: {test.expectedOutput}, Actual:{" "}
-                        {test.actualOutput} — {test.passed ? "Passed" : "Failed"} (Time:{" "}
-                        {test.time}s, Memory: {test.memory}KB)
-                      </li>
-                    ))}
-                  </ul>
+<Tabs defaultValue="testcases" className="mt-1">
+  <TabsList className="">
+    <TabsTrigger value="testcases">Testcases</TabsTrigger>
+    <TabsTrigger value="Results">Test Results</TabsTrigger>
+  </TabsList>
+
+  {/* --- Tab: Testcases --- */}
+  <TabsContent value="testcases">
+    {visibleCases?.length === 0 ? (
+      <div className="text-muted-foreground">No public test cases.</div>
+    ) : (
+      <div className="space-x-10 max-h-[320px] overflow-y-auto flex pr-2">
+        {visibleCases?.map((t, idx) => (
+          <Card key={t._id || idx} className="flex  group relative border">
+            <CardContent className="">
+              <div className="pb-1.5">
+                <span className="font-bold">Input</span>:{" "}
+                <code className="font-mono whitespace-pre-wrap">{t.input}</code>
+              </div>
+              <div>
+                <span className="font-bold">Output</span>:{" "}
+                <code className="font-mono">{t.output}</code>
+              </div>
+              {t.explanation && (
+                <div className="mt-1 text-xs text-muted-foreground">
+                  <span className="font-bold">Explanation</span>: {t.explanation}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )}
+  </TabsContent>
+
+  {/* --- Tab: Test Results --- */}
+ <TabsContent value="Results">
+  {runResult ? (
+    <div className="mb-6">
+      <p className="font-medium mb-4">
+        Passed {runResult.passedTestcases} of {runResult.totalTestcases} visible testcases.
+      </p>
+
+      <div className="flex space-x-4 max-h-[400px] overflow-y-auto pr-2">
+        {runResult.testResults.map((test, idx) => (
+          <div
+            key={idx}
+            className={`rounded border px-4 py-3 shadow-sm transition-all duration-300 ${
+              test.passed
+                ? "border-green-300 bg-green-50 text-green-800"
+                : "border-red-300 bg-red-50 text-red-800"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-semibold text-sm">Test Case #{idx + 1}</h4>
+              <span className="text-sm font-medium">
+                {test.passed ? "✅ Passed" : "❌ Failed"}
+              </span>
+            </div>
+
+            <div className="text-sm space-y-1">
+              <div>
+                <span className="font-semibold">Input:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Expected:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Actual:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div className="text-muted-foreground">No test results available.</div>
+  )}
+</TabsContent>
+
+</Tabs>
+
 
               {/* Display Submit Results */}
-              {submitResult && (
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-300 rounded">
-                  <p className="font-medium mb-2">
-                    Submit finished. Passed {submitResult.passedTestcases} of {submitResult.totalTestcases} total testcases.
-                  </p>
-                  <ul className="max-h-48 overflow-auto list-decimal ml-5 text-sm space-y-1">
-                    {submitResult.testResults.map((test, idx) => (
-                      <li
-                        key={idx}
-                        className={test.passed ? "text-green-700" : "text-red-600"}
-                      >
-                        Input: {test.input}, Expected: {test.expectedOutput}, Actual:{" "}
-                        {test.actualOutput} — {test.passed ? "Passed" : "Failed"} (Time:{" "}
-                        {test.time}s, Memory: {test.memory}KB)
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+             
 
               {(runError || submitError) && (
                 <div className="mb-6 p-4 bg-red-100 text-red-700 rounded">
@@ -514,7 +673,7 @@ export default function ProblemDetailsPage() {
 function Section({ title, children }) {
   return (
     <section className="mb-4">
-      <h2 className="font-semibold text-base mb-1 text-primary">{title}</h2>
+      
       {children}
     </section>
   );
