@@ -7,6 +7,9 @@ import streakReducer from "../redux/slices/StreaksSlice";
 import playlistReducer from "../redux/slices/playlistSlice";
 import commentsReducer from "../redux/slices/commentsSlice";
 import submissionsReducer from "../redux/slices/submissionSlice";
+import announcementReducer from "../redux/slices/announcementSlice";
+import contestReducer from "../redux/slices/contestSlice";
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -16,5 +19,7 @@ export const store = configureStore({
     playlists: playlistReducer,
     comments: commentsReducer,
     submissions: submissionsReducer,
+    announcement: announcementReducer,
+    contest: contestReducer,
   },
 });
