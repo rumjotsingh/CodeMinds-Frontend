@@ -9,6 +9,7 @@ import {
   clearRunResult,
   clearSubmitResult,
 } from "../../../redux/slices/problemSlice";
+import { fetchComments } from "../../../redux/slices/commentsSlice";
 import { useParams } from "next/navigation";
 import {
   Tabs,
@@ -80,11 +81,10 @@ export default function ProblemDetailsPage() {
     submitError,
   } = useSelector((state) => state.problem);
 
+    const { comments, loading } = useSelector((state) => state.comments);
   const availableLangs = ["C++", "PYTHON"];
-
-  const [leftTab, setLeftTab] = useState("problem"); // Problem or Comments
-  const [rightTab, setRightTab] = useState("problem"); // Right tab (problem, comments, solutions)
-  
+  const [leftTab, setLeftTab] = useState("problem");
+  const [rightTab, setRightTab] = useState("problem");
   const [lang, setLang] = useState(() => {
     if (!problem) return "C++";
     const codes = Object.keys(problem?.codeSnippets || {}).map((l) =>
@@ -95,10 +95,22 @@ export default function ProblemDetailsPage() {
   });
 
   const [sourceCode, setSourceCode] = useState("");
+  useEffect(() => {
+    // Lock scroll when this page is mounted
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      // Restore scroll when user navigates away
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
 
   useEffect(() => {
     if (problem?.codeSnippets) {
-      const codes = Object.keys(problem?.codeSnippets).map((l) => l.toUpperCase());
+      const codes = Object.keys(problem?.codeSnippets).map((l) =>
+        l.toUpperCase()
+      );
       const firstAvailableLang = availableLangs?.find((l) => codes.includes(l));
       if (firstAvailableLang && firstAvailableLang !== lang) {
         setLang(firstAvailableLang);
@@ -106,6 +118,11 @@ export default function ProblemDetailsPage() {
       setSourceCode(problem?.codeSnippets[firstAvailableLang] || "");
     }
   }, [problem]);
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchComments(id));
+    }
+  }, [id, dispatch]);
 
   useEffect(() => {
     if (!problem) return;
@@ -117,7 +134,6 @@ export default function ProblemDetailsPage() {
     if (id) dispatch(fetchProblemsById(id));
   }, [id, dispatch]);
 
-  // Show toast on successful submit
   useEffect(() => {
     if (submitStatus === "succeeded") {
       toast(
@@ -127,34 +143,32 @@ export default function ProblemDetailsPage() {
   }, [submitStatus, submitResult]);
 
   if (status === "loading") {
-  return (
-    <div className="flex w-full h-[calc(100vh-64px)] min-h-[600px] gap-8 p-8 bg-muted/60">
-      {/* LEFT: Problem skeleton */}
-      <div className="w-[40%] min-w-[325px] flex flex-col gap-4">
-        <Skeleton className="h-10 w-[70%] mb-2" /> {/* Title */}
-        <Skeleton className="h-6 w-[90px] mb-2 rounded-xl" /> {/* Difficulty badge */}
-        <div className="flex flex-wrap gap-2">
-          <Skeleton className="h-6 w-[60px] rounded" />
-          <Skeleton className="h-6 w-[60px] rounded" />
-          <Skeleton className="h-6 w-[60px] rounded" />
+    return (
+      <div className="flex w-full h-[calc(100vh-64px)] min-h-[600px] gap-8 p-8 bg-muted/60">
+        <div className="w-[40%] min-w-[325px] flex flex-col gap-4">
+          <Skeleton className="h-10 w-[70%] mb-2" />
+          <Skeleton className="h-6 w-[90px] mb-2 rounded-xl" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-[60px] rounded"/>
+            <Skeleton className="h-6 w-[60px] rounded"/>
+            <Skeleton className="h-6 w-[60px] rounded"/>
+          </div>
+          <Skeleton className="h-24 w-full mt-3" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-28 w-full"/>
         </div>
-        <Skeleton className="h-24 w-full mt-3" /> {/* Description */}
-        <Skeleton className="h-20 w-full" /> {/* Constraints */}
-        <Skeleton className="h-28 w-full" /> {/* Testcases */}
-      </div>
-      {/* RIGHT: Editor skeleton */}
-      <div className="w-[60%] flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-8 w-24" /> {/* Language selector */}
-          <Skeleton className="h-10 w-20" /> {/* Run button */}
-          <Skeleton className="h-10 w-20" /> {/* Submit button */}
+        <div className="w-[60%] flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-10 w-20" />
+            <Skeleton className="h-10 w-20" />
+          </div>
+          <Skeleton className="h-[400px] w-full rounded-lg"/>
+          <Skeleton className="h-24 w-full mt-4"/>
         </div>
-        <Skeleton className="h-[400px] w-full rounded-lg" /> {/* Editor */}
-        <Skeleton className="h-24 w-full mt-4" /> {/* Result area */}
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   if (status === "failed")
     return (
@@ -195,149 +209,152 @@ export default function ProblemDetailsPage() {
       })
     );
   }
-
+ 
   function onCodeChange(newCode) {
     setSourceCode(newCode);
   }
 
   return (
-    <div className="min-w-7xl mx-auto">
-      {/* Toaster for notifications */}
-      
-
-      <div className="flex w-full h-[calc(100vh-64px)]  min-h-[600px] bg-muted/60">
-        {/* LEFT SIDE: Problem & Comments */}
-        <aside className="w-[40%] min-w-[325px] px-8 py-6 border-r bg-background/80 overflow-y-auto flex flex-col gap-6 shadow-md">
-          <div>
-            <h1 className="text-3xl font-extrabold mb-2 text-primary">
-              {problem?.title}
-            </h1>
-            <Badge
-              variant={
-                problem?.difficulty === "EASY"
-                  ? "success"
-                  : problem?.difficulty === "MEDIUM"
-                  ? "warning"
-                  : "destructive"
-              }
-              className="font-semibold tracking-wide text-sm"
-            >
-              {problem?.difficulty || ""}
-            </Badge>
-          </div>
-
-          <div className="mb-4 flex gap-2 flex-wrap">
-            {problem?.tags?.map((tag) => (
-              <Badge variant="secondary" key={tag} className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Tabs: Problem / Comments */}
-          <Tabs value={leftTab} onValueChange={setLeftTab} className="mb-4">
-            <TabsList className="bg-background/80 shadow rounded">
-              <TabsTrigger value="problem" className="px-4 py-2">
-                Problem
-              </TabsTrigger>
-              <TabsTrigger value="comments" className="px-4 py-2">
-                Comments
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="problem" className="mt-4">
-              <section
-                className="prose prose-sm max-w-none"
-                style={{ fontSize: 16 }}
-              >
-                <div
-                  dangerouslySetInnerHTML={{ __html: markdownToHtml(problem?.description) }}
-                />
-              </section>
-
-              <Card className="mt-6 shadow-sm border">
-                <CardContent className="py-3 px-4">
-                  <h2 className="font-semibold mb-2">Constraints</h2>
-                  <ul className="list-disc list-inside text-sm">
-                    {problem?.constraints?.map((c, i) => (
-                      <li key={i}>{c}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Section title="Examples" className="mt-6">
-                {visibleCases?.length === 0 && (
-                  <div className="text-muted-foreground">No public test cases.</div>
-                )}
-                <div className="space-y-3 mt-2 max-h-[320px] overflow-y-auto pr-2">
-                  {visibleCases?.map((t, idx) => (
-                    <Card
-                      key={t._id || idx}
-                      className="!shadow-xs group relative border"
-                    >
-                      <CardContent className="py-2 pr-8 pl-4">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 z-10"
-                          title="Copy Input & Output"
-                          tabIndex={-1}
-                          onClick={() =>
-                            copyToClipboard(`Input:\n${t.input}\nOutput:\n${t.output}`)
-                          }
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <div className="pb-1.5">
-                          <span className="font-bold">Input</span>:{" "}
-                          <code className="font-mono">{t.input.replace(/\n/g, "  ")}</code>
-                        </div>
-                        <div>
-                          <span className="font-bold">Output</span>:{" "}
-                          <code className="font-mono">{t.output}</code>
-                        </div>
-                        {t.explanation && (
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            <span className="font-bold">Explanation</span>: {t.explanation}
-                          </div>
-                        )}
-                        <Badge
-                          variant={t.passed ? "success" : "destructive"}
-                          className="absolute bottom-2 right-4 text-xs px-2 py-0.5"
-                        >
-                          {t.passed ? "Passed" : "Failed"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </Section>
-            </TabsContent>
-
-            <TabsContent
-              value="comments"
-              className="mt-3 text-muted-foreground min-h-[200px] flex items-center justify-center text-center px-3"
-            >
-              <div>Comment system coming soon!</div>
-            </TabsContent>
-          </Tabs>
-        </aside>
-
-        {/* RIGHT SIDE: Main right tabs: Problem(editor), Comments, Solutions */}
-        <main className="w-[60%] p-8 flex flex-col h-full bg-muted/70 overflow-auto rounded-lg shadow-md">
-          <Tabs
+    <div className="max-w-7xl mx-auto">
+      <div className="flex w-full h-[calc(100vh-64px)] min-h-[600px] ">
+        {/* LEFT SIDE */}
+         <Tabs
             value={rightTab}
             onValueChange={setRightTab}
-            className="flex-1 flex flex-col"
+            className="flex-1 flex flex-col "
           >
-            <TabsList className="mb-4 bg-background/80 shadow-sm rounded-lg">
+         <TabsList className="w-full text-md">
               <TabsTrigger value="problem">Problem</TabsTrigger>
               <TabsTrigger value="comments">Comments</TabsTrigger>
               <TabsTrigger value="solutions">Solutions</TabsTrigger>
-            </TabsList>
+          </TabsList>
+           
+           
+            <TabsContent value="problem" className="flex-1 overflow-hidden">
+  <aside
+    className="w-full min-w-[325px] mb-10 px-8 py-6   overflow-y-auto flex flex-col gap-4 h-[calc(100vh-5rem)]"
+  >
+    <div>
+      <h1 className="text-3xl font-extrabold mb-2 text-primary">
+        {problem?.title}
+      </h1>
+      <Badge
+        variant={
+          problem?.difficulty === "EASY"
+            ? "success"
+            : problem?.difficulty === "MEDIUM"
+            ? "warning"
+            : "destructive"
+        }
+        className="font-semibold tracking-wide text-sm"
+      >
+        {problem?.difficulty || ""}
+      </Badge>
+    </div>
 
+    <div className="mb-4 flex gap-2 flex-wrap">
+      {problem?.tags?.map((tag) => (
+        <Badge variant="secondary" key={tag} className="text-xs">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+
+    <section
+      className="prose prose-sm max-w-none"
+      style={{ fontFamily:"inter" ,fontSize: 16 }}
+    >
+      <div
+        dangerouslySetInnerHTML={{
+          __html: markdownToHtml(problem?.description),
+        }}
+      />
+    </section>
+
+   <div className="mb-20">
+        <h2 className="font-semibold ">Constraints</h2>
+        <ul className="list-disc list-inside text-sm">
+          {problem?.constraints?.map((c, i) => (
+            <li key={i}>{c}</li>
+          ))}
+        </ul>
+        </div>
+    
+  </aside>
+            </TabsContent>
+            
+
+        <TabsContent
+  value="comments"
+  className="flex-grow overflow-auto px-4 py-4  max-h-[600px]" // Adjust height as needed
+>
+  <CommentSection problemId={id} />
+  <div className="space-y-4 mb-6 mt-6">
+        {comments?.length > 0 ? (
+          comments.map((c,ind) => (
+            <div key={c._id ||ind } className="border border-[#e3e3e3] p-4">
+              <div className="flex justify-between items-center mb-1">
+                <p className="text-sm font-semibold text-blue-700">
+                  {c?.userId?.name || "Unknown User"}
+                </p>
+                <span className="text-xs text-gray-500">
+                  {new Date(c.createdAt).toLocaleString()}
+                </span>
+              </div>
+              <p className="text-gray-800">{c.content}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No comments yet. Be the first to comment!</p>
+        )}
+      </div>
+</TabsContent>
+
+            <TabsContent value="solutions" className="flex flex-col h-full">
+              <Section title="Reference Solutions">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {availableLangs.map((l) => (
+                    <Button
+                      key={l}
+                      size="sm"
+                      variant={lang === l ? "default" : "outline"}
+                      className="rounded px-4"
+                      onClick={() => setLang(l)}
+                    >
+                      {l}
+                    </Button>
+                  ))}
+                </div>
+
+                <Card className="shadow-sm border flex-grow overflow-auto">
+                  <CardContent className="p-4 relative">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-3 right-3 opacity-80 hover:opacity-100"
+                      title="Copy Solution"
+                      tabIndex={-1}
+                      onClick={() =>
+                        copyToClipboard(problem?.referenceSolutions?.[lang] || "")
+                      }
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                    <pre className="bg-background rounded text-sm leading-6 overflow-x-auto p-4 font-mono whitespace-pre-wrap">
+                      {problem?.referenceSolutions?.[lang]}
+                    </pre>
+                  </CardContent>
+                </Card>
+              </Section>
+            </TabsContent>
+
+         </Tabs>
+
+        {/* RIGHT SIDE */}
+        <main className="w-[60%] p-8 flex flex-col h-full overflow-auto  border border-[#e3e3e3]">
+         
             {/* PROBLEM TAB */}
-            <TabsContent value="problem" className="flex flex-col h-full">
+          
               <div className="mb-6 flex items-center gap-4">
                 <label htmlFor="language-select" className="font-semibold">
                   Language:
@@ -380,16 +397,61 @@ export default function ProblemDetailsPage() {
                 </Button>
               </div>
 
-              <Card className="!shadow-md border flex-grow mb-6">
-                <CardContent className="px-1.5 py-2 h-full">
+             
                   <CodeEditor
                     key={lang}
                     language={getMonacoLanguage(lang)}
                     value={sourceCode}
                     onChange={onCodeChange}
                   />
-                </CardContent>
-              </Card>
+               
+               <Section title="Examples" className="mt-6">
+                {visibleCases?.length === 0 && (
+                  <div className="text-muted-foreground">No public test cases.</div>
+                )}
+                <div className="space-y-3 mt-2 max-h-[320px] overflow-y-auto pr-2">
+                  {visibleCases?.map((t, idx) => (
+                    <Card
+                      key={t._id || idx}
+                      className="!shadow-xs group relative border"
+                    >
+                      <CardContent className="py-2 pr-8 pl-4">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 z-10"
+                          title="Copy Input & Output"
+                          tabIndex={-1}
+                          onClick={() =>
+                            copyToClipboard(`Input:\n${t.input}\nOutput:\n${t.output}`)
+                          }
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                        <div className="pb-1.5">
+                          <span className="font-bold">Input</span>:{" "}
+                          <code className="font-mono">{t.input.replace(/\n/g, "  ")}</code>
+                        </div>
+                        <div>
+                          <span className="font-bold">Output</span>:{" "}
+                          <code className="font-mono">{t.output}</code>
+                        </div>
+                        {t.explanation && (
+                          <div className="mt-1 text-xs text-muted-foreground">
+                            <span className="font-bold">Explanation</span>: {t.explanation}
+                          </div>
+                        )}
+                        <Badge
+                          variant={t.passed ? "success" : "destructive"}
+                          className="absolute bottom-2 right-4 text-xs px-2 py-0.5"
+                        >
+                          {t.passed ? "Passed" : "Failed"}
+                        </Badge>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </Section>
 
               {/* Display Run Results */}
               {runResult && (
@@ -416,8 +478,7 @@ export default function ProblemDetailsPage() {
               {submitResult && (
                 <div className="mb-6 p-4 bg-blue-50 border border-blue-300 rounded">
                   <p className="font-medium mb-2">
-                    Submit finished. Passed {submitResult.passedTestcases} of{" "}
-                    {submitResult.totalTestcases} total testcases.
+                    Submit finished. Passed {submitResult.passedTestcases} of {submitResult.totalTestcases} total testcases.
                   </p>
                   <ul className="max-h-48 overflow-auto list-decimal ml-5 text-sm space-y-1">
                     {submitResult.testResults.map((test, idx) => (
@@ -439,55 +500,11 @@ export default function ProblemDetailsPage() {
                   {runError || submitError}
                 </div>
               )}
-            </TabsContent>
+            
 
-            {/* COMMENTS TAB */}
-            <TabsContent
-              value="comments"
-              className="flex-grow overflow-auto px-4 py-4 rounded bg-background/70 border border-border"
-            >
-              <CommentSection problemId={id}/>
-            </TabsContent>
-
-            {/* SOLUTIONS TAB */}
-            <TabsContent value="solutions" className="flex flex-col h-full">
-              <Section title="Reference Solutions">
-                <div className="flex gap-2 mb-4 flex-wrap">
-                  {availableLangs.map((l) => (
-                    <Button
-                      key={l}
-                      size="sm"
-                      variant={lang === l ? "default" : "outline"}
-                      className="rounded px-4"
-                      onClick={() => setLang(l)}
-                    >
-                      {l}
-                    </Button>
-                  ))}
-                </div>
-
-                <Card className="shadow-sm border flex-grow overflow-auto">
-                  <CardContent className="p-4 relative">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute top-3 right-3 opacity-80 hover:opacity-100"
-                      title="Copy Solution"
-                      tabIndex={-1}
-                      onClick={() =>
-                        copyToClipboard(problem?.referenceSolutions?.[lang] || "")
-                      }
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                    <pre className="bg-background rounded text-sm leading-6 overflow-x-auto p-4 font-mono whitespace-pre-wrap">
-                      {problem?.referenceSolutions?.[lang]}
-                    </pre>
-                  </CardContent>
-                </Card>
-              </Section>
-            </TabsContent>
-          </Tabs>
+          
+            
+        
         </main>
       </div>
     </div>

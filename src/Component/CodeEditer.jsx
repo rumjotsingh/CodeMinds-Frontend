@@ -24,7 +24,7 @@ export default function CodeEditor({
   };
 
   return (
-    <div className={`w-full border rounded-lg shadow ${className || ""}`}>
+    <div className={`w-full     ${className || ""}`}>
       <Editor
         height={height}
         language={language}

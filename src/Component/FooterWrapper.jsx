@@ -6,9 +6,11 @@ import Footer from '@/Component/Footer';
 const FooterWrapper = () => {
   const pathname = usePathname();
 
-  // Hide footer on these routes
-  const hideFooterOn = ['/problem']; // Add more paths if needed
-  const shouldHide = hideFooterOn.includes(pathname);
+  // Routes where footer should be hidden
+  const hideFooterOn = ['/problem'];
+
+  // Match for exact or dynamic routes like /problem/123
+  const shouldHide = hideFooterOn.some((path) => pathname.startsWith(path));
 
   return shouldHide ? null : <Footer />;
 };
