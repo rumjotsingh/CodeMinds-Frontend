@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import CodeEditor from "../../../Component/CodeEditer";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommentSection from "../../../Component/Commnets";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 function markdownToHtml(md) {
   return md
@@ -96,7 +97,8 @@ export default function ProblemDetailsPage() {
 
     const { comments, loading } = useSelector((state) => state.comments);
   const availableLangs = ["C++", "PYTHON"];
- 
+  const [tabs,setTabs]=useState("");
+ const [selectedCode, setSelectedCode] = useState("testcases");
   const [rightTab, setRightTab] = useState("problem");
   const [lang, setLang] = useState(() => {
     if (!problem) return "C++";
@@ -108,72 +110,73 @@ export default function ProblemDetailsPage() {
   });
 // you can pass this as a prop too
 
-const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(problem, availableLangs));
-  
-
-
   const [sourceCode, setSourceCode] = useState("");
+const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(problem, availableLangs));
   useEffect(() => {
-    // Lock scroll when this page is mounted
-    document.body.style.overflow = 'hidden';
+  if (id) {
+    dispatch(fetchProblemsById(id));
+    dispatch(fetchComments(id));
+  }
 
-    return () => {
-      // Restore scroll when user navigates away
-      document.body.style.overflow = 'auto';
-    };
-  }, []);
-  useEffect(() => {
+  // Disable body scroll when mounted
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, [id, dispatch]);
+
+useEffect(() => {
+  dispatch(fetchAllSubmission());
+}, [dispatch]);
+
+useEffect(() => {
+  if (!problem) return;
+
+  // Set language if available
+  if (problem.codeSnippets) {
+    const codes = Object.keys(problem.codeSnippets).map((l) => l.toUpperCase());
+    const firstAvailableLang = availableLangs?.find((l) => codes.includes(l));
+
+    if (firstAvailableLang && firstAvailableLang !== lang) {
+      setLang(firstAvailableLang);
+    }
+
+    const selectedLang = firstAvailableLang || lang;
+    const code = problem.codeSnippets[selectedLang] || "";
+    setSourceCode(code);
+  }
+}, [problem, lang, availableLangs]);
+
+useEffect(() => {
+  if (lang && problem?.codeSnippets) {
+    const code = problem.codeSnippets[lang] || "";
+    setSourceCode(code);
+  }
+}, [lang, problem]);
+
+useEffect(() => {
+  if (runResult) {
+    setRightTab("Results");
+  }
+
+  if (runError) {
+    toast(`${runError}`);
+  }
+}, [runResult, runError]);
+
+useEffect(() => {
   if (submitResultId?.length > 0) {
     setRightTab("result");
   }
- 
 }, [submitResultId]);
 
-
-
-  useEffect(() => {
-    if (problem?.codeSnippets) {
-      const codes = Object.keys(problem?.codeSnippets).map((l) =>
-        l.toUpperCase()
-      );
-      const firstAvailableLang = availableLangs?.find((l) => codes.includes(l));
-      if (firstAvailableLang && firstAvailableLang !== lang) {
-        setLang(firstAvailableLang);
-      }
-      setSourceCode(problem?.codeSnippets[firstAvailableLang] || "");
-    }
-  }, [problem]);
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchComments(id));
-    }
-  }, [id, dispatch]);
-
-  useEffect(() => {
-    if (!problem) return;
-    const code = problem?.codeSnippets?.[lang] || "";
-    setSourceCode(code);
-  }, [lang, problem]);
-
-  useEffect(() => {
-    if (id) dispatch(fetchProblemsById(id));
-        fetchAllSubmission();
-  }, [id, dispatch]);
-  useEffect(() => {
-  if (submitResultId) {
-    fetchAllSubmission();
-    setTab("result");
+useEffect(() => {
+  if (submitStatus === "succeeded") {
+    toast(`Submission successful! Passed`);
   }
-}, [submitResultId]);
+}, [submitStatus]);
 
-
-  useEffect(() => {
-    if (submitStatus === "succeeded") {
-      toast(
-        `Submission successful! Passed ${submitResult?.passedTestcases} / ${submitResult?.totalTestcases}`
-      );
-    }
-  }, [submitStatus, submitResult]);
 
   if (status === "loading") {
     return (
@@ -226,6 +229,7 @@ const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(proble
         sourceCode,
       })
     );
+    setTabs("Results")
   }
 
   function handleSubmit() {
@@ -456,46 +460,50 @@ const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(proble
           </TabsContent>
          <TabsContent value="submission" className="flex flex-col h-full overflow-auto ml-2 p-2">
   {/* --- Submission Result Section --- */}
- {submitResultId?.length === 0 ? (
-  <div className="text-muted-foreground">No test results available.</div>
-) : (
-  <div className="space-y-4  overflow-y-auto pr-2">
-    {submitResultId?.map((submission, sIdx) => (
-      <Card key={submission.id || sIdx} className="border group relative">
-        <CardContent className="space-y-3 pt-4">
-          <p className="font-semibold">
-            ✅ Passed {submission?.passedTestcases} of {submission?.totalTestcases} testcases
-          </p>
-
-          {submission?.testResults?.map((test, idx) => (
-            <div
-              key={idx}
-              className={`p-3 rounded-md border ${
-                test?.passed ? "border-green-300 bg-green-50" : "border-red-300 bg-red-50"
-              }`}
-            >
-              <div>
-                <span className="font-bold">Input:</span>{" "}
-                <code className="font-mono whitespace-pre-wrap">{test.input}</code>
-              </div>
-              <div>
-                <span className="font-bold">Expected:</span>{" "}
-                <code className="font-mono">{test.expectedOutput}</code>
-              </div>
-              <div>
-                <span className="font-bold">Actual:</span>{" "}
-                <code className="font-mono">{test.actualOutput}</code>
-              </div>
-              <div className="text-sm text-muted-foreground mt-1">
-                {test.passed ? "✅ Passed" : "❌ Failed"} — Time: {test.time}s, Memory: {test.memory}KB
-              </div>
-            </div>
+  <Card className="overflow-auto p-4">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-muted text-muted-foreground">
+            <th className="p-2 border">#</th>
+            <th className="p-2 border">Passed / Total</th>
+            <th className="p-2 border">Correct</th>
+            <th className="p-2 border">Verdict</th>
+            <th className="p-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {submitResultId?.map((submission, index) => (
+            <tr key={submission._id} className="border-t">
+              <td className="p-2 text-center">{index + 1}</td>
+              <td className="p-2 text-center">
+                ✅ {submission?.passedTestCases} / {submission?.totalTestCases}
+              </td>
+              <td className="p-2 text-center">{submission?.isCorrect ? "✅ Yes" : "❌ No"}</td>
+              <td className="p-2 text-center">{submission?.verdict}</td>
+              <td className="p-2 text-center">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedCode(submission?.sourceCode?.replace(/int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\}/, '')?.trim() || "")}
+                    >
+                      View Solution
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl">
+                     <DialogTitle>Solution</DialogTitle>
+                    <pre className="text-sm overflow-auto max-h-[500px] whitespace-pre-wrap">
+                      {selectedCode}
+                    </pre>
+                  </DialogContent>
+                </Dialog>
+              </td>
+            </tr>
           ))}
-        </CardContent>
-      </Card>
-    ))}
-  </div>
-)}
+        </tbody>
+      </table>
+    </Card>
+
 
 
   {/* --- Reference Solution Section --- */}
@@ -562,7 +570,7 @@ const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(proble
                
            
 
-<Tabs defaultValue="testcases" className="mt-1">
+<Tabs value={tabs} onValueChange={setTabs} defaultValue="testcases" className="mt-1">
   <TabsList className="">
     <TabsTrigger value="testcases">Testcases</TabsTrigger>
     <TabsTrigger value="Results">Test Results</TabsTrigger>
@@ -654,11 +662,7 @@ const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(proble
               {/* Display Submit Results */}
              
 
-              {(runError || submitError) && (
-                <div className="mb-6 p-4 bg-red-100 text-red-700 rounded">
-                  {runError || submitError}
-                </div>
-              )}
+              
             
 
           
