@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubmissionById } from "../../redux/slices/submissionSlice";
+import { fetchSubmissionById } from "../../../redux/slices/submissionSlice";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +15,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 export default function SolutionPage() {
-  const searchParams = useSearchParams();
-  const submissionId = searchParams.get("submissionId");
+  const { submissionId } = useParams();
   const dispatch = useDispatch();
 
   const { single: submission, loading } = useSelector(

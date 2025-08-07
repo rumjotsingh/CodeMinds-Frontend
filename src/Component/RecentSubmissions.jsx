@@ -44,7 +44,7 @@ export default function RecentSubmissions({ submissions }) {
                   </Badge>
                 </TableCell>
                 <TableCell>
-  <Link href={`/solutions/?submissionId=${s._id}`} className="text-blue-600 hover:underline">
+  <Link href={`/solutions/${s._id}`} className="text-blue-600 hover:underline">
     View Solution
   </Link>
 </TableCell>

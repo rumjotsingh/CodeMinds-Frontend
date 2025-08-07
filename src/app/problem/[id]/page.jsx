@@ -97,7 +97,7 @@ export default function ProblemDetailsPage() {
 
     const { comments, loading } = useSelector((state) => state.comments);
   const availableLangs = ["C++", "PYTHON"];
-  const [tabs,setTabs]=useState("");
+  const [tabs,setTabs]=useState("testcases");
  const [selectedCode, setSelectedCode] = useState("testcases");
   const [rightTab, setRightTab] = useState("problem");
   const [lang, setLang] = useState(() => {
@@ -165,11 +165,7 @@ useEffect(() => {
   }
 }, [runResult, runError]);
 
-useEffect(() => {
-  if (submitResultId?.length > 0) {
-    setRightTab("result");
-  }
-}, [submitResultId]);
+
 
 useEffect(() => {
   if (submitStatus === "succeeded") {
@@ -581,13 +577,13 @@ useEffect(() => {
     {visibleCases?.length === 0 ? (
       <div className="text-muted-foreground">No public test cases.</div>
     ) : (
-      <div className="space-x-10 max-h-[320px] overflow-y-auto flex pr-2">
+      <div className="space-x-10 max-h-[300px] overflow-y-auto flex">
         {visibleCases?.map((t, idx) => (
-          <Card key={t._id || idx} className="flex  group relative border">
+          <Card key={t._id || idx} className="w-50  group relative border">
             <CardContent className="">
-              <div className="pb-1.5">
+              <div className="w-36">
                 <span className="font-bold">Input</span>:{" "}
-                <code className="font-mono whitespace-pre-wrap">{t.input}</code>
+                <code className="font-mono ">{t.input}</code>
               </div>
               <div>
                 <span className="font-bold">Output</span>:{" "}
