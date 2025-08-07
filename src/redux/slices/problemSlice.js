@@ -126,6 +126,18 @@ export const deleteProblem = createAsyncThunk(
     }
   }
 );
+export const fetchAllSubmission = createAsyncThunk(
+  "problems/fetchAllSubmission",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get("/api/v1/user/submissions");
+
+      return res.data; // just return the id for local state update
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 // --- Slice --- //
 const problemsSlice = createSlice({
@@ -148,6 +160,8 @@ const problemsSlice = createSlice({
     submitStatus: "idle",
     submitError: null,
     submitResult: null,
+    submitResultId: null,
+    submitResulStatus: "idle",
 
     // Create/Update/Delete
     createStatus: "idle",
@@ -210,6 +224,18 @@ const problemsSlice = createSlice({
       })
       .addCase(fetchTags.rejected, (state, action) => {
         state.tagsStatus = "failed";
+        state.tagsError = action.payload;
+      })
+      .addCase(fetchAllSubmission.pending, (state) => {
+        state.submitResulStatus = "loading";
+        state.tagsError = null;
+      })
+      .addCase(fetchAllSubmission.fulfilled, (state, action) => {
+        state.submitResulStatus = "succeeded";
+        state.submitResultId = action.payload;
+      })
+      .addCase(fetchAllSubmission.rejected, (state, action) => {
+        state.submitResulStatus = "failed";
         state.tagsError = action.payload;
       })
 

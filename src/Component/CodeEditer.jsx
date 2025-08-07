@@ -10,7 +10,7 @@ export default function CodeEditor({
   value = "// write your code here",
   onChange,
   className,
-  height = "400px",
+  height = "350px",
 }) {
   const [code, setCode] = useState(value);
 
@@ -24,7 +24,7 @@ export default function CodeEditor({
   };
 
   return (
-    <div className={`w-full border rounded-lg shadow ${className || ""}`}>
+    <div className={`w-full     ${className || ""}`}>
       <Editor
         height={height}
         language={language}

@@ -8,7 +8,9 @@ import {
   submitCode,
   clearRunResult,
   clearSubmitResult,
+  fetchAllSubmission,
 } from "../../../redux/slices/problemSlice";
+import { fetchComments } from "../../../redux/slices/commentsSlice";
 import { useParams } from "next/navigation";
 import {
   Tabs,
@@ -27,6 +29,7 @@ import { toast } from "sonner";
 import CodeEditor from "../../../Component/CodeEditer";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommentSection from "../../../Component/Commnets";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 function markdownToHtml(md) {
   return md
@@ -64,6 +67,16 @@ function getLanguageId(lang) {
       return 0;
   }
 }
+// utils/getDefaultLanguage.js or top of your component file
+function getDefaultLanguage(problem, availableLangs) {
+  if (!problem) return "C++";
+  const codes = Object.keys(problem?.codeSnippets || {}).map((l) =>
+    l.toUpperCase()
+  );
+  const firstAvailableLang = availableLangs.find((l) => codes.includes(l));
+  return firstAvailableLang || "C++";
+}
+
 
 export default function ProblemDetailsPage() {
   const { id } = useParams();
@@ -77,14 +90,16 @@ export default function ProblemDetailsPage() {
     runError,
     submitStatus,
     submitResult,
+    submitResultId,
+    submitResulStatus,
     submitError,
   } = useSelector((state) => state.problem);
 
+    const { comments, loading } = useSelector((state) => state.comments);
   const availableLangs = ["C++", "PYTHON"];
-
-  const [leftTab, setLeftTab] = useState("problem"); // Problem or Comments
-  const [rightTab, setRightTab] = useState("problem"); // Right tab (problem, comments, solutions)
-  
+  const [tabs,setTabs]=useState("");
+ const [selectedCode, setSelectedCode] = useState("testcases");
+  const [rightTab, setRightTab] = useState("problem");
   const [lang, setLang] = useState(() => {
     if (!problem) return "C++";
     const codes = Object.keys(problem?.codeSnippets || {}).map((l) =>
@@ -93,68 +108,103 @@ export default function ProblemDetailsPage() {
     const firstAvailableLang = availableLangs.find((l) => codes.includes(l));
     return firstAvailableLang || "C++";
   });
+// you can pass this as a prop too
 
   const [sourceCode, setSourceCode] = useState("");
-
+const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(problem, availableLangs));
   useEffect(() => {
-    if (problem?.codeSnippets) {
-      const codes = Object.keys(problem?.codeSnippets).map((l) => l.toUpperCase());
-      const firstAvailableLang = availableLangs?.find((l) => codes.includes(l));
-      if (firstAvailableLang && firstAvailableLang !== lang) {
-        setLang(firstAvailableLang);
-      }
-      setSourceCode(problem?.codeSnippets[firstAvailableLang] || "");
+  if (id) {
+    dispatch(fetchProblemsById(id));
+    dispatch(fetchComments(id));
+  }
+
+  // Disable body scroll when mounted
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, [id, dispatch]);
+
+useEffect(() => {
+  dispatch(fetchAllSubmission());
+}, [dispatch]);
+
+useEffect(() => {
+  if (!problem) return;
+
+  // Set language if available
+  if (problem.codeSnippets) {
+    const codes = Object.keys(problem.codeSnippets).map((l) => l.toUpperCase());
+    const firstAvailableLang = availableLangs?.find((l) => codes.includes(l));
+
+    if (firstAvailableLang && firstAvailableLang !== lang) {
+      setLang(firstAvailableLang);
     }
-  }, [problem]);
 
-  useEffect(() => {
-    if (!problem) return;
-    const code = problem?.codeSnippets?.[lang] || "";
+    const selectedLang = firstAvailableLang || lang;
+    const code = problem.codeSnippets[selectedLang] || "";
     setSourceCode(code);
-  }, [lang, problem]);
+  }
+}, [problem, lang, availableLangs]);
 
-  useEffect(() => {
-    if (id) dispatch(fetchProblemsById(id));
-  }, [id, dispatch]);
+useEffect(() => {
+  if (lang && problem?.codeSnippets) {
+    const code = problem.codeSnippets[lang] || "";
+    setSourceCode(code);
+  }
+}, [lang, problem]);
 
-  // Show toast on successful submit
-  useEffect(() => {
-    if (submitStatus === "succeeded") {
-      toast(
-        `Submission successful! Passed ${submitResult?.passedTestcases} / ${submitResult?.totalTestcases}`
-      );
-    }
-  }, [submitStatus, submitResult]);
+useEffect(() => {
+  if (runResult) {
+    setRightTab("Results");
+  }
+
+  if (runError) {
+    toast(`${runError}`);
+  }
+}, [runResult, runError]);
+
+useEffect(() => {
+  if (submitResultId?.length > 0) {
+    setRightTab("result");
+  }
+}, [submitResultId]);
+
+useEffect(() => {
+  if (submitStatus === "succeeded") {
+    toast(`Submission successful! Passed`);
+  }
+}, [submitStatus]);
+
 
   if (status === "loading") {
-  return (
-    <div className="flex w-full h-[calc(100vh-64px)] min-h-[600px] gap-8 p-8 bg-muted/60">
-      {/* LEFT: Problem skeleton */}
-      <div className="w-[40%] min-w-[325px] flex flex-col gap-4">
-        <Skeleton className="h-10 w-[70%] mb-2" /> {/* Title */}
-        <Skeleton className="h-6 w-[90px] mb-2 rounded-xl" /> {/* Difficulty badge */}
-        <div className="flex flex-wrap gap-2">
-          <Skeleton className="h-6 w-[60px] rounded" />
-          <Skeleton className="h-6 w-[60px] rounded" />
-          <Skeleton className="h-6 w-[60px] rounded" />
+    return (
+      <div className="flex w-full h-[calc(100vh-64px)] min-h-[600px] gap-8 p-8 bg-muted/60">
+        <div className="w-[40%] min-w-[325px] flex flex-col gap-4">
+          <Skeleton className="h-10 w-[70%] mb-2" />
+          <Skeleton className="h-6 w-[90px] mb-2 rounded-xl" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-[60px] rounded"/>
+            <Skeleton className="h-6 w-[60px] rounded"/>
+            <Skeleton className="h-6 w-[60px] rounded"/>
+          </div>
+          <Skeleton className="h-24 w-full mt-3" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-28 w-full"/>
         </div>
-        <Skeleton className="h-24 w-full mt-3" /> {/* Description */}
-        <Skeleton className="h-20 w-full" /> {/* Constraints */}
-        <Skeleton className="h-28 w-full" /> {/* Testcases */}
-      </div>
-      {/* RIGHT: Editor skeleton */}
-      <div className="w-[60%] flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-8 w-24" /> {/* Language selector */}
-          <Skeleton className="h-10 w-20" /> {/* Run button */}
-          <Skeleton className="h-10 w-20" /> {/* Submit button */}
+        <div className="w-[60%] flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-10 w-20" />
+            <Skeleton className="h-10 w-20" />
+          </div>
+          <Skeleton className="h-[400px] w-full rounded-lg"/>
+          <Skeleton className="h-24 w-full mt-4"/>
         </div>
-        <Skeleton className="h-[400px] w-full rounded-lg" /> {/* Editor */}
-        <Skeleton className="h-24 w-full mt-4" /> {/* Result area */}
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   if (status === "failed")
     return (
@@ -179,6 +229,7 @@ export default function ProblemDetailsPage() {
         sourceCode,
       })
     );
+    setTabs("Results")
   }
 
   function handleSubmit() {
@@ -194,151 +245,280 @@ export default function ProblemDetailsPage() {
         sourceCode,
       })
     );
+    toast("The Code is Submitted");
+      setRightTab("result");
   }
-
+ 
   function onCodeChange(newCode) {
     setSourceCode(newCode);
   }
 
   return (
-    <div className="min-w-7xl mx-auto">
-      {/* Toaster for notifications */}
-      
-
-      <div className="flex w-full h-[calc(100vh-64px)]  min-h-[600px] bg-muted/60">
-        {/* LEFT SIDE: Problem & Comments */}
-        <aside className="w-[40%] min-w-[325px] px-8 py-6 border-r bg-background/80 overflow-y-auto flex flex-col gap-6 shadow-md">
-          <div>
-            <h1 className="text-3xl font-extrabold mb-2 text-primary">
-              {problem?.title}
-            </h1>
-            <Badge
-              variant={
-                problem?.difficulty === "EASY"
-                  ? "success"
-                  : problem?.difficulty === "MEDIUM"
-                  ? "warning"
-                  : "destructive"
-              }
-              className="font-semibold tracking-wide text-sm"
-            >
-              {problem?.difficulty || ""}
-            </Badge>
-          </div>
-
-          <div className="mb-4 flex gap-2 flex-wrap">
-            {problem?.tags?.map((tag) => (
-              <Badge variant="secondary" key={tag} className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Tabs: Problem / Comments */}
-          <Tabs value={leftTab} onValueChange={setLeftTab} className="mb-4">
-            <TabsList className="bg-background/80 shadow rounded">
-              <TabsTrigger value="problem" className="px-4 py-2">
-                Problem
-              </TabsTrigger>
-              <TabsTrigger value="comments" className="px-4 py-2">
-                Comments
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="problem" className="mt-4">
-              <section
-                className="prose prose-sm max-w-none"
-                style={{ fontSize: 16 }}
-              >
-                <div
-                  dangerouslySetInnerHTML={{ __html: markdownToHtml(problem?.description) }}
-                />
-              </section>
-
-              <Card className="mt-6 shadow-sm border">
-                <CardContent className="py-3 px-4">
-                  <h2 className="font-semibold mb-2">Constraints</h2>
-                  <ul className="list-disc list-inside text-sm">
-                    {problem?.constraints?.map((c, i) => (
-                      <li key={i}>{c}</li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Section title="Examples" className="mt-6">
-                {visibleCases?.length === 0 && (
-                  <div className="text-muted-foreground">No public test cases.</div>
-                )}
-                <div className="space-y-3 mt-2 max-h-[320px] overflow-y-auto pr-2">
-                  {visibleCases?.map((t, idx) => (
-                    <Card
-                      key={t._id || idx}
-                      className="!shadow-xs group relative border"
-                    >
-                      <CardContent className="py-2 pr-8 pl-4">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 z-10"
-                          title="Copy Input & Output"
-                          tabIndex={-1}
-                          onClick={() =>
-                            copyToClipboard(`Input:\n${t.input}\nOutput:\n${t.output}`)
-                          }
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <div className="pb-1.5">
-                          <span className="font-bold">Input</span>:{" "}
-                          <code className="font-mono">{t.input.replace(/\n/g, "  ")}</code>
-                        </div>
-                        <div>
-                          <span className="font-bold">Output</span>:{" "}
-                          <code className="font-mono">{t.output}</code>
-                        </div>
-                        {t.explanation && (
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            <span className="font-bold">Explanation</span>: {t.explanation}
-                          </div>
-                        )}
-                        <Badge
-                          variant={t.passed ? "success" : "destructive"}
-                          className="absolute bottom-2 right-4 text-xs px-2 py-0.5"
-                        >
-                          {t.passed ? "Passed" : "Failed"}
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </Section>
-            </TabsContent>
-
-            <TabsContent
-              value="comments"
-              className="mt-3 text-muted-foreground min-h-[200px] flex items-center justify-center text-center px-3"
-            >
-              <div>Comment system coming soon!</div>
-            </TabsContent>
-          </Tabs>
-        </aside>
-
-        {/* RIGHT SIDE: Main right tabs: Problem(editor), Comments, Solutions */}
-        <main className="w-[60%] p-8 flex flex-col h-full bg-muted/70 overflow-auto rounded-lg shadow-md">
-          <Tabs
+    <div className="max-w-7xl mx-auto">
+      <div className="flex w-full h-[calc(100vh-64px)] min-h-[600px] ">
+        {/* LEFT SIDE */}
+         <Tabs
             value={rightTab}
             onValueChange={setRightTab}
-            className="flex-1 flex flex-col"
+            className="flex-1 flex flex-col "
           >
-            <TabsList className="mb-4 bg-background/80 shadow-sm rounded-lg">
+         <TabsList className="w-full text-md">
               <TabsTrigger value="problem">Problem</TabsTrigger>
               <TabsTrigger value="comments">Comments</TabsTrigger>
               <TabsTrigger value="solutions">Solutions</TabsTrigger>
-            </TabsList>
+              <TabsTrigger value="submission">Submissions</TabsTrigger>
+              <TabsTrigger value="result">Result</TabsTrigger>
+          </TabsList>
+           
+           
+            <TabsContent value="problem" className="flex-1 overflow-hidden">
+  <aside
+    className="w-full min-w-[325px] mb-10 px-8 py-6   overflow-y-auto flex flex-col gap-4 h-[calc(100vh-5rem)]"
+  >
+    <div>
+      <h1 className="text-3xl font-extrabold mb-2 text-primary">
+        {problem?.title}
+      </h1>
+      <Badge
+        variant={
+          problem?.difficulty === "EASY"
+            ? "success"
+            : problem?.difficulty === "MEDIUM"
+            ? "warning"
+            : "destructive"
+        }
+        className="font-semibold tracking-wide text-sm"
+      >
+        {problem?.difficulty || ""}
+      </Badge>
+    </div>
 
+    <div className="mb-4 flex gap-2 flex-wrap">
+      {problem?.tags?.map((tag) => (
+        <Badge variant="secondary" key={tag} className="text-xs">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+
+    <section
+      className="prose prose-sm max-w-none"
+      style={{ fontFamily:"inter" ,fontSize: 16 }}
+    >
+      <div
+        dangerouslySetInnerHTML={{
+          __html: markdownToHtml(problem?.description),
+        }}
+      />
+    </section>
+
+   <div className="mb-20">
+        <h2 className="font-semibold ">Constraints</h2>
+        <ul className="list-disc list-inside text-sm">
+          {problem?.constraints?.map((c, i) => (
+            <li key={i}>{c}</li>
+          ))}
+        </ul>
+        </div>
+    
+  </aside>
+            </TabsContent>
+            
+
+            <TabsContent
+  value="comments"
+  className="flex-grow overflow-auto px-4 py-4  max-h-[600px]" // Adjust height as needed
+>
+  <CommentSection problemId={id} />
+  <div className="space-y-4 mb-6 mt-6">
+        {comments?.length > 0 ? (
+          comments.map((c,ind) => (
+            <div key={c._id ||ind } className="border border-[#e3e3e3] p-4">
+              <div className="flex justify-between items-center mb-1">
+                <p className="text-sm font-semibold text-blue-700">
+                  {c?.userId?.name || "Unknown User"}
+                </p>
+                <span className="text-xs text-gray-500">
+                  {new Date(c.createdAt).toLocaleString()}
+                </span>
+              </div>
+              <p className="text-gray-800">{c.content}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No comments yet. Be the first to comment!</p>
+        )}
+      </div>
+            </TabsContent>
+
+            <TabsContent value="solutions" className="flex flex-col h-full overflow-auto ml-2 p-2">
+              <Section title="Reference Solutions">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {availableLangs.map((l) => (
+  <Button
+    key={l}
+    size="sm"
+    variant={solutionLang === l ? "default" : "outline"}
+    className=" px-4"
+    onClick={() => setSolutionLang(l)}
+  >
+    {l}
+  </Button>
+))}
+
+                </div>
+
+                <Card className="  flex-grow overflow-auto">
+                  <CardContent className="p-4 relative">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-3 right-3 opacity-80 hover:opacity-100"
+                      title="Copy Solution"
+                      tabIndex={-1}
+                      onClick={() =>
+                        copyToClipboard(  problem?.referenceSolutions?.[solutionLang]
+    ?.replace(/int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\}/, '')
+    ?.trim() || "")
+                      }
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+               <pre className=" text-sm leading-6 overflow-x-auto p-4 font-mono whitespace-pre-wrap">
+  {problem?.referenceSolutions?.[solutionLang]
+    ?.replace(/int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\}/, '')
+    ?.trim()}
+</pre>
+
+
+                  </CardContent>
+                </Card>
+              </Section>
+            </TabsContent>
+           <TabsContent value="result" className="flex flex-col h-full overflow-auto ml-2 p-2">
+  {/* --- Submission Result Section --- */}
+  {submitResult ? (
+    <Section title="Submission Result" className="mb-6">
+      <div
+        className={`mb-4 px-4 py-3 rounded border font-medium text-sm ${
+          submitResult.isCorrect
+            ? "bg-green-50 border-green-300 text-green-800"
+            : "bg-red-50 border-red-300 text-red-800"
+        }`}
+      >
+        {submitResult.isCorrect ? (
+          <>✅ Accepted — Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases.</>
+        ) : (
+          <>❌ Failed — Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases.</>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-2">
+        {submitResult.testResults.map((test, idx) => (
+          <div
+            key={idx}
+            className={`rounded border px-4 py-3 shadow-sm transition-all duration-300 ${
+              test.passed
+                ? "border-green-300 bg-green-50 text-green-800"
+                : "border-red-300 bg-red-50 text-red-800"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-semibold text-sm">Test Case #{idx + 1}</h4>
+              <span className="text-sm font-medium">
+                {test.passed ? "✅ Passed" : "❌ Failed"}
+              </span>
+            </div>
+
+            <div className="text-sm space-y-1">
+              <div>
+                <span className="font-semibold">Input:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Expected:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Actual:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  ) : (
+    <div className="text-muted-foreground text-sm">No submission data available.</div>
+  )}
+
+  {/* --- Reference Solution Section --- */}
+
+          </TabsContent>
+         <TabsContent value="submission" className="flex flex-col h-full overflow-auto ml-2 p-2">
+  {/* --- Submission Result Section --- */}
+  <Card className="overflow-auto p-4">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-muted text-muted-foreground">
+            <th className="p-2 border">#</th>
+            <th className="p-2 border">Passed / Total</th>
+            <th className="p-2 border">Correct</th>
+            <th className="p-2 border">Verdict</th>
+            <th className="p-2 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {submitResultId?.map((submission, index) => (
+            <tr key={submission._id} className="border-t">
+              <td className="p-2 text-center">{index + 1}</td>
+              <td className="p-2 text-center">
+                ✅ {submission?.passedTestCases} / {submission?.totalTestCases}
+              </td>
+              <td className="p-2 text-center">{submission?.isCorrect ? "✅ Yes" : "❌ No"}</td>
+              <td className="p-2 text-center">{submission?.verdict}</td>
+              <td className="p-2 text-center">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedCode(submission?.sourceCode?.replace(/int\s+main\s*\([^)]*\)\s*\{[\s\S]*?\n\}/, '')?.trim() || "")}
+                    >
+                      View Solution
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl">
+                     <DialogTitle>Solution</DialogTitle>
+                    <pre className="text-sm overflow-auto max-h-[500px] whitespace-pre-wrap">
+                      {selectedCode}
+                    </pre>
+                  </DialogContent>
+                </Dialog>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Card>
+
+
+
+  {/* --- Reference Solution Section --- */}
+
+          </TabsContent>
+
+
+         </Tabs>
+
+        {/* RIGHT SIDE */}
+        <main className="w-[60%] p-1  flex flex-col h-full overflow-auto  border  border-[#e3e3e3]">
+         
             {/* PROBLEM TAB */}
-            <TabsContent value="problem" className="flex flex-col h-full">
-              <div className="mb-6 flex items-center gap-4">
+          
+              <div className="mb-6 flex items-center mt-4 gap-4">
                 <label htmlFor="language-select" className="font-semibold">
                   Language:
                 </label>
@@ -380,114 +560,114 @@ export default function ProblemDetailsPage() {
                 </Button>
               </div>
 
-              <Card className="!shadow-md border flex-grow mb-6">
-                <CardContent className="px-1.5 py-2 h-full">
+             
                   <CodeEditor
                     key={lang}
                     language={getMonacoLanguage(lang)}
                     value={sourceCode}
                     onChange={onCodeChange}
                   />
-                </CardContent>
-              </Card>
+               
+           
 
-              {/* Display Run Results */}
-              {runResult && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-300 rounded">
-                  <p className="font-medium mb-2">
-                    Passed {runResult.passedTestcases} of {runResult.totalTestcases} visible testcases.
-                  </p>
-                  <ul className="max-h-32 overflow-auto list-decimal ml-5 text-sm space-y-1">
-                    {runResult.testResults.map((test, idx) => (
-                      <li
-                        key={idx}
-                        className={test.passed ? "text-green-700" : "text-red-600"}
-                      >
-                        Input: {test.input}, Expected: {test.expectedOutput}, Actual:{" "}
-                        {test.actualOutput} — {test.passed ? "Passed" : "Failed"} (Time:{" "}
-                        {test.time}s, Memory: {test.memory}KB)
-                      </li>
-                    ))}
-                  </ul>
+<Tabs value={tabs} onValueChange={setTabs} defaultValue="testcases" className="mt-1">
+  <TabsList className="">
+    <TabsTrigger value="testcases">Testcases</TabsTrigger>
+    <TabsTrigger value="Results">Test Results</TabsTrigger>
+  </TabsList>
+
+  {/* --- Tab: Testcases --- */}
+  <TabsContent value="testcases">
+    {visibleCases?.length === 0 ? (
+      <div className="text-muted-foreground">No public test cases.</div>
+    ) : (
+      <div className="space-x-10 max-h-[320px] overflow-y-auto flex pr-2">
+        {visibleCases?.map((t, idx) => (
+          <Card key={t._id || idx} className="flex  group relative border">
+            <CardContent className="">
+              <div className="pb-1.5">
+                <span className="font-bold">Input</span>:{" "}
+                <code className="font-mono whitespace-pre-wrap">{t.input}</code>
+              </div>
+              <div>
+                <span className="font-bold">Output</span>:{" "}
+                <code className="font-mono">{t.output}</code>
+              </div>
+              {t.explanation && (
+                <div className="mt-1 text-xs text-muted-foreground">
+                  <span className="font-bold">Explanation</span>: {t.explanation}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )}
+  </TabsContent>
+
+  {/* --- Tab: Test Results --- */}
+ <TabsContent value="Results">
+  {runResult ? (
+    <div className="mb-6">
+      <p className="font-medium mb-4">
+        Passed {runResult.passedTestcases} of {runResult.totalTestcases} visible testcases.
+      </p>
+
+      <div className="flex space-x-4 max-h-[400px] overflow-y-auto pr-2">
+        {runResult.testResults.map((test, idx) => (
+          <div
+            key={idx}
+            className={`rounded border px-4 py-3 shadow-sm transition-all duration-300 ${
+              test.passed
+                ? "border-green-300 bg-green-50 text-green-800"
+                : "border-red-300 bg-red-50 text-red-800"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-semibold text-sm">Test Case #{idx + 1}</h4>
+              <span className="text-sm font-medium">
+                {test.passed ? "✅ Passed" : "❌ Failed"}
+              </span>
+            </div>
+
+            <div className="text-sm space-y-1">
+              <div>
+                <span className="font-semibold">Input:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Expected:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+              </div>
+              <div>
+                <span className="font-semibold">Actual:</span>{" "}
+                <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div className="text-muted-foreground">No test results available.</div>
+  )}
+</TabsContent>
+
+</Tabs>
+
 
               {/* Display Submit Results */}
-              {submitResult && (
-                <div className="mb-6 p-4 bg-blue-50 border border-blue-300 rounded">
-                  <p className="font-medium mb-2">
-                    Submit finished. Passed {submitResult.passedTestcases} of{" "}
-                    {submitResult.totalTestcases} total testcases.
-                  </p>
-                  <ul className="max-h-48 overflow-auto list-decimal ml-5 text-sm space-y-1">
-                    {submitResult.testResults.map((test, idx) => (
-                      <li
-                        key={idx}
-                        className={test.passed ? "text-green-700" : "text-red-600"}
-                      >
-                        Input: {test.input}, Expected: {test.expectedOutput}, Actual:{" "}
-                        {test.actualOutput} — {test.passed ? "Passed" : "Failed"} (Time:{" "}
-                        {test.time}s, Memory: {test.memory}KB)
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+             
 
-              {(runError || submitError) && (
-                <div className="mb-6 p-4 bg-red-100 text-red-700 rounded">
-                  {runError || submitError}
-                </div>
-              )}
-            </TabsContent>
+              
+            
 
-            {/* COMMENTS TAB */}
-            <TabsContent
-              value="comments"
-              className="flex-grow overflow-auto px-4 py-4 rounded bg-background/70 border border-border"
-            >
-              <CommentSection problemId={id}/>
-            </TabsContent>
-
-            {/* SOLUTIONS TAB */}
-            <TabsContent value="solutions" className="flex flex-col h-full">
-              <Section title="Reference Solutions">
-                <div className="flex gap-2 mb-4 flex-wrap">
-                  {availableLangs.map((l) => (
-                    <Button
-                      key={l}
-                      size="sm"
-                      variant={lang === l ? "default" : "outline"}
-                      className="rounded px-4"
-                      onClick={() => setLang(l)}
-                    >
-                      {l}
-                    </Button>
-                  ))}
-                </div>
-
-                <Card className="shadow-sm border flex-grow overflow-auto">
-                  <CardContent className="p-4 relative">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute top-3 right-3 opacity-80 hover:opacity-100"
-                      title="Copy Solution"
-                      tabIndex={-1}
-                      onClick={() =>
-                        copyToClipboard(problem?.referenceSolutions?.[lang] || "")
-                      }
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                    <pre className="bg-background rounded text-sm leading-6 overflow-x-auto p-4 font-mono whitespace-pre-wrap">
-                      {problem?.referenceSolutions?.[lang]}
-                    </pre>
-                  </CardContent>
-                </Card>
-              </Section>
-            </TabsContent>
-          </Tabs>
+          
+            
+        
         </main>
       </div>
     </div>
@@ -497,7 +677,7 @@ export default function ProblemDetailsPage() {
 function Section({ title, children }) {
   return (
     <section className="mb-4">
-      <h2 className="font-semibold text-base mb-1 text-primary">{title}</h2>
+      
       {children}
     </section>
   );
