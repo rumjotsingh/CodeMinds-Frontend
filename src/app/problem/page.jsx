@@ -28,6 +28,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -307,7 +308,7 @@ const router = useRouter();
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
-                                <Dialog open={open} onOpenChange={setOpen}>
+                                <Dialog open={open} onOpenChange={setOpen } className="w-full bg-white">
                                   <DialogTrigger asChild>
                                     <Button
                                       variant="secondary"
@@ -320,8 +321,8 @@ const router = useRouter();
                                       Add to Playlist
                                     </Button>
                                   </DialogTrigger>
-
-                                  <DialogContent >
+                                        <DialogOverlay className="fixed inset-0 bg-white/70 backdrop-blur-sm z-40" />
+                                  <DialogContent  className="bg-white [&>div[data-radix-dialog-overlay]]:bg-white/70 [&>div[data-radix-dialog-overlay]]:backdrop-blur-sm [&>div[data-radix-dialog-overlay]]:z-40" >
                                     <DialogHeader>
                                       <DialogTitle>Add to Playlist</DialogTitle>
                                       <DialogDescription>
