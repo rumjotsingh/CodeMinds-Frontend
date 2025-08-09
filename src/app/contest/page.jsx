@@ -31,7 +31,7 @@ const Contest = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 py-12 px-4">
+    <div className="min-h-screen py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <header className="mb-10 flex flex-col md:flex-row items-center justify-between">
           <div>
