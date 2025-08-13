@@ -1,9 +1,7 @@
 "use client";
 
-import Editor, { OnChange, useMonaco } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import React, { useState, useEffect } from "react";
-
-
 
 export default function CodeEditor({
   language = "cpp",
@@ -18,13 +16,14 @@ export default function CodeEditor({
     setCode(value);
   }, [value]);
 
-  const handleCodeChange = (newValue) => {
-    setCode(newValue || "");
-    if (onChange) onChange(newValue || "");
+  const handleCodeChange = (newValue /* string | undefined */) => {
+    const updatedCode = newValue ?? "";
+    setCode(updatedCode);
+    if (onChange) onChange(updatedCode);
   };
 
   return (
-    <div className={`w-full     ${className || ""}`}>
+    <div className={`w-full ${className || ""}`}>
       <Editor
         height={height}
         language={language}
@@ -38,9 +37,8 @@ export default function CodeEditor({
           lineNumbers: "on",
           wordWrap: "on",
           tabSize: 4,
-          automaticLayout: true, // allows responsive resizing
+          automaticLayout: true,
         }}
-        aria-label="Code editor"
       />
     </div>
   );

@@ -576,10 +576,10 @@ useEffect(() => {
 
              
                   <CodeEditor
-                    key={lang}
+                   
                     language={getMonacoLanguage(lang)}
                     value={sourceCode}
-                    onChange={onCodeChange}
+                    
                   />
                
            
