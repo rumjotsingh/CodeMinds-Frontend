@@ -26,11 +26,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
-import CodeEditor from "../../../Component/CodeEditer";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommentSection from "../../../Component/Commnets";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from '@/context/authContext';
+import  Editor  from "@monaco-editor/react";
+
 
 function markdownToHtml(md) {
   return md
@@ -151,7 +152,7 @@ useEffect(() => {
 
     const selectedLang = firstAvailableLang || lang;
     const code = problem.codeSnippets[selectedLang] || "";
-    setSourceCode(code);
+   
   }
 }, [problem, lang, availableLangs]);
 
@@ -230,6 +231,7 @@ useEffect(() => {
       router.push("/login");
     }
     dispatch(clearRunResult());
+    
     dispatch(
       runCode({
         problemId: id,
@@ -574,15 +576,24 @@ useEffect(() => {
                 </Button>
               </div>
 
-             
-                  <CodeEditor
-                   
-                    language={getMonacoLanguage(lang)}
-                    value={sourceCode}
-                    
-                  />
-               
-           
+              <div className="w-full">
+      <Editor
+        height="350px"
+        language="cpp"
+        value={sourceCode} // fully controlled
+        theme="vs-dark"
+        onChange={onCodeChange}
+        options={{
+          fontSize: 14,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          lineNumbers: "on",
+          wordWrap: "on",
+          tabSize: 4,
+          automaticLayout: true,
+        }}
+      />
+    </div>
 
 <Tabs value={tabs} onValueChange={setTabs} defaultValue="testcases" className="mt-1">
   <TabsList className="">

@@ -1,25 +1,28 @@
-"use client";
-
-import Editor from "@monaco-editor/react";
-import React, { useState, useEffect } from "react";
+import { Editor } from "@monaco-editor/react";
+import { useState, useEffect } from "react";
 
 export default function CodeEditor({
   language = "cpp",
-  value = "// write your code here",
+  dvalue = "// write your code here",
   onChange,
   className,
   height = "350px",
 }) {
-  const [code, setCode] = useState(value);
-
+   // Update local state if parent changes `dvalue`
+  
+  const [code, setCode] = useState(dvalue);
+  
+  
+ // Update local state if parent changes `dvalue`
   useEffect(() => {
-    setCode(value);
-  }, [value]);
+    setCode(dvalue);
+  }, [dvalue]); 
 
-  const handleCodeChange = (newValue /* string | undefined */) => {
-    const updatedCode = newValue ?? "";
-    setCode(updatedCode);
-    if (onChange) onChange(updatedCode);
+  
+
+  const handleCodeChange = (newValue) => {
+    setCode(newValue ?? "");
+    onChange?.(newValue ?? "");
   };
 
   return (
@@ -27,7 +30,7 @@ export default function CodeEditor({
       <Editor
         height={height}
         language={language}
-        value={code}
+        // value={code} // fully controlled
         theme="vs-dark"
         onChange={handleCodeChange}
         options={{
