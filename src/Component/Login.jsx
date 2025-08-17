@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Eye, EyeOff } from 'lucide-react'; // Eye icons
+ import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const { user, loading, error } = useSelector((state) => state.auth);
+ 
 
   // Handle navigation when authenticated
   useEffect(() => {
@@ -57,7 +59,17 @@ export default function LoginPage() {
       setIsNavigating(false);
     }
   }, [error]);
-
+ const handleGoogleSuccess = async (credentialResponse) => {
+    const id_token = credentialResponse.credential;
+    const res = await dispatch(loginWithGoogle(id_token));
+    if (loginWithGoogle.fulfilled.match(res)) {
+      const role = res.payload?.user?.role;
+      toast("Google login successful");
+      router.push(role === "admin" ? "/dashboard/admin" : "/dashboard/user");
+    } else {
+      toast.error(res.payload || "Google login failed");
+    }
+  };
   return (
     <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center">
       <Card className="w-full max-w-md">
@@ -98,6 +110,13 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
+             <div className="w-full text-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error("Google login failed")}
+                useOneTap={false}
+              />
+            </div>
           </form>
         </CardContent>
       </Card>

@@ -58,31 +58,20 @@ const router = useRouter();
     title: "",
     description: ""
   });
+  
 
 
 
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
 
-  const [difficultyFilter, setDifficultyFilter] = useState({
-    EASY: false,
-    MEDIUM: false,
-    HARD: false,
-  });
-
-  const [statusFilter, setStatusFilter] = useState({
-    Solved: false,
-    Unsolved: false,
-  });
-
-  const [difficultyTouched, setDifficultyTouched] = useState(false);
-  const [statusTouched, setStatusTouched] = useState(false);
+ 
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (status === "idle") dispatch(fetchProblems());
-    dispatch(fetchTags());
+     dispatch(fetchProblems());
+    
     dispatch(fetchAllPlaylists());
-  }, [status, dispatch]);
+  }, [ dispatch]);
 
   const handleCreatePlaylist = async () => {
     if (!newPlaylist.title.trim() || !selectedProblem) return;
@@ -140,54 +129,18 @@ const router = useRouter();
     }
   };
 
-  const filteredProblems = useMemo(() => {
-    const noDifficultySelected = Object.values(difficultyFilter).every(
-      (v) => !v
-    );
-    const noStatusSelected = Object.values(statusFilter).every((v) => !v);
+ 
+   
 
-    if (noDifficultySelected && noStatusSelected) {
-      return problems;
-    }
-
-    return problems?.filter((problem) => {
-      const isDifficultyMatch =
-        noDifficultySelected || difficultyFilter[problem.difficulty];
-      const isStatusMatch =
-        noStatusSelected || statusFilter["Unsolved"]; // Update this logic if needed
-      return isDifficultyMatch && isStatusMatch;
-    });
-  }, [problems, difficultyFilter, statusFilter]);
-   const [isFixed, setIsFixed] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // Adjust 200 to the scroll distance where you want it to become fixed
-      if (window.scrollY > 10) {
-        setIsFixed(true);
-      } else {
-        setIsFixed(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <div className="flex flex-col min-h-screen max-w-7xl mx-auto">
-      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden ">
         {/* Sidebar */}
-        <aside
-          className={`${
-            isFixed
-              ? "fixed top-0 left-0 md:w-30 w-full h-full z-60 overflow-y-auto  p-4"
-              : "relative md:w-40 w-full p-4"
-          }`}
-    >
-  <h2 className="text-lg font-semibold mb-4">Filters</h2>
-  <div className="mb-6">
-    <p className="font-medium mb-2">Difficulty</p>
+        {/* <aside className="border border-[#e3e3e3] p-4 mt-10 w-64 overflow-y-auto sticky top-0" >
+          <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <div className="mb-6">
+            <p className="font-medium mb-2">Difficulty</p>
     {["EASY", "MEDIUM", "HARD"].map((level) => (
       <label
         key={level}
@@ -207,13 +160,11 @@ const router = useRouter();
       </label>
     ))}
   </div>
-</aside>
+</aside> */}
 
 
         {/* Main Content */}
-        <main className={`overflow-y-auto p-4 md:p-6 transition-all duration-300 ${
-    isFixed ? " ml-40  w-full" : "w-full md:w-[calc(100%-10rem)]"
-  }`}>
+        <main className={`overflow-y-auto w-full p-4 md:p-6 transition-all duration-300 `}>
           {/* Loading Skeleton */}
           {status === "loading" && (
             <div className="space-y-4">
@@ -222,7 +173,7 @@ const router = useRouter();
                   key={rowIdx}
                   className="flex flex-col md:grid md:grid-cols-5 gap-4 py-2 border-b border-gray-200"
                 >
-                  <Skeleton className="h-6 w-full col-span-2" />
+                  <Skeleton className="h-6 w-full" />
                   <Skeleton className="h-6 w-full" />
                   <Skeleton className="h-6 w-full" />
                   <Skeleton className="h-6 w-full" />
@@ -240,30 +191,30 @@ const router = useRouter();
           {/* Problems Display */}
           {status === "succeeded" && (
             <>
-              {filteredProblems?.length === 0 ? (
-                <p className="text-gray-500 text-center mt-8">
-                  No matching problems found.
-                </p>
-              ) : (
+               
                 <>
                   {/* For larger screens, keep table */}
                   <div className="hidden md:block">
-                    <Table className="mt-4">
+                    <Table className="">
                      
                       <TableHeader>
                         <TableRow>
                           <TableHead>Problem</TableHead>
+                           <TableHead>Tags</TableHead>
                           <TableHead>Difficulty</TableHead>
-                          
-                          <TableHead>Add to Sheets</TableHead>
+                         
+                          <TableHead>Add to Playlist</TableHead>
                           <TableHead>Solve</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredProblems.map((problem) => (
+                        {problems?.map((problem) => (
                           <TableRow key={problem._id}>
                             <TableCell className="font-medium">
                               {problem.title}
+                            </TableCell>
+                             <TableCell className="font-medium gap-4 flex">
+                              {problem.tags.slice(0,3).map((tag)=><span key={tag} className="text-sm font-medium px-2 py-1 rounded bg-gray-100">{tag}</span>)}
                             </TableCell>
                             <TableCell>
                               <span
@@ -276,100 +227,128 @@ const router = useRouter();
                             </TableCell>
                           
                             <TableCell>
-                              <div className="flex gap-2">
-                                <Dialog open={open} onOpenChange={setOpen } className="w-full bg-white">
-                                  <DialogTrigger asChild>
-                                    <Button
-                                      variant="secondary"
-                                      size="sm"
-                                      onClick={() => {
-                                        setSelectedProblem(problem);
-                                        setOpen(true);
-                                      }}
-                                    >
-                                      Add to Playlist
-                                    </Button>
-                                  </DialogTrigger>
-                                        <DialogOverlay className="fixed inset-0 bg-white/70 backdrop-blur-sm z-40" />
-                                  <DialogContent  className="bg-white [&>div[data-radix-dialog-overlay]]:bg-white/70 [&>div[data-radix-dialog-overlay]]:backdrop-blur-sm [&>div[data-radix-dialog-overlay]]:z-40" >
-                                    <DialogHeader>
-                                      <DialogTitle>Add to Playlist</DialogTitle>
-                                      <DialogDescription>
-                                        Add "{selectedProblem?.title}" to an existing playlist or create a new one.
-                                      </DialogDescription>
-                                    </DialogHeader>
+                              
+                                <Dialog open={open} onOpenChange={setOpen}>
+  <DialogTrigger asChild>
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={() => {
+        setSelectedProblem(problem);
+        setOpen(true);
+      }}
+    >
+      Add to Playlist
+    </Button>
+  </DialogTrigger>
 
-                                    {!isCreateMode ? (
-                                      <>
-                                        <div className="space-y-4 py-4">
-                                          <div className="space-y-2">
-                                            <Label>Select Playlist</Label>
-                                            <select
-                                              className="w-full p-2 border rounded-md"
-                                              value={selectedPlaylistId}
-                                              onChange={(e) => setSelectedPlaylistId(e.target.value)}
-                                            >
-                                              <option value="">Select a playlist...</option>
-                                              {playlists.map((item) => (
-                                                <option key={item?.playlist?._id} value={item?.playlist?._id}>
-                                                  {item?.playlist?.title}
-                                                </option>
-                                              ))}
-                                            </select>
-                                          </div>
-                                          <Button type="button" variant="outline" onClick={() => setIsCreateMode(true)}>
-                                            Create New Playlist
-                                          </Button>
-                                        </div>
-                                        <DialogFooter>
-                                          <Button type="button" onClick={handleAddToPlaylist} disabled={!selectedPlaylistId}>
-                                            Add to Playlist
-                                          </Button>
-                                        </DialogFooter>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div className="space-y-4 py-4">
-                                          <div className="space-y-2">
-                                            <Label>Playlist Title</Label>
-                                            <Input
-                                              value={newPlaylist.title}
-                                              onChange={(e) =>
-                                                setNewPlaylist((prev) => ({ ...prev, title: e.target.value }))
-                                              }
-                                              placeholder="Enter playlist title"
-                                            />
-                                          </div>
-                                          <div className="space-y-2">
-                                            <Label>Description</Label>
-                                            <Textarea
-                                              value={newPlaylist.description}
-                                              onChange={(e) =>
-                                                setNewPlaylist((prev) => ({ ...prev, description: e.target.value }))
-                                              }
-                                              placeholder="Enter playlist description"
-                                            />
-                                          </div>
-                                        </div>
-                                        <DialogFooter>
-                                          <Button type="button" variant="outline" onClick={() => setIsCreateMode(false)}>
-                                            Back
-                                          </Button>
-                                          <Button
-                                            type="button"
-                                            onClick={handleCreatePlaylist}
-                                            disabled={!newPlaylist.title.trim()}
-                                          >
-                                            Create & Add
-                                          </Button>
-                                        </DialogFooter>
-                                      </>
-                                    )}
-                                  </DialogContent>
-                                </Dialog>
+  <DialogContent
+    className="
+      bg-white 
+      sm:max-w-lg 
+      rounded-lg 
+      shadow-lg 
+      [&>div[data-radix-dialog-overlay]]:bg-white/70 
+      [&>div[data-radix-dialog-overlay]]:backdrop-blur-sm
+    "
+  >
+    <DialogHeader>
+      <DialogTitle>Add to Playlist</DialogTitle>
+      <DialogDescription>
+        Add "{selectedProblem?.title}" to an existing playlist or create a new one.
+      </DialogDescription>
+    </DialogHeader>
+
+    {!isCreateMode ? (
+      <>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Select Playlist</Label>
+            <select
+              className="w-full p-2 border rounded-md"
+              value={selectedPlaylistId}
+              onChange={(e) => setSelectedPlaylistId(e.target.value)}
+            >
+              <option value="">Select a playlist...</option>
+              {playlists.map((item) => (
+                <option key={item?._id} value={item?._id}>
+                  {item?.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsCreateMode(true)}
+          >
+            Create New Playlist
+          </Button>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            onClick={handleAddToPlaylist}
+            disabled={!selectedPlaylistId}
+          >
+            Add to Playlist
+          </Button>
+        </DialogFooter>
+      </>
+    ) : (
+      <>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Playlist Title</Label>
+            <Input
+              value={newPlaylist.title}
+              onChange={(e) =>
+                setNewPlaylist((prev) => ({
+                  ...prev,
+                  title: e.target.value,
+                }))
+              }
+              placeholder="Enter playlist title"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Description</Label>
+            <Textarea
+              value={newPlaylist.description}
+              onChange={(e) =>
+                setNewPlaylist((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+              placeholder="Enter playlist description"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsCreateMode(false)}
+          >
+            Back
+          </Button>
+          <Button
+            type="button"
+            onClick={handleCreatePlaylist}
+            disabled={!newPlaylist.title.trim()}
+          >
+            Create & Add
+          </Button>
+        </DialogFooter>
+      </>
+    )}
+  </DialogContent>
+</Dialog>
 
 
-                              </div>
+
+                             
                             </TableCell>
                             <TableCell>
                               <Button asChild size="sm">
@@ -390,7 +369,7 @@ const router = useRouter();
 
                   {/* Mobile & small screen view - card list */}
                   <div className="md:hidden space-y-4">
-                    {filteredProblems.map((problem) => (
+                    {problems.map((problem) => (
                       <div
                         key={problem._id}
                         className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md"
@@ -526,7 +505,7 @@ const router = useRouter();
                     ))}
                   </div>
                 </>
-              )}
+              
             </>
           )}
         </main>

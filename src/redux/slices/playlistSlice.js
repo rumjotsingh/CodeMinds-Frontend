@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosInstance from '../../config/axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from "../../config/axios";
 
 // Async thunks
 export const fetchAllPlaylists = createAsyncThunk(
-  'playlists/fetchAll',
+  "playlists/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get('/api/v1/playlists');
+      const response = await axiosInstance.get("/api/v1/playlists");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -15,10 +15,13 @@ export const fetchAllPlaylists = createAsyncThunk(
 );
 
 export const createPlaylist = createAsyncThunk(
-  'playlists/create',
+  "playlists/create",
   async (playlistData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post('/api/v1/playlists', playlistData);
+      const response = await axiosInstance.post(
+        "/api/v1/playlists",
+        playlistData
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -27,10 +30,13 @@ export const createPlaylist = createAsyncThunk(
 );
 
 export const updatePlaylist = createAsyncThunk(
-  'playlists/update',
+  "playlists/update",
   async ({ playlistId, updateData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/api/v1/playlists/${playlistId}`, updateData);
+      const response = await axiosInstance.put(
+        `/api/v1/playlists/${playlistId}`,
+        updateData
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -39,10 +45,12 @@ export const updatePlaylist = createAsyncThunk(
 );
 
 export const getPlaylistById = createAsyncThunk(
-  'playlists/getById',
+  "playlists/getById",
   async (playlistId, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/api/v1/playlists/${playlistId}`);
+      const response = await axiosInstance.get(
+        `/api/v1/playlists/${playlistId}`
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -51,10 +59,13 @@ export const getPlaylistById = createAsyncThunk(
 );
 
 export const addProblemToPlaylist = createAsyncThunk(
-  'playlists/addProblem',
+  "playlists/addProblem",
   async ({ playlistId, problemId }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/api/v1/playlists/${playlistId}/add`, { problemId });
+      const response = await axiosInstance.post(
+        `/api/v1/playlists/${playlistId}/add`,
+        { problemId }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -63,12 +74,15 @@ export const addProblemToPlaylist = createAsyncThunk(
 );
 
 export const removeProblemFromPlaylist = createAsyncThunk(
-  'playlists/removeProblem',
+  "playlists/removeProblem",
   async ({ playlistId, problemId }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`/api/v1/playlists/${playlistId}/remove`, {
-        data: { problemId }
-      });
+      const response = await axiosInstance.post(
+        `/api/v1/playlists/${playlistId}/remove`,
+        {
+          problemId,
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -77,7 +91,7 @@ export const removeProblemFromPlaylist = createAsyncThunk(
 );
 
 export const deletePlaylist = createAsyncThunk(
-  'playlists/delete',
+  "playlists/delete",
   async (playlistId, { rejectWithValue }) => {
     try {
       await axiosInstance.delete(`/api/v1/playlists/${playlistId}`);
@@ -93,11 +107,11 @@ const initialState = {
   currentPlaylist: null,
   loading: false,
   error: null,
-  success: false
+  success: false,
 };
 
 const playlistSlice = createSlice({
-  name: 'playlists',
+  name: "playlists",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -105,7 +119,7 @@ const playlistSlice = createSlice({
     },
     clearSuccess: (state) => {
       state.success = false;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -145,7 +159,9 @@ const playlistSlice = createSlice({
       })
       .addCase(updatePlaylist.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.playlists.findIndex(p => p._id === action.payload._id);
+        const index = state.playlists.findIndex(
+          (p) => p._id === action.payload._id
+        );
         if (index !== -1) {
           state.playlists[index] = action.payload;
         }
@@ -177,7 +193,9 @@ const playlistSlice = createSlice({
       })
       .addCase(addProblemToPlaylist.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.playlists.findIndex(p => p._id === action.payload._id);
+        const index = state.playlists.findIndex(
+          (p) => p._id === action.payload._id
+        );
         if (index !== -1) {
           state.playlists[index] = action.payload;
         }
@@ -198,7 +216,9 @@ const playlistSlice = createSlice({
       })
       .addCase(removeProblemFromPlaylist.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.playlists.findIndex(p => p._id === action.payload._id);
+        const index = state.playlists.findIndex(
+          (p) => p._id === action.payload._id
+        );
         if (index !== -1) {
           state.playlists[index] = action.payload;
         }
@@ -219,7 +239,9 @@ const playlistSlice = createSlice({
       })
       .addCase(deletePlaylist.fulfilled, (state, action) => {
         state.loading = false;
-        state.playlists = state.playlists.filter(p => p._id !== action.payload);
+        state.playlists = state.playlists.filter(
+          (p) => p._id !== action.payload
+        );
         if (state.currentPlaylist?._id === action.payload) {
           state.currentPlaylist = null;
         }
@@ -229,7 +251,7 @@ const playlistSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-  }
+  },
 });
 
 export const { clearError, clearSuccess } = playlistSlice.actions;

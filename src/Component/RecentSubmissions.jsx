@@ -34,7 +34,7 @@ export default function RecentSubmissions({ submissions }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {submissions.map((s, idx) => (
+            {submissions?.map((s, idx) => (
               <TableRow key={idx}>
                 <TableCell>{new Date(s.createdAt || s.date || "").toLocaleString()}</TableCell>
                 <TableCell>{s.problemId.title}</TableCell>
@@ -70,7 +70,7 @@ export default function RecentSubmissions({ submissions }) {
             <p className="text-sm text-muted-foreground">
               {new Date(s.createdAt || s.date || "").toLocaleString()}
             </p>
-            <a href="#" className="text-sm text-blue-600 hover:underline">
+            <a href={`/solutions/${s._id}`} className="text-sm text-blue-600 hover:underline">
               View Solution
             </a>
           </CardContent>

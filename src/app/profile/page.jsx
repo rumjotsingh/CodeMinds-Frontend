@@ -1,41 +1,32 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea'; // Add if you have this component for bio multiline
-import { useForm } from 'react-hook-form';
-import { getUserProfile, updateUserProfile } from '../../redux/slices/authSlice';
-import { toast } from 'sonner';
-import { fetchDashboard } from './../../redux/slices/DashbordSlice';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import {
+  getUserProfile,
+  updateUserProfile,
+} from "../../redux/slices/authSlice";
+import { toast } from "sonner";
+import { fetchDashboard } from "./../../redux/slices/DashbordSlice";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
   const { profile, loading, error } = useSelector((state) => state.auth);
+  const dashboard = useSelector((state) => state.dashboard.data);
 
-  // Extend defaultValues and form to handle new fields: phone and bio
   const {
     register,
     handleSubmit,
@@ -43,30 +34,21 @@ const ProfilePage = () => {
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
-      bio: '',
+      name: "",
+      email: "",
     },
   });
 
   useEffect(() => {
-     dispatch(fetchDashboard());
+    dispatch(fetchDashboard());
     dispatch(getUserProfile());
   }, [dispatch]);
-    
-   const dashboard = useSelector((state) => state.dashboard.data);
-   
-  
-    
 
   useEffect(() => {
     if (profile) {
       reset({
-        name: profile.name || '',
-        email: profile.email || '',
-        phone: profile.phone || '',
-        bio: profile.bio || '',
+        name: profile.name || "",
+        email: profile.email || "",
       });
     }
   }, [profile, reset]);
@@ -74,116 +56,111 @@ const ProfilePage = () => {
   const onSubmit = async (data) => {
     const resultAction = await dispatch(updateUserProfile(data));
     if (updateUserProfile.fulfilled.match(resultAction)) {
-      toast.success('Profile updated successfully!');
+      toast.success("Profile updated successfully!");
       setOpen(false);
     } else {
-      toast.error('Failed to update profile. Please try again.');
+      toast.error("Failed to update profile. Please try again.");
     }
   };
 
-  // Format join date for display if exists
-
-
+  /** ---------- SKELETON LOADER ---------- */
   if (loading) {
     return (
-      <Card className="max-w-md min-h-[400px] mx-auto mt-10 mb-10 p-4">
-        <Skeleton className="h-20 w-20 rounded-full mb-4 mx-auto" />
-        <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
-        <Skeleton className="h-4 w-1/2 mx-auto" />
-      </Card>
+      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* Header Skeleton */}
+        <div>
+        
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+
+        {/* User Info Skeleton */}
+        <section className="space-y-3">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-5 w-64" />
+          <Skeleton className="h-5 w-52" />
+          <Skeleton className="h-10 w-32 rounded-md" />
+        </section>
+
+        {/* Stats Skeleton */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center"
+            >
+              <Skeleton className="h-10 w-20 mx-auto mb-2" />
+              <Skeleton className="h-5 w-24 mx-auto" />
+            </div>
+          ))}
+        </section>
+      </div>
     );
   }
 
+  /** ---------- ERROR ---------- */
   if (error) {
     return (
-      <Card className="max-w-md mx-auto mt-10 p-4 text-center text-red-500">
-        Error: {error}
-      </Card>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <p className="text-red-600 text-center text-lg">Error: {error}</p>
+      </div>
     );
   }
 
+  /** ---------- MAIN CONTENT ---------- */
   return (
-    <Card className="max-w-md mx-auto mt-10 mb-10">
-      <CardHeader className="flex flex-col items-center justify-center">
-        <Avatar className="h-24 w-24 mb-6 ring-4 ring-yellow-400">
-          <AvatarImage src={profile?.avatarUrl} alt={profile?.name} />
-          <AvatarFallback className="text-4xl">{profile?.name?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <CardTitle className="text-3xl font-semibold mb-1">{profile?.name}</CardTitle>
-       
-        <Button variant="outline" className="mb-2" onClick={() => setOpen(true)}>
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      {/* User Information */}
+      <section className="mb-12">
+        <h2 className="text-xl font-semibold mb-4 border-b border-yellow-400 pb-2">
+          User Information
+        </h2>
+        <p className="text-gray-700 mb-2">
+          <span className="font-medium">Email:</span> {profile?.email || "N/A"}
+        </p>
+        <p className="text-gray-700 mb-2">
+          <span className="font-medium">Name:</span> {profile?.name || "N/A"}
+        </p>
+        <Button
+          variant="outline"
+          onClick={() => setOpen(true)}
+          className="mt-3"
+        >
           Edit Profile
         </Button>
-      </CardHeader>
+      </section>
 
-      <CardContent>
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 border-b border-yellow-400 pb-1">
-            Contact Information
-          </h3>
-          <p className="text-gray-300 mb-1">
-            <span className="font-medium">Email:</span> {profile?.email || 'N/A'}
-          </p>
-          <p className="text-gray-300">
-            <span className="font-medium">Phone:</span> {profile?.phone || 'Not provided'}
-          </p>
-        </section>
-
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 border-b border-yellow-400 pb-1">
-            About Me
-          </h3>
-          <p className="text-gray-300 whitespace-pre-wrap min-h-[60px]">
-            {profile?.bio || 'No bio available.'}
-          </p>
-        </section>
-
-        <section className="mb-6">
-          <h3 className="text-lg font-semibold mb-3 border-b border-yellow-400 pb-1">
-            Account Stats
-          </h3>
-          {/* Placeholder stats: replace with real data if you have */}
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Solved</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
+      {/* Account Stats */}
+      <section>
+        <h2 className="text-xl font-semibold mb-6 border-b border-yellow-400 pb-2">
+          Account Stats
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <p className="text-3xl font-bold mb-1">
               {dashboard?.totalProblemsSolved || 0}
             </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Submissions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
+            <p className="font-medium">Total Solved</p>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <p className="text-3xl font-bold mb-1">
               {dashboard?.totalSubmissions || 0}
             </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Correct</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
+            <p className="font-medium">Total Submissions</p>
+          </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <p className="text-3xl font-bold mb-1">
               {dashboard?.totalCorrect || 0}
             </p>
-          </CardContent>
-        </Card>
-      </div>
-        </section>
-      </CardContent>
+            <p className="font-medium">Correct</p>
+          </div>
+        </div>
+      </section>
 
-      {/* EDIT PROFILE DIALOG */}
+      {/* Edit Profile Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
           </DialogHeader>
@@ -193,71 +170,48 @@ const ProfilePage = () => {
             autoComplete="off"
           >
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="name">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium mb-1"
+              >
                 Name <span className="text-red-500">*</span>
               </label>
               <Input
                 id="name"
                 type="text"
                 placeholder="Your full name"
-                {...register('name', { required: 'Name is required' })}
+                {...register("name", { required: "Name is required" })}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="email">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium mb-1"
+              >
                 Email <span className="text-red-500">*</span>
               </label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Your email"
-                {...register('email', {
-                  required: 'Email is required',
+                {...register("email", {
+                  required: "Email is required",
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'Invalid email address',
+                    message: "Invalid email address",
                   },
                 })}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="phone">
-                Phone
-              </label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Your phone number"
-                {...register('phone', {
-                  pattern: {
-                    value: /^\+?[0-9]{7,15}$/,
-                    message: 'Invalid phone number',
-                  },
-                })}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1" htmlFor="bio">
-                Bio
-              </label>
-              <Textarea
-                id="bio"
-                rows={4}
-                placeholder="Tell us about yourself"
-                {...register('bio')}
-              />
-            </div>
-
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            <Button type="submit" disabled={isSubmitting} className="mt-2">
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 };
 
