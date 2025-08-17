@@ -61,7 +61,7 @@ export default function LoginPage() {
   }, [error]);
  const handleGoogleSuccess = async (credentialResponse) => {
     const id_token = credentialResponse.credential;
-    const res = await dispatch(loginWithGoogle(id_token));
+    const res =  dispatch(loginWithGoogle(id_token));
     if (loginWithGoogle.fulfilled.match(res)) {
       const role = res.payload?.user?.role;
       toast("Google login successful");
