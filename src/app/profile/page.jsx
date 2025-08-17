@@ -1,27 +1,24 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
-import { getUserProfile, updateUserProfile } from '../../redux/slices/authSlice';
-import { toast } from 'sonner';
-import { fetchDashboard } from './../../redux/slices/DashbordSlice';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import {
+  getUserProfile,
+  updateUserProfile,
+} from "../../redux/slices/authSlice";
+import { toast } from "sonner";
+import { fetchDashboard } from "./../../redux/slices/DashbordSlice";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -37,10 +34,8 @@ const ProfilePage = () => {
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      name: '',
-      email: '',
-      phone: '',
-      bio: '',
+      name: "",
+      email: "",
     },
   });
 
@@ -52,10 +47,8 @@ const ProfilePage = () => {
   useEffect(() => {
     if (profile) {
       reset({
-        name: profile.name || '',
-        email: profile.email || '',
-        phone: profile.phone || '',
-        bio: profile.bio || '',
+        name: profile.name || "",
+        email: profile.email || "",
       });
     }
   }, [profile, reset]);
@@ -63,23 +56,49 @@ const ProfilePage = () => {
   const onSubmit = async (data) => {
     const resultAction = await dispatch(updateUserProfile(data));
     if (updateUserProfile.fulfilled.match(resultAction)) {
-      toast.success('Profile updated successfully!');
+      toast.success("Profile updated successfully!");
       setOpen(false);
     } else {
-      toast.error('Failed to update profile. Please try again.');
+      toast.error("Failed to update profile. Please try again.");
     }
   };
 
+  /** ---------- SKELETON LOADER ---------- */
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <Skeleton className="h-24 w-24 rounded-full mb-6" />
-        <Skeleton className="h-8 w-48 mb-3" />
-        <Skeleton className="h-6 w-32" />
+      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* Header Skeleton */}
+        <div>
+        
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+
+        {/* User Info Skeleton */}
+        <section className="space-y-3">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-5 w-64" />
+          <Skeleton className="h-5 w-52" />
+          <Skeleton className="h-10 w-32 rounded-md" />
+        </section>
+
+        {/* Stats Skeleton */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center"
+            >
+              <Skeleton className="h-10 w-20 mx-auto mb-2" />
+              <Skeleton className="h-5 w-24 mx-auto" />
+            </div>
+          ))}
+        </section>
       </div>
     );
   }
 
+  /** ---------- ERROR ---------- */
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -88,34 +107,28 @@ const ProfilePage = () => {
     );
   }
 
+  /** ---------- MAIN CONTENT ---------- */
   return (
     <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      {/* Profile Header */}
-      
-
-      {/* Contact Information */}
+      {/* User Information */}
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4 border-b border-yellow-400 pb-2">
           User Information
         </h2>
-         
-              <p className="text-gray-700 mb-2">
-                <span className="font-medium">Email:</span>{' '}
-                {profile?.email || 'N/A'}
-              </p>
-              <p className="text-gray-700 mb-2">
-                <span className="font-medium">Name:</span>{' '}
-                {profile?.name || 'N/A'}
-              </p>
-               <Button variant="outline" onClick={() => setOpen(true)} className="mt-3">
+        <p className="text-gray-700 mb-2">
+          <span className="font-medium">Email:</span> {profile?.email || "N/A"}
+        </p>
+        <p className="text-gray-700 mb-2">
+          <span className="font-medium">Name:</span> {profile?.name || "N/A"}
+        </p>
+        <Button
+          variant="outline"
+          onClick={() => setOpen(true)}
+          className="mt-3"
+        >
           Edit Profile
         </Button>
-            
       </section>
-       
-
-      {/* About Me */}
-      
 
       {/* Account Stats */}
       <section>
@@ -167,7 +180,7 @@ const ProfilePage = () => {
                 id="name"
                 type="text"
                 placeholder="Your full name"
-                {...register('name', { required: 'Name is required' })}
+                {...register("name", { required: "Name is required" })}
               />
             </div>
 
@@ -182,22 +195,18 @@ const ProfilePage = () => {
                 id="email"
                 type="email"
                 placeholder="Your email"
-                {...register('email', {
-                  required: 'Email is required',
+                {...register("email", {
+                  required: "Email is required",
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'Invalid email address',
+                    message: "Invalid email address",
                   },
                 })}
               />
             </div>
 
-           
-
-           
-
             <Button type="submit" disabled={isSubmitting} className="mt-2">
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         </DialogContent>

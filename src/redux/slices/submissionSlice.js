@@ -29,10 +29,23 @@ export const fetchSubmissionById = createAsyncThunk(
   }
 );
 
+export const fetchSubmissionsByProblemById = createAsyncThunk(
+  "submissions/fetchSubmissionsByProblemById",
+  async (id, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get(`/api/v1/submissions/problem/${id}`);
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 const submissionsSlice = createSlice({
   name: "submissions",
   initialState: {
     list: [],
+    problemSubmission: null,
     single: null,
     loading: false,
     error: null,
@@ -68,6 +81,20 @@ const submissionsSlice = createSlice({
         state.single = action.payload;
       })
       .addCase(fetchSubmissionById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Fetch problem
+      .addCase(fetchSubmissionsByProblemById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSubmissionsByProblemById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.problemSubmission = action.payload;
+      })
+      .addCase(fetchSubmissionsByProblemById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -59,15 +59,15 @@ const testimonials = [
 // ---- MAIN PAGE ----
 export default function HomePage() {
   return (
-    <main className="max-w-7xl mx-auto bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 pb-32 px-6 sm:px-10 md:px-20 lg:px-24 xl:px-32 py-20 overflow-x-hidden">
+    <main className="max-w-7xl mx-auto bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 pb-36 px-6 sm:px-10 md:px-20 lg:px-24 xl:px-32 py-20 overflow-x-hidden">
       {/* HERO */}
       <motion.section
-        className="max-w-4xl mx-auto text-center mb-28"
+        className="max-w-4xl mx-auto text-center "
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2 }}
       >
-        <h1 className="text-6xl md:text-7xl font-extrabold text-yellow-400 mb-10 tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
+        <h1 className="text-6xl md:text-7xl font-extrabold text-yellow-400  tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
           Welcome to CodeMinds
         </h1>
         <motion.p
@@ -83,16 +83,6 @@ export default function HomePage() {
           interviews, get placed at top Indian IT and startups, and grow your
           skills with premium coding challenges{" "}
         </motion.p>
-        <div className="flex justify-center gap-10">
-          <Link href="/problem">
-            <Button
-              size="lg"
-              className="transition-transform hover:scale-110 shadow-yellow-500/40 font-semibold text-lg"
-            >
-              Start Coding
-            </Button>
-          </Link>
-        </div>
       </motion.section>
 
       {/* CIRCULAR LOGOS */}

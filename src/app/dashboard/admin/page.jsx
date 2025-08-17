@@ -45,8 +45,7 @@ export default function AdminPanel() {
       {/* Main content */}
       <main className="flex-1 p-8 overflow-auto min-w-0">
         {tab === "problems" && <ProblemsManager />}
-        {tab === "announcements" && <AnnouncementsManager />}
-         {tab === "contests" && <ContestManager />}
+        
       </main>
     </div>
   );

@@ -31,6 +31,7 @@ import CommentSection from "../../../Component/Commnets";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from '@/context/authContext';
 import  Editor  from "@monaco-editor/react";
+import { fetchSubmissionsByProblemById } from './../../../redux/slices/submissionSlice';
 
 
 function markdownToHtml(md) {
@@ -96,8 +97,8 @@ export default function ProblemDetailsPage() {
     submitResulStatus,
     submitError,
   } = useSelector((state) => state.problem);
-  
-      const { isAuthenticated, loading: authLoading } = useAuth();
+  const {problemSubmission} = useSelector((state) => state.submissions);
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
 
 
@@ -135,7 +136,7 @@ const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(proble
 }, [id, dispatch]);
 
 useEffect(() => {
-  dispatch(fetchAllSubmission());
+  dispatch(fetchSubmissionsByProblemById(id));
 }, [dispatch]);
 
 useEffect(() => {
@@ -488,7 +489,7 @@ useEffect(() => {
           </tr>
         </thead>
         <tbody>
-          {submitResultId?.map((submission, index) => (
+          {problemSubmission?.map((submission, index) => (
             <tr key={submission._id} className="border-t">
               <td className="p-2 text-center">{index + 1}</td>
               <td className="p-2 text-center">
@@ -535,24 +536,9 @@ useEffect(() => {
             {/* PROBLEM TAB */}
           
               <div className="mb-6 flex items-center mt-4 gap-4">
-                <label htmlFor="language-select" className="font-semibold">
-                  Language:
-                </label>
-                <select
-                  id="language-select"
-                  value={lang}
-                  onChange={(e) => setLang(e.target.value)}
-                  className="border border-gray-300 rounded px-3 py-1 shadow-sm max-w-[130px]"
-                >
-                  {availableLangs.map((availableLang) => (
-                    <option key={availableLang} value={availableLang}>
-                      {availableLang}
-                    </option>
-                  ))}
-                </select>
+                
 
-                <div className="flex-grow" />
-
+              
                 <Button
                   variant="outline"
                   onClick={handleRun}
@@ -578,7 +564,7 @@ useEffect(() => {
 
               <div className="w-full">
       <Editor
-        height="350px"
+        height="300px"
         language="cpp"
         value={sourceCode} // fully controlled
         theme="vs-dark"

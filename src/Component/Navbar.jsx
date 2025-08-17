@@ -28,6 +28,7 @@ export default function Navbar() {
       href: user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user",
     },
     { label: "Profile", href: "/profile" },
+    { label: "Playlists", href: "/playlist" },
   ];
 
   const navItems = isAuthenticated
