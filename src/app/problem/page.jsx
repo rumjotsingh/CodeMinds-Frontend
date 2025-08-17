@@ -176,18 +176,12 @@ const router = useRouter();
 
   return (
     <div className="flex flex-col min-h-screen max-w-7xl mx-auto">
-      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden ">
         {/* Sidebar */}
-        <aside
-          className={`${
-            isFixed
-              ? "fixed top-0 left-0 md:w-30 w-full h-full z-60 overflow-y-auto  p-4"
-              : "relative md:w-40 w-full p-4"
-          }`}
-    >
-  <h2 className="text-lg font-semibold mb-4">Filters</h2>
-  <div className="mb-6">
-    <p className="font-medium mb-2">Difficulty</p>
+        {/* <aside className="border border-[#e3e3e3] p-4 mt-10 w-64 overflow-y-auto sticky top-0" >
+          <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <div className="mb-6">
+            <p className="font-medium mb-2">Difficulty</p>
     {["EASY", "MEDIUM", "HARD"].map((level) => (
       <label
         key={level}
@@ -207,13 +201,11 @@ const router = useRouter();
       </label>
     ))}
   </div>
-</aside>
+</aside> */}
 
 
         {/* Main Content */}
-        <main className={`overflow-y-auto p-4 md:p-6 transition-all duration-300 ${
-    isFixed ? " ml-40  w-full" : "w-full md:w-[calc(100%-10rem)]"
-  }`}>
+        <main className={`overflow-y-auto w-full p-4 md:p-6 transition-all duration-300 `}>
           {/* Loading Skeleton */}
           {status === "loading" && (
             <div className="space-y-4">
@@ -222,7 +214,7 @@ const router = useRouter();
                   key={rowIdx}
                   className="flex flex-col md:grid md:grid-cols-5 gap-4 py-2 border-b border-gray-200"
                 >
-                  <Skeleton className="h-6 w-full col-span-2" />
+                  <Skeleton className="h-6 w-full" />
                   <Skeleton className="h-6 w-full" />
                   <Skeleton className="h-6 w-full" />
                   <Skeleton className="h-6 w-full" />
@@ -248,13 +240,14 @@ const router = useRouter();
                 <>
                   {/* For larger screens, keep table */}
                   <div className="hidden md:block">
-                    <Table className="mt-4">
+                    <Table className="">
                      
                       <TableHeader>
                         <TableRow>
                           <TableHead>Problem</TableHead>
+                           <TableHead>Tags</TableHead>
                           <TableHead>Difficulty</TableHead>
-                          
+                         
                           <TableHead>Add to Sheets</TableHead>
                           <TableHead>Solve</TableHead>
                         </TableRow>
@@ -264,6 +257,9 @@ const router = useRouter();
                           <TableRow key={problem._id}>
                             <TableCell className="font-medium">
                               {problem.title}
+                            </TableCell>
+                             <TableCell className="font-medium">
+                              {problem.tags.slice(0,3).map((tag)=><span key={tag} className="text-sm font-medium px-2 py-1 rounded bg-gray-100">{tag}</span>)}
                             </TableCell>
                             <TableCell>
                               <span

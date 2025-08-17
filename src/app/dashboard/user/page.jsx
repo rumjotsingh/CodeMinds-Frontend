@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchDashboard,
-  
 } from "../../../redux/slices/DashbordSlice";
 import {
   fetchStreaks,
-  
 } from "../../../redux/slices/StreaksSlice";
 import {
   fetchAllPlaylists,
@@ -17,8 +15,19 @@ import {
 } from "../../../redux/slices/playlistSlice";
 import CalendarHeatmap from "../../../Component/CalendarHeatmap";
 import RecentSubmissions from "../../../Component/RecentSubmissions";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +35,7 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
-  const router=useRouter();
+  const router = useRouter();
 
   const dashboard = useSelector((state) => state.dashboard.data);
   const streaks = useSelector((state) => state.streaks.data);
@@ -79,75 +88,117 @@ export default function Dashboard() {
     setPlaylistToEdit(null);
   };
 
-  const goToPlaylistProblems = () => {
-    router.push("/problem")
+  const goToPlaylistProblems = (id) => {
+    router.push(`/problem?playlist=${id}`);
   };
 
   return (
-    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 space-y-10 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold">Coding Dashboard</h2>
-          <p className="text-orange-500">Streak: 🔥 {streakDays} days</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+            Coding Dashboard
+          </h1>
+          <p className="text-lg text-orange-600 mt-1">
+            🔥 Current Streak: {streakDays} days
+          </p>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="shadow-sm hover:shadow-md transition">
           <CardHeader>
             <CardTitle>Total Solved</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{dashboard?.totalProblemsSolved || 0}</p>
+            <p className="text-3xl font-bold text-indigo-600">
+              {dashboard?.totalProblemsSolved || 0}
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition">
           <CardHeader>
             <CardTitle>Total Submissions</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{dashboard?.totalSubmissions || 0}</p>
+            <p className="text-3xl font-bold text-purple-600">
+              {dashboard?.totalSubmissions || 0}
+            </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition">
           <CardHeader>
             <CardTitle>Correct</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{dashboard?.totalCorrect || 0}</p>
+            <p className="text-3xl font-bold text-green-600">
+              {dashboard?.totalCorrect || 0}
+            </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Calendar Heatmap */}
-      <CalendarHeatmap data={streaks} />
+      <div className="bg-white rounded-xl shadow p-4 md:p-6">
+        <h2 className="text-xl font-semibold mb-4">Activity</h2>
+        <CalendarHeatmap data={streaks} />
+      </div>
 
       {/* Recent Submissions */}
-      <RecentSubmissions submissions={dashboard?.recentSubmissions || []} />
+      <div className="bg-white rounded-xl shadow p-4 md:p-6">
+        <h2 className="text-xl font-semibold mb-4">Recent Submissions</h2>
+        <RecentSubmissions submissions={dashboard?.recentSubmissions || []} />
+      </div>
 
       {/* Playlists */}
       <section>
-        <h2 className="text-xl font-semibold mb-4">Your Playlists</h2>
+        <h2 className="text-2xl font-bold mb-6">Your Playlists</h2>
         {loadingPlaylists && <p>Loading playlists...</p>}
         {error && <p className="text-red-500">Error: {error}</p>}
-        {!loadingPlaylists && playlists.length === 0 && <p>No playlists found.</p>}
+        {!loadingPlaylists && playlists.length === 0 && (
+          <p className="text-gray-500">No playlists found.</p>
+        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {playlists.map((playlist) => (
-            <Card key={playlist._id}>
+            <Card
+              key={playlist._id}
+              className="shadow-sm hover:shadow-lg transition cursor-pointer flex flex-col"
+            >
               <CardHeader>
-                <CardTitle className="text-lg">{playlist.title}</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  {playlist.title}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="mb-4 text-sm text-muted-foreground">{playlist.description}</p>
-                <div className="flex gap-2">
-                  <Button variant="default" onClick={() => goToPlaylistProblems(playlist._id)}>More Problems</Button>
-                  <Button variant="outline" onClick={() => openEditDialog(playlist)}>Edit</Button>
-                  <Button variant="destructive" onClick={() => openDeleteDialog(playlist)}>Delete</Button>
+              <CardContent className="flex flex-col justify-between flex-1">
+                <p className="mb-4 text-sm text-gray-600">
+                  {playlist.description}
+                </p>
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    size="sm"
+                    onClick={() => goToPlaylistProblems(playlist._id)}
+                  >
+                    View Problems
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openEditDialog(playlist)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => openDeleteDialog(playlist)}
+                  >
+                    Delete
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -161,12 +212,18 @@ export default function Dashboard() {
           <DialogHeader>
             <DialogTitle>Delete Playlist</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete the playlist “{playlistToDelete?.title}”? This action cannot be undone.
+          <p className="text-sm text-gray-600">
+            Are you sure you want to delete{" "}
+            <strong>{playlistToDelete?.title}</strong>? This action cannot be
+            undone.
           </p>
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -180,16 +237,26 @@ export default function Dashboard() {
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium">Title</label>
-              <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+              <Input
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+              />
             </div>
             <div>
               <label className="text-sm font-medium">Description</label>
-              <Textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+              <Textarea
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+              />
             </div>
           </div>
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
-            <Button onClick={saveEdit} disabled={loadingPlaylists}>Update</Button>
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={saveEdit} disabled={loadingPlaylists}>
+              Update
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

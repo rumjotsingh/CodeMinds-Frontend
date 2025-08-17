@@ -14,7 +14,7 @@ export default function Navbar() {
 
   const commonNavItems = [
     { label: "Problems", href: "/problem" },
-    { label: "Contest", href: "/contest" },
+   
   ];
 
   const guestNavItems = [

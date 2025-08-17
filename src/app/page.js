@@ -59,23 +59,19 @@ const testimonials = [
 // ---- MAIN PAGE ----
 export default function HomePage() {
   return (
-    <main
-      className=" max-w-7xl mx-auto bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 pb-32 px-6 sm:px-10 md:px-20 lg:px-40 xl:px-60 py-20"
-      style={{ overflowX: "hidden" }}
-    >
+    <main className="max-w-7xl mx-auto bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 pb-32 px-6 sm:px-10 md:px-20 lg:px-24 xl:px-32 py-20 overflow-x-hidden">
       {/* HERO */}
-
       <motion.section
-        className="text-center mb-24"
+        className="max-w-4xl mx-auto text-center mb-28"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2 }}
       >
-        <h1 className="text-7xl md:text-8xl font-extrabold text-yellow-400 mb-8 tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
+        <h1 className="text-6xl md:text-7xl font-extrabold text-yellow-400 mb-10 tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
           Welcome to CodeMinds
         </h1>
         <motion.p
-          className="text-gray-200 max-w-4xl mx-auto mb-12 text-2xl md:text-3xl leading-relaxed"
+          className="text-gray-200 max-w-3xl mx-auto mb-16 text-xl md:text-2xl leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
@@ -86,9 +82,8 @@ export default function HomePage() {
           and platform to ace <b className="text-yellow-400">FAANG</b>{" "}
           interviews, get placed at top Indian IT and startups, and grow your
           skills with premium coding challenges{" "}
-          <span className="inline-block animate-bounce">🚀</span>
         </motion.p>
-        <div className="flex justify-center gap-8">
+        <div className="flex justify-center gap-10">
           <Link href="/problem">
             <Button
               size="lg"
@@ -97,25 +92,16 @@ export default function HomePage() {
               Start Coding
             </Button>
           </Link>
-          <Link href="/contest">
-            <Button
-              variant="outline"
-              size="lg"
-              className="transition-transform hover:scale-110 shadow-yellow-500/20 border-yellow-400 font-semibold text-lg"
-            >
-              Join Contests
-            </Button>
-          </Link>
         </div>
       </motion.section>
 
       {/* CIRCULAR LOGOS */}
       <section className="mb-24">
-        <h2 className="text-4xl font-bold text-white mb-10 text-center tracking-wide drop-shadow">
+        <h2 className="text-4xl font-bold text-white mb-16 text-center tracking-wide drop-shadow">
           Used & loved by talent at
         </h2>
         <motion.div
-          className="flex gap-16 min-w-max px-4"
+          className="flex gap-16 min-w-max px-6"
           animate={{ x: ["0%", "-50%"] }}
           transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
         >
@@ -124,9 +110,9 @@ export default function HomePage() {
               <Image
                 src={logo.src}
                 alt={logo.name}
-                width={100} // sets width
-                height={100} // or omit height
-                layout="intrinsic" // keeps aspect ratio
+                width={100}
+                height={100}
+                layout="intrinsic"
                 className="transition duration-300"
               />
             </div>
@@ -136,119 +122,114 @@ export default function HomePage() {
 
       {/* DETAILED FEATURES */}
       <motion.section
-        className="mb-24 text-center"
+        className="mb-24 text-center max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 70 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-white mb-12">
+        <h2 className="text-4xl font-bold text-white mb-16">
           Why is CodeMinds Your #1 Interview & Coding Companion?
         </h2>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 text-left">
-          <Card className="bg-gray-800 border-yellow-500 border-opacity-60 shadow-2xl hover:scale-105 duration-300">
-            <CardHeader>
-              <CardTitle className="text-yellow-400 text-2xl font-bold">
-                FAANG-Level Questions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="mt-4 text-gray-200 text-lg">
-              <ul className="list-disc ml-4">
-                <li>Curated by experts and top coders</li>
-                <li>Difficulty levels from beginner to advanced</li>
-                <li>
-                  Exact company-specific topics for Facebook, Google, Amazon,
-                  and more
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="bg-gray-800 border-yellow-500 border-opacity-60 shadow-2xl hover:scale-105 duration-300">
-            <CardHeader>
-              <CardTitle className="text-yellow-400 text-2xl font-bold">
-                Real Indian & Startup Patterns
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="mt-4 text-gray-200 text-lg">
-              <ul className="list-disc ml-4">
-                <li>
-                  Popular TCS/Infosys, Flipkart/Oyo, Zomato-style questions
-                </li>
-                <li>Campus placement, coding rounds, and hackathon archives</li>
-                <li>Tons of language support (C++, Java, Python, JS...)</li>
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="bg-gray-800 border-yellow-500 border-opacity-60 shadow-2xl hover:scale-105 duration-300">
-            <CardHeader>
-              <CardTitle className="text-yellow-400 text-2xl font-bold">
-                Vibrant Community & Growth
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="mt-4 text-gray-200 text-lg">
-              <ul className="list-disc ml-4">
-                <li>Weekly contests, rank ladders, and advanced analytics</li>
-                <li>100,000+ active users and mentors</li>
-                <li>Peer review, hints, and solution discussion</li>
-              </ul>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 gap-12 text-left">
+          {[
+            {
+              title: "FAANG-Level Questions",
+              points: [
+                "Curated by experts and top coders",
+                "Difficulty levels from beginner to advanced",
+                "Exact company-specific topics for Facebook, Google, Amazon, and more",
+              ],
+            },
+            {
+              title: "Real Indian & Startup Patterns",
+              points: [
+                "Popular TCS/Infosys, Flipkart/Oyo, Zomato-style questions",
+                "Campus placement, coding rounds, and hackathon archives",
+                "Tons of language support (C++, Java, Python, JS...)",
+              ],
+            },
+            {
+              title: "Vibrant Community & Growth",
+              points: [
+                "Weekly contests, rank ladders, and advanced analytics",
+                "100,000+ active users and mentors",
+                "Peer review, hints, and solution discussion",
+              ],
+            },
+          ].map(({ title, points }) => (
+            <Card
+              key={title}
+              className="bg-gray-800 border-yellow-500 border-opacity-60 shadow-xl hover:shadow-2xl p-8 rounded-lg transition-transform transform hover:-translate-y-1 duration-300"
+            >
+              <CardHeader>
+                <CardTitle className="text-yellow-400 text-2xl font-bold">
+                  {title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="mt-6 text-gray-200 text-lg">
+                <ul className="list-disc ml-6 space-y-2">
+                  {points.map((point, i) => (
+                    <li key={i}>{point}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </motion.section>
 
-      {/* Extra Large About Section */}
+      {/* EXTRA LARGE ABOUT SECTION */}
       <motion.section
-        className="mb-24 max-w-5xl mx-auto text-center"
+        className="mb-24 max-w-4xl mx-auto text-center"
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.2 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-yellow-400 mb-8">
+        <h2 className="text-4xl font-bold text-yellow-400 mb-10">
           How CodeMinds is Different
         </h2>
-        <div className="text-lg md:text-2xl text-gray-200 mb-8 leading-relaxed">
-          <p>
-            <b>CodeMinds</b> combines the <b>rigor of FAANG prep</b>, the
-            patterns of Indian tech & startup interviews, and the support of a
-            thriving community. Every coder—from beginners to ICPC
-            medalists—finds their place. Our platform is powered by modern
-            technology and an ever-improving library to keep you a step ahead,
-            always!
-          </p>
-        </div>
-        <Button size="lg">
-          <Link className="text-yellow-400" href="/register">
+        <p className="text-lg md:text-xl text-gray-200 mb-10 leading-relaxed tracking-wide">
+          <strong>CodeMinds</strong> combines the{" "}
+          <strong>rigor of FAANG prep</strong>, the patterns of Indian tech &
+          startup interviews, and the support of a thriving community. Every
+          coder—from beginners to ICPC medalists—finds their place. Our platform
+          is powered by modern technology and an ever-improving library to keep
+          you a step ahead, always!
+        </p>
+        <Button
+          size="lg"
+          className="bg-yellow-400 text-gray-900 font-semibold hover:bg-yellow-500 transition"
+        >
+          <Link href="/register" className="block w-full">
             Sign Up Free
           </Link>
         </Button>
       </motion.section>
 
-      <Separator className="my-20 border-yellow-600" />
-      <AnnouncementsList />
-
-      {/* Testimonials */}
+      {/* TESTIMONIALS */}
       <motion.section
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-white mb-12 text-center tracking-wide drop-shadow">
+        <h2 className="text-4xl font-bold text-white mb-14 text-center tracking-wide drop-shadow">
           What Our Users Say
         </h2>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 animate-slideUp">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4  animate-slideUp">
           {testimonials.map(({ id, name, role, quote }) => (
             <Card
               key={id}
-              className="bg-gray-800 border-yellow-600 border-opacity-60 p-8 flex flex-col justify-between shadow-2xl hover:shadow-3xl transition-shadow duration-300 transform hover:-translate-y-2"
+              className="bg-gray-800 border-yellow-600 border-opacity-60 p-8 flex flex-col justify-between shadow-xl hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2"
             >
               <CardContent className="flex-grow">
-                <p className="italic text-gray-300 text-xl leading-relaxed">
+                <p className="italic text-gray-300 text-lg  leading-relaxed">
                   “{quote}”
                 </p>
               </CardContent>
-              <div className="mt-8">
+              <div className="">
                 <p className="font-semibold text-yellow-400 text-xl">{name}</p>
                 <p className="text-gray-400 text-sm">{role}</p>
               </div>
@@ -257,7 +238,7 @@ export default function HomePage() {
         </div>
       </motion.section>
 
-      {/* Mission & Vision */}
+      {/* MISSION & VISION */}
       <motion.section
         className="mt-32 max-w-7xl mx-auto"
         initial={{ opacity: 0, y: 60 }}
@@ -265,35 +246,34 @@ export default function HomePage() {
         transition={{ duration: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-white mb-14 text-center tracking-wide">
+        <h2 className="text-4xl font-bold text-white mb-16 text-center tracking-wide">
           Our Mission & Vision
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          <Card className="bg-gray-800 border-yellow-600 border-opacity-60 p-8">
-            <CardHeader>
-              <CardTitle className="text-yellow-400 text-2xl font-bold">
-                Our Mission
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 text-xl mt-4">
-              To empower developers with accessible, world-class coding
-              education, powerful practice tools, and a motivating community so
-              everyone can achieve their software career dreams, globally and
-              locally.
-            </CardContent>
-          </Card>
-          <Card className="bg-gray-800 border-yellow-600 border-opacity-60 p-8">
-            <CardHeader>
-              <CardTitle className="text-yellow-400 text-2xl font-bold">
-                Our Vision
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-gray-300 text-xl mt-4">
-              To be the go-to destination for aspiring engineers, students, and
-              professionals preparing for coding jobs—regardless of background.
-              We believe in real skill, endless learning, and community success.
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
+          {[
+            {
+              title: "Our Mission",
+              text: "To empower developers with accessible, world-class coding education, powerful practice tools, and a motivating community so everyone can achieve their software career dreams, globally and locally.",
+            },
+            {
+              title: "Our Vision",
+              text: "To be the go-to destination for aspiring engineers, students, and professionals preparing for coding jobs—regardless of background. We believe in real skill, endless learning, and community success.",
+            },
+          ].map(({ title, text }) => (
+            <Card
+              key={title}
+              className="bg-gray-800 border-yellow-600 border-opacity-60 p-8 rounded-lg shadow-lg"
+            >
+              <CardHeader>
+                <CardTitle className="text-yellow-400 text-2xl font-bold">
+                  {title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-gray-300 text-xl mt-4">
+                {text}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </motion.section>
     </main>
