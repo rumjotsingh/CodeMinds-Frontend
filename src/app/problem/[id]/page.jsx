@@ -240,7 +240,7 @@ export default function ProblemDetailsPage() {
 
   return (
     <div className="max-w-full mx-auto px-2 sm:px-4">
-      <div className="flex flex-col md:flex-row w-full h-[calc(100vh-64px)] min-h-[400px] gap-4">
+      <div className=" w-full h-[calc(100vh-64px)] min-h-[400px] gap-4 md:flex">
         {/* LEFT SIDE */}
         <Tabs
           value={rightTab}
@@ -511,7 +511,7 @@ export default function ProblemDetailsPage() {
 
           <div className="w-full mb-4">
             <Editor
-              height="250px sm:300px md:350px"
+              height="300px"
               language={getMonacoLanguage(lang)}
               value={sourceCode}
               theme="vs-dark"
@@ -540,6 +540,7 @@ export default function ProblemDetailsPage() {
               ) : (
                 <div className="flex overflow-x-auto gap-3 max-h-[300px] py-2">
                   {visibleCases?.map((t, idx) => (
+
                     <Card key={t._id || idx} className="min-w-[180px] sm:min-w-[200px] group relative border">
                       <CardContent className="p-3">
                         <div className="text-xs sm:text-sm">
