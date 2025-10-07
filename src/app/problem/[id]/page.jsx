@@ -239,7 +239,7 @@ export default function ProblemDetailsPage() {
   }
 
   return (
-    <div className="max-w-full mx-auto px-2 sm:px-4">
+    <div className="max-w-full mx-auto px-2 sm:px-4 fixed w-full">
       <div className=" w-full h-[calc(100vh-64px)] min-h-[400px] gap-4 md:flex">
         {/* LEFT SIDE */}
         <Tabs
