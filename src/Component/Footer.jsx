@@ -1,7 +1,7 @@
 'use client'
 export default function Footer() {
   return (
- <footer className="bg-gray-900  max-w-7xl mx-auto text-white py-8 px-12 ">
+ <footer className="bg-gray-900   mx-auto text-white py-8 px-12 ">
    <div className="flex-shrink-0">
       <h3 className="font-bold mb-3 text-center text-yellow-400">CodeMinds</h3>
     </div>

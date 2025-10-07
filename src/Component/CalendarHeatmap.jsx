@@ -11,6 +11,8 @@ import {
   eachDayOfInterval,
   getMonth,
   isSameMonth,
+  startOfWeek,
+  addDays,
 } from "date-fns";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -19,110 +21,101 @@ export default function CalendarHeatmap({ data = {} }) {
   // Only show 6 months history
   const today = new Date();
   const startDate = subMonths(today, 6); // start 6 months back
-  const days = eachDayOfInterval({ start: startDate, end: today });
-
-  // Group days into weeks (Monday-first)
+  // Align start to Monday to create week columns like GitHub/LeetCode
+  const alignedStart = startOfWeek(startDate, { weekStartsOn: 1 });
   const weeks = [];
-  for (let i = 0; i < days.length; i += 7) {
-    weeks.push(days.slice(i, i + 7));
+  for (let w = alignedStart; w <= today; w = addDays(w, 7)) {
+    const week = [];
+    for (let d = 0; d < 7; d++) {
+      const day = addDays(w, d);
+      // If day is beyond today, push null to keep grid consistent
+      week.push(day > today ? null : day);
+    }
+    weeks.push(week);
   }
 
-  // Month labels: show only above the first week with the new month
+  // Month labels: show only above the first week that contains a new month
   const monthLabels = Array(weeks.length).fill("");
   let lastMonth = null;
   for (let i = 0; i < weeks.length; i++) {
     const week = weeks[i];
-    const foundMonthDay = week.find(
-      d =>
-        d instanceof Date &&
-        !isNaN(d.getTime()) &&
-        getMonth(d) !== lastMonth
-    );
-    if (foundMonthDay) {
-      const newMonth = getMonth(foundMonthDay);
-      monthLabels[i] = format(foundMonthDay, "MMM");
-      lastMonth = newMonth;
+    const firstValidDay = week.find((d) => d instanceof Date && d <= today);
+    if (firstValidDay) {
+      const m = getMonth(firstValidDay);
+      if (m !== lastMonth) {
+        monthLabels[i] = format(firstValidDay, "MMM");
+        lastMonth = m;
+      }
     }
   }
 
   const colorScale = (val) => {
-    if (val >= 10) return "bg-green-700";
-    if (val >= 5) return "bg-green-600";
-    if (val >= 3) return "bg-green-400";
-    if (val >= 1) return "bg-green-200";
+    if (val >= 12) return "bg-green-800";
+    if (val >= 8) return "bg-green-700";
+    if (val >= 4) return "bg-green-500";
+    if (val >= 1) return "bg-green-300";
     return "bg-gray-100";
   };
 
-  return (
-    <div className="bg-white p-6 shadow-lg rounded-xl max-w-full overflow-x-auto border border-gray-200">
-      <h3 className="text-lg font-semibold mb-2 text-gray-800">
-        Submission Calendar (Last 6 Months)
-      </h3>
-      {/* Month labels row */}
-      <div className="flex mb-1 ">
-        <div className="w-5" /> {/* Spacer for weekday labels */}
-        {monthLabels.map((label, i) => (
-          <div
-            key={`month-${i}`}
-            className="w-[30px] text-md text-gray-400  font-medium"
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-      {/* Grid */}
-      <div className="flex">
-        {/* Weekday labels vertically */}
-        <div className="flex flex-col gap-[4px] mr-1">
-          
-        </div>
-        {/* Heatmap Squares */}
-        <div className="flex gap-[4px]">
-          {weeks.map((week, i) => {
-            const nextWeek = weeks[i + 1];
-            const firstDayCurrent = week[0];
-            const firstDayNext = nextWeek && nextWeek ? nextWeek : null;
-            const isMonthEnding =
-              firstDayNext &&
-              firstDayCurrent &&
-              !isSameMonth(firstDayCurrent, firstDayNext);
+  const total = Object.values(data || {}).reduce((s, v) => s + (Number(v) || 0), 0);
 
-            return (
-              <div key={`week-${i}`} className="flex flex-col items-center gap-[1px] space-x-2">
-                {/* Squares for days in week */}
-                {week.map((date, dayIdx) => {
-                  const formatted =
-                    date instanceof Date && !isNaN(date.getTime())
-                      ? format(date, "yyyy-MM-dd")
-                      : "";
-                  const count = formatted ? data[formatted] || 0 : 0;
-                  return (
-                    <TooltipProvider key={formatted + dayIdx}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div
-                            className={`w-4 h-4 rounded-[3px] ${colorScale(count)} border border-gray-100 hover:scale-105 hover:shadow transition-all`}
-                            aria-label={`${count} problems`}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent side="left" align="center">
-                          <p>
-                            {count} problem{count !== 1 ? "s" : ""} on{" "}
-                            {formatted
-                              ? format(date, "MMM d, yyyy")
-                              : "Invalid"}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  );
-                })}
-                {/* Month end spacer for spacing between months */}
-                {isMonthEnding && <div className="h-8" />}
-              </div>
-            );
-          })}
+  return (
+    <div className="bg-white p-3 rounded-md max-w-8xl overflow-x-auto border border-[#e3e3e3]">
+      <div className="flex items-start justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-800">Submission Calendar</h3>
+        
+      </div>
+
+      <div className="flex">
+        {/* Weekday labels */}
+       
+
+        {/* Weeks */}
+        <div className="flex gap-2 items-start">
+          {weeks.map((week, i) => (
+            <div key={`week-${i}`} className="flex flex-col gap-2">
+              {week.map((date, dayIdx) => {
+                const formatted = date instanceof Date && !isNaN(date.getTime()) ? format(date, "yyyy-MM-dd") : "";
+                const count = formatted ? data[formatted] || 0 : 0;
+                return (
+                  <TooltipProvider key={formatted + dayIdx}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={`w-5 h-5 rounded-sm ${formatted ? colorScale(count) : 'bg-transparent'} border ${formatted ? 'border-gray-100' : 'border-transparent'} hover:scale-105 transform transition-all`}
+                          aria-label={`${count} problems`}
+                          title={`${count} problems on ${formatted ? format(date, 'MMM d, yyyy') : 'N/A'}`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        <div className="text-sm">
+                          <div className="font-medium">{count} problem{count !== 1 ? 's' : ''}</div>
+                          <div className="text-xs text-muted-foreground">{formatted ? format(date, 'EEEE, MMM d, yyyy') : 'N/A'}</div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                );
+              })}
+              {/* month label if present for this week */}
+              {monthLabels[i] ? (
+                <div className="text-xs text-gray-400 mt-1 text-center">{monthLabels[i]}</div>
+              ) : (
+                <div className="h-4" />
+              )}
+            </div>
+          ))}
         </div>
+      </div>
+
+      {/* Legend */}
+      <div className="mt-4 flex items-center gap-3 text-sm">
+        <div className="text-muted-foreground">Less</div>
+        <div className="w-5 h-5 bg-gray-100 border border-gray-100 rounded-sm" />
+        <div className="w-5 h-5 bg-green-300 border border-gray-100 rounded-sm" />
+        <div className="w-5 h-5 bg-green-500 border border-gray-100 rounded-sm" />
+        <div className="w-5 h-5 bg-green-700 border border-gray-100 rounded-sm" />
+        <div className="text-muted-foreground">More</div>
       </div>
     </div>
   );

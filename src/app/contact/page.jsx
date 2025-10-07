@@ -1,8 +1,8 @@
 "use client"
 export default function Contact() {
   return (
-    <div className="min-h-[80vh] bg-gray-50 flex justify-center px-5 py-10">
-      <article className="bg-white rounded-2xl shadow-lg p-12 max-w-3xl w-full transition-shadow duration-200 hover:shadow-xl">
+    <div className="min-h-[80vh]  flex justify-center px-5 py-10">
+      <article className=" rounded-2xl border border-[#e3e3e3] p-12 max-w-3xl w-full">
         <h1 className="text-4xl font-extrabold mb-5 text-gray-900">Contact Us</h1>
         <p className="text-lg leading-relaxed text-gray-700 mb-6">
           Questions? Feedback? Reach out to us below.
@@ -53,7 +53,7 @@ export default function Contact() {
 
           <button
             type="submit"
-            className="bg-teal-600 hover:bg-teal-700 transition-colors duration-200 text-white font-semibold py-3 px-6 rounded-xl"
+            className="bg-black text-white font-semibold py-3 px-6 rounded-xl"
           >
             Send Message
           </button>

@@ -21,12 +21,9 @@ const formSchema = z
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Invalid email"),
     password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Confirm Password must be at least 6 characters"),
+    
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+ 
 
 
 export default function RegisterForm() {
@@ -44,6 +41,7 @@ export default function RegisterForm() {
   } = useForm({
     resolver: zodResolver(formSchema),
   });
+  console.log(errors);  
 
   const onSubmit = async (values) => {
     const res = await dispatch(registerUser(values));
@@ -110,7 +108,7 @@ export default function RegisterForm() {
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4 mt-10">
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
               {loading ? "Registering..." : "Register"}
             </Button>
 
@@ -119,7 +117,7 @@ export default function RegisterForm() {
               <button
                 type="button"
                 onClick={() => router.push("/login")}
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 hover:underline cursor-pointer"
               >
                 Login
               </button>

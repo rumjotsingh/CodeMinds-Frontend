@@ -12,7 +12,7 @@ export default function TagsSidebar() {
   const [dsaTags, setDsaTags] = useState([]);
 
   const companyList = new Set([
-    "Amazon", "Apple", "Atlassian", "Bloomberg", "Cisco", "Facebook",
+    "Apple", "Atlassian", "Bloomberg", "Cisco", "Facebook",
     "Goldman Sachs", "Google", "Infosys", "JP Morgan", "Microsoft", "Oracle",
     "Paypal", "TCS", "Uber", "VM Ware", "Zoho",
   ]);
