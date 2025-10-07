@@ -1,8 +1,8 @@
 'use client'
 export default function Privacy() {
   return (
-    <div className="min-h-[80vh] bg-gray-50 flex justify-center px-5 py-10">
-      <article className="bg-white rounded-2xl shadow-lg p-12 max-w-3xl w-full transition-shadow duration-200 hover:shadow-xl">
+    <div className="min-h-[80vh]  flex justify-center px-5 py-10">
+      <article className=" rounded-2xl  p-12 max-w-3xl w-full">
         <h1 className="text-4xl font-extrabold mb-5 text-gray-900">Privacy Policy</h1>
 
         <p className="text-lg leading-relaxed text-gray-700 mb-6">

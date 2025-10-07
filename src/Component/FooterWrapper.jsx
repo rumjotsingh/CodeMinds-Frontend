@@ -7,7 +7,7 @@ const FooterWrapper = () => {
   const pathname = usePathname();
 
   // Routes where footer should be hidden
-  const hideFooterOn = ['/problem'];
+  const hideFooterOn = ['/problem', '/dashboard/admin'];
 
   // Match for exact or dynamic routes like /problem/123
   const shouldHide = hideFooterOn.some((path) => pathname.startsWith(path));

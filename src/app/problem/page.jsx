@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Checkbox } from "@/components/ui/checkbox";
+// Checkbox removed from UI per design request (functionality preserved where needed)
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from "../../context/authContext";
 import { useRouter } from "next/navigation";
@@ -227,29 +234,49 @@ const router = useRouter();
                             </TableCell>
                           
                             <TableCell>
-                              
-                                <Dialog open={open} onOpenChange={setOpen}>
-  <DialogTrigger asChild>
-    <Button
+                               <Button
       variant="secondary"
       size="sm"
       onClick={() => {
         setSelectedProblem(problem);
         setOpen(true);
       }}
+      className="cursor-pointer border border-[#e3e3e3] hover:bg-gray-100 hover:text-gray-900 transition-all"
     >
       Add to Playlist
     </Button>
+                              
+                                
+
+
+
+                             
+                            </TableCell>
+                            <TableCell>
+                              <Button asChild size="sm">
+                                <a
+                                  href={`/problem/${problem._id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Solve
+                                </a>
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <Dialog open={open} onOpenChange={setOpen}>
+  <DialogTrigger asChild>
+   
   </DialogTrigger>
 
   <DialogContent
     className="
       bg-white 
-      sm:max-w-lg 
-      rounded-lg 
-      shadow-lg 
-      [&>div[data-radix-dialog-overlay]]:bg-white/70 
-      [&>div[data-radix-dialog-overlay]]:backdrop-blur-sm
+      
     "
   >
     <DialogHeader>
@@ -264,18 +291,21 @@ const router = useRouter();
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label>Select Playlist</Label>
-            <select
-              className="w-full p-2 border rounded-md"
+            <Select
               value={selectedPlaylistId}
-              onChange={(e) => setSelectedPlaylistId(e.target.value)}
+              onValueChange={(val) => setSelectedPlaylistId(val)}
             >
-              <option value="">Select a playlist...</option>
-              {playlists.map((item) => (
-                <option key={item?._id} value={item?._id}>
-                  {item?.title}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full bg-gray-50 shadow-sm border rounded-md px-3 py-2 text-sm cursor-pointer">
+                <SelectValue placeholder="Select a playlist..." />
+              </SelectTrigger>
+              <SelectContent>
+                {playlists.map((item) => (
+                  <SelectItem key={item?._id} value={item?._id}>
+                    {item?.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <Button
             type="button"
@@ -289,9 +319,16 @@ const router = useRouter();
           <Button
             type="button"
             onClick={handleAddToPlaylist}
-            disabled={!selectedPlaylistId}
+            disabled={playlistLoading || !selectedPlaylistId}
           >
-            Add to Playlist
+            {playlistLoading ? (
+              <>
+               
+                Adding...
+              </>
+            ) : (
+              "Add to Playlist"
+            )}
           </Button>
         </DialogFooter>
       </>
@@ -336,36 +373,22 @@ const router = useRouter();
           <Button
             type="button"
             onClick={handleCreatePlaylist}
-            disabled={!newPlaylist.title.trim()}
+            disabled={playlistLoading || !newPlaylist.title.trim()}
           >
-            Create & Add
+            {playlistLoading ? (
+              <>
+               
+                Creating...
+              </>
+            ) : (
+              "Create & Add"
+            )}
           </Button>
         </DialogFooter>
       </>
     )}
   </DialogContent>
 </Dialog>
-
-
-
-                             
-                            </TableCell>
-                            <TableCell>
-                              <Button asChild size="sm">
-                                <a
-                                  href={`/problem/${problem._id}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  Solve
-                                </a>
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
 
                   {/* Mobile & small screen view - card list */}
                   <div className="md:hidden space-y-4">
@@ -414,18 +437,21 @@ const router = useRouter();
                                   <div className="space-y-4 py-4">
                                     <div className="space-y-2">
                                       <Label>Select Playlist</Label>
-                                      <select
-                                        className="w-full p-2 border rounded-md"
+                                      <Select
                                         value={selectedPlaylistId}
-                                        onChange={(e) => setSelectedPlaylistId(e.target.value)}
+                                        onValueChange={(val) => setSelectedPlaylistId(val)}
                                       >
-                                        <option value="">Select a playlist...</option>
-                                        {playlists.map((playlist) => (
-                                          <option key={playlist._id} value={playlist._id}>
-                                            {playlist.title}
-                                          </option>
-                                        ))}
-                                      </select>
+                                        <SelectTrigger className="w-full bg-gray-50 shadow-sm border rounded-md px-3 py-2 text-sm cursor-pointer">
+                                          <SelectValue placeholder="Select a playlist..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {playlists.map((playlist) => (
+                                            <SelectItem key={playlist._id} value={playlist._id}>
+                                              {playlist.title}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
                                     </div>
                                     <Button
                                       type="button"
@@ -439,9 +465,16 @@ const router = useRouter();
                                     <Button
                                       type="button"
                                       onClick={handleAddToPlaylist}
-                                      disabled={!selectedPlaylistId}
+                                      disabled={playlistLoading || !selectedPlaylistId}
                                     >
-                                      Add to Playlist
+                                      {playlistLoading ? (
+                                        <>
+                                          <span className="inline-block animate-spin h-4 w-4 border-b-2 border-current mr-2" />
+                                          Adding...
+                                        </>
+                                      ) : (
+                                        "Add to Playlist"
+                                      )}
                                     </Button>
                                   </DialogFooter>
                                 </>

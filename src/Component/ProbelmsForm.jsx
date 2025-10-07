@@ -180,7 +180,7 @@ export default function ProblemForm({ initialValues, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm p-6 overflow-y-auto">
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-8"

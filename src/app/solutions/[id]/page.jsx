@@ -48,8 +48,8 @@ export default function SolutionPage() {
       <h1 className="text-3xl font-bold tracking-tight">Submission Result</h1>
 
       {/* Verdict Summary */}
-      <Card className="border shadow-sm">
-        <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <Card className="border border-[#e3e3e3]">
+        <CardContent className=" flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="space-y-2">
             <Badge
               variant={isCorrect ? "default" : "destructive"}
@@ -65,21 +65,19 @@ export default function SolutionPage() {
             <Badge variant="outline" className="text-base px-3">
               {passedTestCases} / {totalTestCases} Passed
             </Badge>
-            <Badge variant="secondary" className="text-base px-3">
-              Language: {languageId}
-            </Badge>
+            
           </div>
         </CardContent>
       </Card>
 
       {/* Submitted Code */}
-      <Card className="border shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-2">
+      <Card className="border border-[#e3e3e3]  ">
+        <CardHeader className="flex flex-row items-center ">
           <Code2 className="h-5 w-5 text-muted-foreground" />
           <CardTitle>Submitted Code</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[450px] border rounded-xl">
+          <ScrollArea className="h-[300px] border rounded-xl">
             <SyntaxHighlighter
               language="cpp"
               style={vscDarkPlus}
@@ -101,7 +99,7 @@ export default function SolutionPage() {
               key={test._id}
               className="p-4 border shadow-sm hover:shadow-md transition"
             >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-start">
                 <div>
                   <p className="text-xs uppercase text-muted-foreground mb-1">
                     Input

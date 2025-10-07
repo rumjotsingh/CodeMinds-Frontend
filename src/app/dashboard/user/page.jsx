@@ -19,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { GitHub, Sparkles } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -67,7 +68,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 space-x-1.5 space-y-1.5">
         {loadingDashboard ? (
           <>
             <Skeleton className="h-28 w-full rounded-xl" />
@@ -76,7 +77,7 @@ export default function Dashboard() {
           </>
         ) : (
           <>
-            <Card className="shadow-sm hover:shadow-md transition">
+            <Card className="">
               <CardHeader>
                 <CardTitle>Total Solved</CardTitle>
               </CardHeader>
@@ -87,7 +88,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm hover:shadow-md transition">
+            <Card className="">
               <CardHeader>
                 <CardTitle>Total Submissions</CardTitle>
               </CardHeader>
@@ -98,7 +99,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm hover:shadow-md transition">
+            <Card className="">
               <CardHeader>
                 <CardTitle>Correct</CardTitle>
               </CardHeader>
@@ -108,12 +109,27 @@ export default function Dashboard() {
                 </p>
               </CardContent>
             </Card>
+            {/* Streak card */}
+            <Card className="">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Sparkles className="size-5 text-yellow-500" /> Streak
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-orange-600">{streakDays} days</p>
+                <p className="text-sm text-muted-foreground mt-2">Keep the streak going — solve at least one problem every day.</p>
+              </CardContent>
+            </Card>
+
+            {/* GitHub card (light placeholder) */}
+         
           </>
         )}
       </div>
 
       {/* Calendar Heatmap */}
-      <div className="p-4 md:p-6">
+      <div className=" max-w-7xl">
         <h2 className="text-xl font-semibold mb-4">Activity</h2>
         {loadingStreaks ? (
           <Skeleton className="h-[150px] w-full rounded-xl" />
@@ -123,7 +139,7 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Submissions */}
-      <div className="bg-white rounded-xl shadow p-4 md:p-6">
+      <div className="bg-white  max-w-7xl ">
         <h2 className="text-xl font-semibold mb-4">Recent Submissions</h2>
         {loadingDashboard ? (
           <div className="space-y-3">
