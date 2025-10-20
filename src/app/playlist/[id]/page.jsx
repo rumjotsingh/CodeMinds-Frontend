@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useParams, useRouter } from "next/navigation";
@@ -62,24 +62,24 @@ const PlaylistPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto py-10 space-y-8 min-h-screen bg-white px-8">
-        <Skeleton className="h-12 w-1/3" />
-        <Skeleton className="h-8 w-2/3" />
-        <Separator className="border-[#e3e3e3]" />
-        <Skeleton className="h-10 w-48" />
-        <div className="rounded-xl border border-[#e3e3e3] shadow-sm bg-white overflow-hidden">
+      <div className="max-w-6xl mx-auto py-10 space-y-8 min-h-screen bg-background px-4 sm:px-8 text-foreground">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-6 w-2/3" />
+        <Separator className="border-border" />
+        <Skeleton className="h-9 w-40" />
+        <Card className="rounded-xl border border-border shadow-sm bg-card overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-[#e3e3e3] bg-gray-50">
-                <TableHead className="w-[220px] font-bold text-black px-6 py-4">Title</TableHead>
-                <TableHead className="font-bold text-black px-6 py-4">Tags</TableHead>
-                <TableHead className="font-bold text-black px-6 py-4">Difficulty</TableHead>
-                <TableHead className="text-center font-bold text-black px-6 py-4">Actions</TableHead>
+              <TableRow className="border-b border-border bg-muted">
+                <TableHead className="w-[220px] font-semibold px-6 py-4">Title</TableHead>
+                <TableHead className="font-semibold px-6 py-4">Tags</TableHead>
+                <TableHead className="font-semibold px-6 py-4">Difficulty</TableHead>
+                <TableHead className="text-center font-semibold px-6 py-4">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {[...Array(3)].map((_, i) => (
-                <TableRow key={i} className="border-b border-[#e3e3e3] last:border-b-0">
+                <TableRow key={i} className="border-b border-border last:border-b-0">
                   <TableCell className="px-6 py-5">
                     <Skeleton className="h-6 w-40" />
                   </TableCell>
@@ -97,19 +97,20 @@ const PlaylistPage = () => {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </Card>
       </div>
     );
   }
 
   if (!currentPlaylist) {
     return (
-      <div className="flex justify-center items-center h-[60vh] bg-white">
+      <div className="flex justify-center items-center h-[60vh] bg-background text-foreground">
         <div className="text-center space-y-4">
-          <p className="text-gray-600 text-xl">Playlist not found</p>
+          <p className="text-muted-foreground text-lg">Playlist not found</p>
           <Button 
             onClick={() => router.push('/playlist')}
-            className="bg-black text-white hover:bg-gray-800 border border-[#e3e3e3]"
+            variant="outline"
+            className="border border-border"
           >
             Back to Playlists
           </Button>
@@ -119,80 +120,83 @@ const PlaylistPage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-10 space-y-8 min-h-screen bg-white px-8">
+    <div className="max-w-6xl mx-auto py-8 space-y-6 min-h-screen bg-background px-4 sm:px-8 text-foreground">
       {/* Playlist Info */}
-      <Card className="shadow-lg border border-[#e3e3e3] bg-white">
-        <CardHeader className="pb-8">
-          <CardTitle className="text-3xl font-bold text-black mb-4">
+      <Card className="shadow-sm border border-border bg-card">
+        <CardHeader className="pb-6">
+          <CardTitle className="text-2xl font-bold mb-2">
             {currentPlaylist?.title}
           </CardTitle>
-          <p className="text-gray-600 text-lg leading-relaxed">
-            {currentPlaylist?.description}
-          </p>
-          <div className="mt-4 flex items-center gap-4">
-            <div className="bg-gray-50 px-4 py-2 rounded-lg border border-[#e3e3e3]">
-              <span className="text-sm font-semibold text-black">
-                {currentPlaylist?.problems?.length || 0} Problem{(currentPlaylist?.problems?.length || 0) !== 1 ? 's' : ''}
-              </span>
+          <CardContent className="p-0">
+            <p className="text-muted-foreground">
+              {currentPlaylist?.description}
+            </p>
+            <div className="mt-4 flex items-center gap-4">
+              <div className="px-3 py-1.5 rounded-md border border-border bg-muted">
+                <span className="text-xs font-medium">
+                  {currentPlaylist?.problems?.length || 0} Problem{(currentPlaylist?.problems?.length || 0) !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <Button
+                onClick={() => router.push('/playlist')}
+                variant="outline"
+                className="border border-border"
+              >
+                ← Back to Playlists
+              </Button>
             </div>
-            <Button
-              onClick={() => router.push('/playlist')}
-              variant="outline"
-              className="border border-[#e3e3e3] text-black hover:bg-gray-50"
-            >
-              ← Back to Playlists
-            </Button>
-          </div>
+          </CardContent>
         </CardHeader>
       </Card>
 
-      <Separator className="border-[#e3e3e3]" />
+      <Separator className="border-border" />
 
       {/* Problems List */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-black">
+            <h2 className="text-xl sm:text-2xl font-bold">
               Problems in this Playlist
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-muted-foreground mt-1 text-sm">
               {currentPlaylist?.problems?.length || 0} problem{(currentPlaylist?.problems?.length || 0) !== 1 ? 's' : ''} total
             </p>
           </div>
           <Button
             onClick={() => router.push('/problem')}
-            className="bg-black text-white hover:bg-gray-800 border border-[#e3e3e3] shadow-sm"
+            className="shadow-sm"
           >
             Add More Problems
           </Button>
         </div>
-        {currentPlaylist?.problems?.length === 0 ? (
-          <div className="text-center py-16 bg-gray-50 rounded-xl border border-[#e3e3e3]">
-            <div className="max-w-md mx-auto">
-              <div className="text-6xl mb-4">📚</div>
-              <h3 className="text-xl font-semibold text-black mb-2">No problems in this playlist yet</h3>
-              <p className="text-gray-600 mb-6">Start building your collection by adding some coding problems to practice.</p>
+  {!currentPlaylist?.problems?.length ? (
+          <Card className="text-center py-12 bg-card rounded-xl border border-border">
+            <CardContent className="max-w-md mx-auto">
+              <div className="text-5xl mb-4">📚</div>
+              <h3 className="text-lg font-semibold mb-2">No problems in this playlist yet</h3>
+              <p className="text-muted-foreground mb-6">Start building your collection by adding some coding problems to practice.</p>
               <Button
                 onClick={() => router.push('/problem')}
-                className="bg-black text-white hover:bg-gray-800 px-6 py-3"
+                className="px-6"
               >
                 Browse Problems to Add
               </Button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="rounded-xl border border-[#e3e3e3] shadow-sm bg-white overflow-hidden">
+          <>
+          <Card className="hidden md:block rounded-xl border border-border shadow-sm bg-card overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="border-b border-[#e3e3e3] bg-gray-50">
-                  <TableHead className="w-[250px] font-bold text-black px-6 py-4">Problem Title</TableHead>
-                  <TableHead className="font-bold text-black px-6 py-4">Tags</TableHead>
-                  <TableHead className="font-bold text-black px-6 py-4">Difficulty</TableHead>
-                  <TableHead className="text-center font-bold text-black px-6 py-4">Actions</TableHead>
+                <TableRow className="border-b border-border bg-muted">
+                  <TableHead className="w-[250px] font-semibold px-6 py-4">Problem Title</TableHead>
+                  <TableHead className="font-semibold px-6 py-4">Tags</TableHead>
+                  <TableHead className="font-semibold px-6 py-4">Difficulty</TableHead>
+                  <TableHead className="text-center font-semibold px-6 py-4">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentPlaylist?.problems.map((play) => {
+                {(currentPlaylist?.problems ?? []).map((play) => {
                   const getDifficultyColor = (difficulty) => {
                     switch (difficulty) {
                       case "EASY":
@@ -207,19 +211,19 @@ const PlaylistPage = () => {
                   };
                   
                   return (
-                    <TableRow key={play._id} className="hover:bg-gray-50 border-b border-[#e3e3e3] last:border-b-0">
-                      <TableCell className="font-semibold text-black px-6 py-5">{play.title}</TableCell>
+                    <TableRow key={play._id} className="hover:bg-muted border-b border-border last:border-b-0">
+                      <TableCell className="font-semibold px-6 py-5">{play.title}</TableCell>
                       <TableCell className="px-6 py-5">
                         <div className="flex flex-wrap gap-2">
                           {play?.tags?.slice(0, 3)?.map((tag) => (
-                            <Badge key={tag} variant="outline" className="border-[#e3e3e3] text-gray-700">
+                            <Badge key={tag} variant="secondary" className="border border-border">
                               {tag}
                             </Badge>
                           ))}
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-5">
-                        <Badge className={`${getDifficultyColor(play.difficulty)} border font-medium`}>
+                        <Badge variant={play.difficulty === 'EASY' ? 'success' : play.difficulty === 'MEDIUM' ? 'warning' : 'destructive'} className="border font-medium">
                           {play.difficulty}
                         </Badge>
                       </TableCell>
@@ -228,7 +232,7 @@ const PlaylistPage = () => {
                           <Button
                             size="sm"
                             onClick={() => router.push(`/problem/${play._id}`)}
-                            className="bg-black text-white hover:bg-gray-800 shadow-sm"
+                            className="shadow-sm"
                           >
                             Solve
                           </Button>
@@ -244,18 +248,18 @@ const PlaylistPage = () => {
                                 Remove
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="border border-[#e3e3e3] shadow-lg">
+                            <AlertDialogContent className="border border-border shadow-lg">
                               <AlertDialogHeader>
-                                <AlertDialogTitle className="text-xl font-bold text-black">
+                                <AlertDialogTitle className="text-xl font-bold">
                                   Remove Problem from Playlist?
                                 </AlertDialogTitle>
-                                <AlertDialogDescription className="text-gray-600 text-base">
+                                <AlertDialogDescription className="text-muted-foreground text-base">
                                   This action cannot be undone. The problem will be
-                                  removed from <strong className="text-black">{currentPlaylist.title}</strong>.
+                                  removed from <strong>{currentPlaylist.title}</strong>.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel className="border border-[#e3e3e3] text-black hover:bg-gray-50">
+                                <AlertDialogCancel className="border border-border hover:bg-muted">
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction
@@ -281,7 +285,70 @@ const PlaylistPage = () => {
                 })}
               </TableBody>
             </Table>
+          </Card>
+
+          {/* Mobile View */}
+          <div className="md:hidden space-y-3">
+            {(currentPlaylist?.problems ?? []).map((play) => (
+              <Card key={play._id} className="border border-border bg-card shadow-sm">
+                <CardContent className="p-4 space-y-3">
+                  <div>
+                    <h3 className="font-semibold text-base mb-1">{play.title}</h3>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {play?.tags?.slice(0, 3)?.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant={play.difficulty === 'EASY' ? 'success' : play.difficulty === 'MEDIUM' ? 'warning' : 'destructive'} className="text-xs">
+                      {play.difficulty}
+                    </Badge>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => router.push(`/problem/${play._id}`)}
+                    >
+                      Solve
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="destructive" className="flex-1">
+                          Remove
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="border border-border shadow-lg">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-lg font-bold">
+                            Remove Problem?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="text-muted-foreground text-sm">
+                            Remove <strong>{play.title}</strong> from <strong>{currentPlaylist.title}</strong>?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="border border-border">
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleRemoveProblem(play._id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            {loading ? "Removing..." : "Yes, Remove"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
+          </>
         )}
       </div>
     </div>

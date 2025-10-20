@@ -1,14 +1,24 @@
 import { useDispatch, useSelector } from "react-redux";
 import { fetchComments, postComment } from "../redux/slices/commentsSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 export default function CommentSection({ problemId }) {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { comments, loading, error } = useSelector((state) => state.comments);
-  const { user } = useSelector((state) => state.auth); // assuming you have user auth state
+  const { user } = useSelector((state) => state.auth);
 
   const [newComment, setNewComment] = useState("");
+
+  const charCount = useMemo(() => newComment.trim().length, [newComment]);
+  const canPost = !!user && charCount > 0 && !loading;
 
   useEffect(() => {
     if (problemId) {
@@ -18,44 +28,68 @@ export default function CommentSection({ problemId }) {
 
   const handlePost = async () => {
     if (!newComment.trim()) return;
-
     try {
       await dispatch(postComment({ problemId, content: newComment })).unwrap();
       setNewComment("");
-      toast("Created new Comment")
-      dispatch(fetchComments(problemId)); // re-fetch after successful post
+      toast("Comment posted");
+      dispatch(fetchComments(problemId));
     } catch (err) {
+      toast("Failed to post comment");
       console.error("Failed to post comment:", err);
     }
   };
 
+  const onKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && canPost) {
+      e.preventDefault();
+      handlePost();
+    }
+  };
+
   return (
-    <div className=" max-w-2xl mx-auto ">
-      <h3 className="text-2xl font-semibold mb-4">Comments</h3>
+    <Card className="bg-card border border-border shadow-sm text-foreground rounded-md">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base sm:text-lg font-semibold">Discussion</h3>
+          {typeof comments?.length === "number" && (
+            <span className="text-xs sm:text-sm text-muted-foreground">{comments.length} comments</span>
+          )}
+        </div>
 
-      {/* Loading & error state */}
-  
+        {error && (
+          <div className="text-xs sm:text-sm text-destructive border border-destructive/30 bg-destructive/10 rounded px-3 py-2">
+            {String(error)}
+          </div>
+        )}
 
-      {/* Comment list */}
-      
+       
 
-      {/* Add new comment */}
-      <div>
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          className="w-full p-3 border rounded resize-none focus:outline-none focus:ring focus:border-blue-300"
-          rows="3"
-          placeholder="Write a comment..."
-        />
-        <button
-          onClick={handlePost}
-          disabled={!newComment.trim() || loading}
-          className="mt-2 px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? "Posting..." : "Post Comment"}
-        </button>
-      </div>
-    </div>
+        <div className="space-y-2">
+          <Label htmlFor="new-comment" className="text-xs sm:text-sm text-muted-foreground">
+            Add a comment
+          </Label>
+          <Textarea
+            id="new-comment"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={onKeyDown}
+            className="bg-input text-foreground border border-border min-h-[96px]"
+            placeholder={user ? "Write a comment... (Ctrl/Cmd + Enter to post)" : "Sign in to write a comment"}
+            disabled={!user || loading}
+          />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">{charCount}/1000</span>
+            <div className="flex gap-2">
+              {!user && (
+                <Button variant="outline" size="sm" onClick={() => router.push("/login")}>Sign in</Button>
+              )}
+              <Button size="sm" onClick={handlePost} disabled={!canPost}>
+                {loading ? "Posting..." : "Post"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

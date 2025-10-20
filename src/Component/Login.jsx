@@ -80,6 +80,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Email Field */}
             <Input
+               className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               type="email"
               placeholder="Email"
               {...register('email', { required: 'Email is required' })}
@@ -93,12 +94,14 @@ export default function LoginPage() {
               <Input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
+                 className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 {...register('password', { required: 'Password is required' })}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800"
+                className="absolute right-3 top-2.5 text-gray-500 "
+                
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>

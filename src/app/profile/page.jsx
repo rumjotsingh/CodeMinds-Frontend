@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import {
   getUserProfile,
   updateUserProfile,
+  getUserStats,
 } from "../../redux/slices/authSlice";
 import { toast } from "sonner";
 import { fetchDashboard } from "./../../redux/slices/DashbordSlice";
@@ -24,7 +25,7 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
-  const { profile, loading, error } = useSelector((state) => state.auth);
+  const { profile, loading, error, stats } = useSelector((state) => state.auth);
   const dashboard = useSelector((state) => state.dashboard.data);
 
   const {
@@ -42,6 +43,7 @@ const ProfilePage = () => {
   useEffect(() => {
     dispatch(fetchDashboard());
     dispatch(getUserProfile());
+    dispatch(getUserStats());
   }, [dispatch]);
 
   useEffect(() => {
@@ -66,10 +68,9 @@ const ProfilePage = () => {
   /** ---------- SKELETON LOADER ---------- */
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10 bg-background text-foreground">
         {/* Header Skeleton */}
         <div>
-        
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-32" />
         </div>
@@ -83,16 +84,35 @@ const ProfilePage = () => {
         </section>
 
         {/* Stats Skeleton */}
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center"
-            >
-              <Skeleton className="h-10 w-20 mx-auto mb-2" />
-              <Skeleton className="h-5 w-24 mx-auto" />
-            </div>
-          ))}
+        <section className="space-y-4">
+          <Skeleton className="h-6 w-40" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-muted border border-border rounded-lg p-4 text-center"
+              >
+                <Skeleton className="h-10 w-16 mx-auto mb-2" />
+                <Skeleton className="h-4 w-20 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Dashboard Stats Skeleton */}
+        <section className="space-y-4">
+          <Skeleton className="h-6 w-40" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-muted border border-border rounded-lg p-6 text-center"
+              >
+                <Skeleton className="h-10 w-20 mx-auto mb-2" />
+                <Skeleton className="h-5 w-24 mx-auto" />
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     );
@@ -101,58 +121,103 @@ const ProfilePage = () => {
   /** ---------- ERROR ---------- */
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <p className="text-red-600 text-center text-lg">Error: {error}</p>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-card rounded-xl shadow-sm border border-border">
+        <p className="text-destructive text-center text-lg">Error: {error}</p>
       </div>
     );
   }
 
   /** ---------- MAIN CONTENT ---------- */
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 bg-background text-foreground">
       {/* User Information */}
       <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 border-b border-yellow-400 pb-2">
+        <h2 className="text-xl font-semibold mb-4 border-b border-primary pb-2 text-primary">
           User Information
         </h2>
-        <p className="text-gray-700 mb-2">
+        <p className="text-muted-foreground mb-2">
           <span className="font-medium">Email:</span> {profile?.email || "N/A"}
         </p>
-        <p className="text-gray-700 mb-2">
+        <p className="text-muted-foreground mb-2">
           <span className="font-medium">Name:</span> {profile?.name || "N/A"}
         </p>
         <Button
           variant="outline"
           onClick={() => setOpen(true)}
-          className="mt-3"
+          className="mt-3 border-border text-foreground hover:bg-muted"
         >
           Edit Profile
         </Button>
       </section>
 
       {/* Account Stats */}
-      <section>
-        <h2 className="text-xl font-semibold mb-6 border-b border-yellow-400 pb-2">
+      <section className="mb-12">
+        <h2 className="text-xl font-semibold mb-6 border-b border-primary pb-2 text-primary">
           Account Stats
         </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-primary">
+              {stats?.totalSolved || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Total Solved</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-green-600 dark:text-green-500">
+              {stats?.easy || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Easy</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-yellow-600 dark:text-yellow-500">
+              {stats?.medium || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Medium</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-red-600 dark:text-red-500">
+              {stats?.hard || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Hard</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-primary">
+              {stats?.totalAttempts || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Attempts</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-orange-600 dark:text-orange-500">
+              {stats?.streak || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Streak 🔥</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Stats */}
+      <section>
+        <h2 className="text-xl font-semibold mb-6 border-b border-primary pb-2 text-primary">
+          Submission Stats
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <p className="text-3xl font-bold mb-1">
+          <div className="bg-muted border border-border rounded-lg p-6 text-center">
+            <p className="text-3xl font-bold mb-1 text-primary">
               {dashboard?.totalProblemsSolved || 0}
             </p>
-            <p className="font-medium">Total Solved</p>
+            <p className="font-medium text-muted-foreground">Problems Solved</p>
           </div>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <p className="text-3xl font-bold mb-1">
+          <div className="bg-muted border border-border rounded-lg p-6 text-center">
+            <p className="text-3xl font-bold mb-1 text-primary">
               {dashboard?.totalSubmissions || 0}
             </p>
-            <p className="font-medium">Total Submissions</p>
+            <p className="font-medium text-muted-foreground">Total Submissions</p>
           </div>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <p className="text-3xl font-bold mb-1">
+          <div className="bg-muted border border-border rounded-lg p-6 text-center">
+            <p className="text-3xl font-bold mb-1 text-primary">
               {dashboard?.totalCorrect || 0}
             </p>
-            <p className="font-medium">Correct</p>
+            <p className="font-medium text-muted-foreground">Correct</p>
           </div>
         </div>
       </section>
@@ -160,9 +225,9 @@ const ProfilePage = () => {
       {/* Edit Profile Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild></DialogTrigger>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg bg-card text-foreground border border-border">
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogTitle className="text-primary">Edit Profile</DialogTitle>
           </DialogHeader>
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -172,24 +237,25 @@ const ProfilePage = () => {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium mb-1"
+                className="block text-sm font-medium mb-1 text-primary"
               >
-                Name <span className="text-red-500">*</span>
+                Name <span className="text-destructive">*</span>
               </label>
               <Input
                 id="name"
                 type="text"
                 placeholder="Your full name"
                 {...register("name", { required: "Name is required" })}
+                className="bg-input text-foreground border border-border"
               />
             </div>
 
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium mb-1"
+                className="block text-sm font-medium mb-1 text-primary"
               >
-                Email <span className="text-red-500">*</span>
+                Email <span className="text-destructive">*</span>
               </label>
               <Input
                 id="email"
@@ -202,10 +268,11 @@ const ProfilePage = () => {
                     message: "Invalid email address",
                   },
                 })}
+                className="bg-input text-foreground border border-border"
               />
             </div>
 
-            <Button type="submit" disabled={isSubmitting} className="mt-2">
+            <Button type="submit" disabled={isSubmitting} className="mt-2 bg-primary text-primary-foreground">
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </form>

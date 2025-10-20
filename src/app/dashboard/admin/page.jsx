@@ -24,42 +24,39 @@ export default function AdminPanel() {
     }
   };
 
-  const currentTab = getTabInfo();
-
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 to-white flex flex-col  scrollbar-hide">
+    <div className="h-screen bg-background flex flex-col scrollbar-hide text-foreground">
       {/* Enhanced Header with Tab Navigation */}
-      <header className="bg-white border-b border-[#e3e3e3] shadow-sm flex-shrink-0">
+      <header className="bg-card border-b border-border shadow-sm flex-shrink-0">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center border border-[#e3e3e3]">
+              <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center border border-border">
                 <span className="text-2xl">{currentTab.icon}</span>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-black">{currentTab.title}</h1>
-                <p className="text-gray-600 mt-1">{currentTab.subtitle}</p>
+                <h1 className="text-3xl font-bold text-primary">{currentTab.title}</h1>
+                <p className="text-muted-foreground mt-1">{currentTab.subtitle}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-[#e3e3e3]">
+              <div className="w-10 h-10 bg-card rounded-xl flex items-center justify-center border border-border">
                 <span className="text-xl">⚡</span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-black">Admin Panel</p>
-                <p className="text-xs text-gray-500">Management Dashboard</p>
+                <p className="text-sm font-semibold text-primary">Admin Panel</p>
+                <p className="text-xs text-muted-foreground">Management Dashboard</p>
               </div>
             </div>
           </div>
-          
           {/* Tab Navigation */}
           <nav className="flex space-x-2">
             <button
               onClick={() => setTab("problems")}
               className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all border ${
                 tab === "problems" 
-                  ? "bg-black text-white shadow-lg border-[#e3e3e3]" 
-                  : "text-gray-700 hover:bg-gray-50 border-[#e3e3e3] hover:shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-lg border-border" 
+                  : "text-foreground hover:bg-muted border-border hover:shadow-sm"
               }`}
             >
               <span className="mr-3 text-lg">💻</span>
@@ -69,8 +66,8 @@ export default function AdminPanel() {
               onClick={() => setTab("contests")}
               className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all border ${
                 tab === "contests" 
-                  ? "bg-black text-white shadow-lg border-[#e3e3e3]" 
-                  : "text-gray-700 hover:bg-gray-50 border-[#e3e3e3] hover:shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-lg border-border" 
+                  : "text-foreground hover:bg-muted border-border hover:shadow-sm"
               }`}
             >
               <span className="mr-3 text-lg">🏆</span>
@@ -80,8 +77,8 @@ export default function AdminPanel() {
               onClick={() => setTab("announcements")}
               className={`flex items-center px-6 py-3 rounded-xl font-medium transition-all border ${
                 tab === "announcements" 
-                  ? "bg-black text-white shadow-lg border-[#e3e3e3]" 
-                  : "text-gray-700 hover:bg-gray-50 border-[#e3e3e3] hover:shadow-sm"
+                  ? "bg-primary text-primary-foreground shadow-lg border-border" 
+                  : "text-foreground hover:bg-muted border-border hover:shadow-sm"
               }`}
             >
               <span className="mr-3 text-lg">📢</span>
@@ -92,10 +89,10 @@ export default function AdminPanel() {
       </header>
 
       {/* Content Area - Fixed Height, Scrollable Content */}
-      <div className="flex-1 overflow-hidden bg-gray-50">
+      <div className="flex-1 overflow-hidden bg-muted">
         <div className="h-full overflow-auto p-8">
           <div className="w-full">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#e3e3e3] min-h-[600px] p-8 w-full">
+            <div className="bg-card rounded-2xl shadow-sm border border-border min-h-[600px] p-8 w-full text-foreground">
               {tab === "problems" && <ProblemsManager />}
               {tab === "contests" && <ContestManager />}
               {tab === "announcements" && <AnnouncementsManager />}
@@ -103,6 +100,7 @@ export default function AdminPanel() {
           </div>
         </div>
       </div>
+  );
     </div>
   );
 }

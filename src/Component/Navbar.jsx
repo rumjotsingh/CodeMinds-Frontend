@@ -6,6 +6,7 @@ import { useAuth } from "../context/authContext";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -13,6 +14,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const commonNavItems = [
+     { label: "Leaderboard", href: "/leaderboard" },
     { label: "Problems", href: "/problem" },
    
   ];
@@ -23,12 +25,13 @@ export default function Navbar() {
   ];
 
   const authNavItems = [
+    { label: "Profile", href: "/profile" },
+    { label: "Playlists", href: "/playlist" },
     {
       label: "Dashboard",
       href: user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user",
     },
-    { label: "Profile", href: "/profile" },
-    { label: "Playlists", href: "/playlist" },
+    
   ];
 
   const navItems = isAuthenticated
@@ -46,8 +49,10 @@ export default function Navbar() {
       key={item.href}
       href={item.href}
       onClick={() => setIsOpen(false)}
-      className={`block px-4 py-2 text-lg md:text-base hover:text-yellow-400 ${
-        pathname === item.href ? "text-yellow-400 font-semibold" : ""
+      className={`block px-4 py-2 text-base font-medium transition-colors rounded-xl ${
+        pathname === item.href 
+          ? "text-[#6366F1] dark:text-[#818CF8] bg-[#EEF2FF] dark:bg-[#312E81] font-semibold" 
+          : "text-[#111827] dark:text-[#E2E8F0] hover:text-[#6366F1] dark:hover:text-[#818CF8] hover:bg-[#F3F4F6] dark:hover:bg-[#1E293B]"
       }`}
     >
       {item.label}
@@ -55,63 +60,71 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-gray-900  mx-auto text-white shadow-md px-6 py-4">
-      <div className="flex justify-between items-center max-w-7xl mx-auto">
-        {/* Logo */}
-        <div className="text-xl font-bold tracking-tight text-yellow-400">
-          <Link
-            href="/"
-            className={`hover:text-yellow-400 ${
-              pathname === "/" ? "text-yellow-400 font-semibold" : ""
-            }`}
-          >
-            CodeMinds
-          </Link>
-        </div>
-
-        {/* Desktop nav */}
-        <div className="hidden md:flex gap-8 items-center">
-          {navItems.map(renderNavLink)}
-          {isAuthenticated && (
-            <button
-              onClick={handleLogout}
-              className="hover:text-yellow-300 font-semibold cursor-pointer"
+    <nav className="bg-white dark:bg-[#1E293B] shadow-md border-b border-[#CBD5E1] dark:border-[#334155] sticky top-0 z-50 backdrop-blur-lg bg-opacity-90 dark:bg-opacity-90 transition-colors">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="text-xl font-bold tracking-tight">
+            <Link
+              href="/"
+              className="flex items-center space-x-2 text-[#6366F1] dark:text-[#818CF8] hover:text-[#4F46E5] dark:hover:text-[#6366F1] transition-colors"
             >
-              Logout
-            </button>
-          )}
-        </div>
-
-        {/* Hamburger button */}
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile slide-in nav */}
-      {isOpen && (
-        <div className="md:hidden fixed top-0 right-0 w-64 h-full bg-gray-800 text-white shadow-lg z-50 transition-transform duration-300 ease-in-out transform translate-x-0">
-          <div className="flex justify-between items-center px-4 py-4 border-b border-gray-700">
-            <span className="text-yellow-400 font-bold text-lg">Menu</span>
-            <button onClick={() => setIsOpen(false)}>
-              <X size={24} />
-            </button>
+              <span>CodeMinds</span>
+            </Link>
           </div>
-          <div className="flex flex-col px-2 py-4 space-y-2">
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex gap-2 items-center">
             {navItems.map(renderNavLink)}
             {isAuthenticated && (
               <button
                 onClick={handleLogout}
-                className="text-left px-4 py-2 text-lg hover:text-yellow-300"
+                className="px-4 py-2 text-base font-medium text-[#111827] dark:text-[#E2E8F0] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
               >
                 Logout
               </button>
             )}
+            <ThemeToggle />
+          </div>
+
+          {/* Mobile menu button and theme toggle */}
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button 
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-xl hover:bg-[#F3F4F6] dark:hover:bg-[#334155] transition-colors"
+            >
+              {isOpen ? <X size={24} className="text-[#111827] dark:text-[#E2E8F0]" /> : <Menu size={24} className="text-[#111827] dark:text-[#E2E8F0]" />}
+            </button>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Mobile slide-in nav */}
+        {isOpen && (
+          <div className="md:hidden fixed top-0 right-0 w-64 h-[100vh]  bg-white dark:bg-[#1E293B] shadow-2xl z-50 animate-slide-in border-l border-[#CBD5E1] dark:border-[#334155]">
+            <div className="flex justify-between items-center px-4 py-4 border-b border-[#CBD5E1] dark:border-[#334155]">
+              <span className="text-[#6366F1] dark:text-[#818CF8] font-bold text-lg">Menu</span>
+              <button 
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-xl hover:bg-[#F3F4F6] dark:hover:bg-[#334155] transition-colors"
+              >
+                <X size={24} className="text-[#111827] dark:text-[#E2E8F0]" />
+              </button>
+            </div>
+            <div className="flex flex-col px-2 py-4 space-y-2">
+              {navItems.map(renderNavLink)}
+              {isAuthenticated && (
+                <button
+                  onClick={handleLogout}
+                  className="text-left px-4 py-2 text-base font-medium text-[#111827] dark:text-[#E2E8F0] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                >
+                  Logout
+                </button>
+              )}
+            </div>
+          </div>
+        )}
     </nav>
   );
 }

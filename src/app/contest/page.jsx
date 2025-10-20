@@ -31,21 +31,21 @@ const Contest = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-12 px-4 bg-background text-foreground">
       <div className="max-w-4xl mx-auto">
         <header className="mb-10 flex flex-col md:flex-row items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">Contests</h1>
-            <p className="text-gray-500 text-lg">
+            <h1 className="text-4xl font-bold text-primary mb-2">Contests</h1>
+            <p className="text-muted-foreground text-lg">
               Browse upcoming and ongoing programming contests.
             </p>
           </div>
-          <Badge className="mt-4 md:mt-0 text-base px-4 py-2 bg-blue-600 text-white">
+          <Badge className="mt-4 md:mt-0 text-base px-4 py-2 bg-primary text-primary-foreground">
             {contests?.length ?? 0} Contest{contests?.length !== 1 ? 's' : ''}
           </Badge>
         </header>
         {contests?.length === 0 ? (
-          <div className="text-center text-gray-500 py-20 text-xl">
+          <div className="text-center text-muted-foreground py-20 text-xl">
             No contests available.
           </div>
         ) : (
@@ -54,7 +54,7 @@ const Contest = () => {
               const status = getContestStatus(contest.startTime, contest.endTime);
 
               return (
-                <Card key={index} className="hover:shadow-xl transition-shadow bg-white">
+                <Card key={index} className="hover:shadow-lg transition-shadow bg-card border border-border text-foreground">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <span>{contest.title}</span>
@@ -64,18 +64,18 @@ const Contest = () => {
                             ? 'bg-green-100 text-green-700'
                             : status === 'Ongoing'
                               ? 'bg-blue-100 text-blue-700'
-                              : 'bg-gray-300 text-gray-600'
+                              : 'bg-muted text-muted-foreground'
                         }
                       >
                         {status}
                       </Badge>
                     </CardTitle>
-                    <CardDescription className="mt-2 text-gray-600">
+                    <CardDescription className="mt-2 text-muted-foreground">
                       {contest.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-sm text-gray-500 mb-2">
+                    <div className="text-sm text-muted-foreground mb-2">
                       <span className="mr-4">
                         <strong>Start:</strong> {new Date(contest.startTime).toLocaleString()}
                       </span>
@@ -84,14 +84,14 @@ const Contest = () => {
                       </span>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-700 mb-2 mt-3">Problems</h4>
+                      <h4 className="font-semibold text-primary mb-2 mt-3">Problems</h4>
                       <ul className="space-y-2">
                         {contest.problems.map((problem, idx) => (
                           <li
                             key={idx}
-                            className="rounded bg-slate-50 px-3 py-1 flex justify-between items-center hover:bg-blue-50 transition cursor-pointer"
+                            className="rounded bg-muted px-3 py-1 flex justify-between items-center hover:bg-primary/10 transition cursor-pointer"
                           >
-                            <span className="font-medium text-gray-800">
+                            <span className="font-medium text-foreground">
                               {problem.title}
                             </span>
                             {problem.difficulty && (
@@ -114,6 +114,7 @@ const Contest = () => {
                       <Button
                         disabled={status !== 'Ongoing'}
                         variant={status === 'Ongoing' ? 'default' : 'outline'}
+                        className={status === 'Ongoing' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground border-border'}
                       >
                         {status === 'Upcoming'
                           ? 'Not Started Yet'

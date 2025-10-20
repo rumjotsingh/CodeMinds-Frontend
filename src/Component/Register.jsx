@@ -66,7 +66,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center  px-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <h1 className="text-2xl font-bold text-center">Register</h1>
@@ -75,23 +75,26 @@ export default function RegisterForm() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="name">Name</Label>
-              <Input {...register("name")} id="name" />
+              <Input 
+          className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+         {...register("name")} id="name" />
               {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
             </div>
 
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input type="email" {...register("email")} id="email" />
+              <Input   className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary" type="email" {...register("email")} id="email" />
               {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
             </div>
 
             <div className="relative">
               <Label htmlFor="password">Password</Label>
               <Input
+                className="w-full pr-10 rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 id="password"
-                className="pr-10"
+                
               />
               <button
                 type="button"

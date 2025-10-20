@@ -9,6 +9,7 @@ import commentsReducer from "../redux/slices/commentsSlice";
 import submissionsReducer from "../redux/slices/submissionSlice";
 import announcementReducer from "../redux/slices/announcementSlice";
 import contestReducer from "../redux/slices/contestSlice";
+import leaderboardReducer from "../redux/slices/leaderboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -21,5 +22,6 @@ export const store = configureStore({
     submissions: submissionsReducer,
     announcement: announcementReducer,
     contest: contestReducer,
+    leaderboard: leaderboardReducer,
   },
 });

@@ -9,6 +9,7 @@ const initialState = {
   streaks: {}, // date: count format
   loading: false,
   profile: null,
+  stats: null, // User statistics
   error: null,
 };
 
@@ -129,6 +130,21 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+// Get User Stats
+export const getUserStats = createAsyncThunk(
+  "auth/getUserStats",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get("/api/v1/user/stats");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch stats"
+      );
+    }
+  }
+);
+
 // ========== Slice ==========
 
 const authSlice = createSlice({
@@ -139,6 +155,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.streaks = {};
+      state.stats = null;
       localStorage.removeItem("user");
       localStorage.removeItem("token");
     },
@@ -252,6 +269,21 @@ const authSlice = createSlice({
         state.error = action.payload;
         state.user = null;
         state.token = null;
+      });
+
+    // Get User Stats
+    builder
+      .addCase(getUserStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.stats = action.payload;
+      })
+      .addCase(getUserStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

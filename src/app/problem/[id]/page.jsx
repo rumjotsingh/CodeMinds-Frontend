@@ -185,7 +185,7 @@ export default function ProblemDetailsPage() {
 
   if (status === "failed")
     return (
-      <div className="p-4 md:p-8 text-destructive text-base md:text-lg flex items-center h-full justify-center">
+      <div className="p-4 md:p-8 text-destructive text-base md:text-lg flex items-center h-full justify-center bg-card rounded-xl shadow-sm border border-border">
         {error}
       </div>
     );
@@ -239,15 +239,15 @@ export default function ProblemDetailsPage() {
   }
 
   return (
-    <div className="max-w-full mx-auto px-2 sm:px-4 fixed w-full">
-      <div className=" w-full h-[calc(100vh-64px)] min-h-[400px] gap-4 md:flex">
+    <div className="max-w-full mx-auto px-0 sm:px-0 md:px-0 w-full bg-background text-foreground ">
+      <div className="w-full h-auto min-h-[400px] gap-0 flex flex-col md:flex-row md:items-stretch md:justify-between">
         {/* LEFT SIDE */}
         <Tabs
           value={rightTab}
           onValueChange={setRightTab}
-          className="w-full md:w-[40%] flex flex-col"
+          className="w-full md:w-[40%] flex flex-col bg-card border border-border mb-4 md:mb-0 overflow-auto"
         >
-          <TabsList className="w-full text-sm flex-wrap justify-start">
+          <TabsList className="w-full text-xs sm:text-sm flex-wrap justify-start sticky top-0 z-10 bg-card border-b border-border">
             <TabsTrigger value="problem">Problem</TabsTrigger>
             <TabsTrigger value="comments">Comments</TabsTrigger>
             <TabsTrigger value="solutions">Solutions</TabsTrigger>
@@ -255,41 +255,46 @@ export default function ProblemDetailsPage() {
             <TabsTrigger value="result">Result</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="problem" className="flex-1 overflow-hidden">
-            <aside className="w-full min-w-[280px] mb-6 px-4 sm:px-6 py-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-5rem)]">
-              <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-2 text-primary">
-                  {problem?.title}
-                </h1>
-                <Badge
-                  variant={
-                    problem?.difficulty === "EASY"
-                      ? "success"
-                      : problem?.difficulty === "MEDIUM"
-                      ? "warning"
-                      : "destructive"
-                  }
-                  className="font-semibold tracking-wide text-xs sm:text-sm"
-                >
-                  {problem?.difficulty || ""}
-                </Badge>
-              </div>
-
-              <div className="mb-3 flex gap-2 flex-wrap">
-                {problem?.tags?.map((tag) => (
-                  <Badge variant="secondary" key={tag} className="text-xs">
-                    {tag}
+          <TabsContent value="problem" className="flex-1 overflow-y-auto px-4 py-6 md:px-6 md:py-8 max-h-[83vh]">
+            <aside className="w-full flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-primary leading-tight tracking-tight">
+                    {problem?.title}
+                  </h1>
+                  {problem?.solved && (
+                    <Badge className="bg-green-500 text-white font-semibold text-xs sm:text-sm px-2 py-1">Solved</Badge>
+                  )}
+                  <Badge
+                    variant={
+                      problem?.difficulty === "EASY"
+                        ? "success"
+                        : problem?.difficulty === "MEDIUM"
+                        ? "warning"
+                        : "destructive"
+                    }
+                    className="font-semibold tracking-wide text-xs sm:text-sm bg-muted text-muted-foreground px-2 py-1"
+                  >
+                    {problem?.difficulty || ""}
                   </Badge>
-                ))}
+                </div>
+
+                <div className="flex gap-2 flex-wrap">
+                  {problem?.tags?.map((tag) => (
+                    <Badge variant="secondary" key={tag} className="text-xs border border-border bg-muted text-muted-foreground px-2 py-1">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               </div>
 
-              <section className="prose prose-sm max-w-none" style={{ fontFamily: "inter", fontSize: 14 }}>
+              <section className="prose prose-sm max-w-none text-foreground" style={{ fontFamily: "inter", fontSize: 15 }}>
                 <div dangerouslySetInnerHTML={{ __html: markdownToHtml(problem?.description) }} />
               </section>
 
-              <div className="mb-10">
-                <h2 className="font-semibold text-sm sm:text-base">Constraints</h2>
-                <ul className="list-disc list-inside text-xs sm:text-sm">
+              <div className="mb-2">
+                <h2 className="font-bold text-base text-primary mb-1 uppercase tracking-wide">Constraints</h2>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground pl-4">
                   {problem?.constraints?.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -298,30 +303,32 @@ export default function ProblemDetailsPage() {
             </aside>
           </TabsContent>
 
-          <TabsContent value="comments" className="flex-grow overflow-auto px-4 py-4 max-h-[500px]">
+          <TabsContent value="comments" className="flex-grow overflow-auto px-4 py-4 max-h-[83vh]">
             <CommentSection problemId={id} />
-            <div className="space-y-4 mb-6 mt-4">
+            <div className="space-y-3 mb-6 mt-4">
               {comments?.length > 0 ? (
                 comments.map((c, ind) => (
-                  <div key={c._id || ind} className="border border-[#e3e3e3] p-3 rounded">
-                    <div className="flex justify-between items-center mb-1">
-                      <p className="text-xs sm:text-sm font-semibold text-blue-700">
-                        {c?.userId?.name || "Unknown User"}
-                      </p>
-                      <span className="text-xs text-gray-500">
-                        {new Date(c.createdAt).toLocaleString()}
-                      </span>
-                    </div>
-                    <p className="text-gray-800 text-xs sm:text-sm">{c.content}</p>
-                  </div>
+                  <Card key={c._id || ind} className="border border-border bg-card shadow-sm">
+                    <CardContent className="p-3">
+                      <div className="flex justify-between items-center mb-1">
+                        <p className="text-xs sm:text-sm font-semibold text-foreground">
+                          {c?.userId?.name || "Unknown User"}
+                        </p>
+                        <span className="text-[10px] sm:text-xs text-muted-foreground">
+                          {new Date(c.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-foreground">{c.content}</p>
+                    </CardContent>
+                  </Card>
                 ))
               ) : (
-                <p className="text-gray-500 text-xs sm:text-sm">No comments yet. Be the first to comment!</p>
+                <p className="text-muted-foreground text-xs sm:text-sm">No comments yet. Be the first to comment!</p>
               )}
             </div>
           </TabsContent>
 
-          <TabsContent value="solutions" className="flex flex-col h-full overflow-auto p-2">
+          <TabsContent value="solutions" className="flex flex-col h-full overflow-auto p-2 max-h-[83vh]">
             {hasRunProblem && (
               <Section title="Reference Solutions">
                 <div className="flex gap-2 mb-3 flex-wrap">
@@ -367,58 +374,52 @@ export default function ProblemDetailsPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="result" className="flex flex-col h-full overflow-auto p-2">
+          <TabsContent value="result" className="flex flex-col h-full overflow-auto p-2 max-h-[83vh]">
             {submitResult ? (
               <Section title="Submission Result" className="mb-4">
-                <div
-                  className={`mb-3 px-3 py-2 rounded border font-medium text-xs sm:text-sm ${
-                    submitResult.isCorrect
-                      ? "bg-green-50 border-green-300 text-green-800"
-                      : "bg-red-50 border-red-300 text-red-800"
-                  }`}
-                >
-                  {submitResult.isCorrect ? (
-                    <>✅ Accepted — Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases.</>
-                  ) : (
-                    <>❌ Failed — Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases.</>
-                  )}
-                </div>
-
-                <div className="flex overflow-x-auto gap-3 max-h-[350px] pr-2">
-                  {submitResult.testResults.map((test, idx) => (
-                    <div
-                      key={idx}
-                      className={`rounded border px-3 py-2 shadow-sm min-w-[200px] transition-all duration-300 ${
-                        test.passed
-                          ? "border-green-300 bg-green-50 text-green-800"
-                          : "border-red-300 bg-red-50 text-red-800"
-                      }`}
+                <Card className="mb-3 border border-border bg-card">
+                  <CardContent className="p-3 text-xs sm:text-sm flex items-center gap-2">
+                    <Badge
+                      variant={submitResult.isCorrect ? "success" : "destructive"}
+                      className="px-2 py-0.5"
                     >
-                      <div className="flex justify-between items-center mb-1">
-                        <h4 className="font-semibold text-xs sm:text-sm">Test Case #{idx + 1}</h4>
-                        <span className="text-xs sm:text-sm font-medium">
-                          {test.passed ? "✅ Passed" : "❌ Failed"}
-                        </span>
-                      </div>
+                      {submitResult.isCorrect ? "Accepted" : "Failed"}
+                    </Badge>
+                    <span className="text-muted-foreground">
+                      Passed {submitResult.passedTestCases} of {submitResult.totalTestCases} testcases
+                    </span>
+                  </CardContent>
+                </Card>
 
-                      <div className="text-xs space-y-1">
-                        <div>
-                          <span className="font-semibold">Input:</span>{" "}
-                          <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {submitResult.testResults.map((test, idx) => (
+                    <Card key={idx} className="border border-border bg-card">
+                      <CardContent className="p-3">
+                        <div className="flex justify-between items-center mb-1">
+                          <h4 className="font-semibold text-xs sm:text-sm">Test Case #{idx + 1}</h4>
+                          <Badge variant={test.passed ? "success" : "destructive"} className="px-2 py-0.5 text-[10px] sm:text-xs">
+                            {test.passed ? "Passed" : "Failed"}
+                          </Badge>
                         </div>
-                        <div>
-                          <span className="font-semibold">Expected:</span>{" "}
-                          <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+                        <div className="text-xs space-y-1">
+                          <div>
+                            <span className="font-semibold">Input:</span>{" "}
+                            <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+                          </div>
+                          <div>
+                            <span className="font-semibold">Expected:</span>{" "}
+                            <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+                          </div>
+                          <div>
+                            <span className="font-semibold">Actual:</span>{" "}
+                            <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
+                          </div>
                         </div>
-                        <div>
-                          <span className="font-semibold">Actual:</span>{" "}
-                          <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
-                        </div>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </Section>
@@ -427,7 +428,7 @@ export default function ProblemDetailsPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="submission" className="flex flex-col h-full overflow-auto p-2">
+          <TabsContent value="submission" className="flex flex-col h-full overflow-auto p-2 max-h-[83vh]">
             <Card className="overflow-auto p-3">
               <table className="w-full text-xs sm:text-sm border-collapse">
                 <thead>
@@ -452,7 +453,7 @@ export default function ProblemDetailsPage() {
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
-                              variant="outline"
+                             
                               size="sm"
                               onClick={() =>
                                 setSelectedCode(
@@ -480,7 +481,7 @@ export default function ProblemDetailsPage() {
         </Tabs>
 
         {/* RIGHT SIDE */}
-        <main className="w-full md:w-[60%] p-2 sm:p-3 flex flex-col h-full overflow-auto border border-[#e3e3e3]">
+  <main className="w-full md:w-[60%] p-2 sm:p-3 flex flex-col h-full overflow-auto border border-border  shadow-sm text-foreground">
           <div className="mb-4 flex items-center gap-3">
             <Button
               variant="outline"
@@ -509,9 +510,9 @@ export default function ProblemDetailsPage() {
             </Button>
           </div>
 
-          <div className="w-full mb-4">
+          <div className="w-full mb-1">
             <Editor
-              height="300px"
+              height="360px"
               language={getMonacoLanguage(lang)}
               value={sourceCode}
               theme="vs-dark"
@@ -528,7 +529,7 @@ export default function ProblemDetailsPage() {
             />
           </div>
 
-          <Tabs value={tabs} onValueChange={setTabs} defaultValue="testcases" className="mt-1">
+          <Tabs value={tabs} onValueChange={setTabs} defaultValue="testcases" className="mt-[1px]">
             <TabsList className="text-xs sm:text-sm">
               <TabsTrigger value="testcases">Testcases</TabsTrigger>
               <TabsTrigger value="Results">Test Results</TabsTrigger>
@@ -541,8 +542,8 @@ export default function ProblemDetailsPage() {
                 <div className="flex overflow-x-auto gap-3 max-h-[300px] py-2">
                   {visibleCases?.map((t, idx) => (
 
-                    <Card key={t._id || idx} className="min-w-[180px] sm:min-w-[200px] group relative border">
-                      <CardContent className="p-3">
+                    <Card key={t._id || idx} className="min-w-[150px] sm:min-w-[150px] group relative border">
+                      <CardContent className="p-1">
                         <div className="text-xs sm:text-sm">
                           <span className="font-bold">Input:</span>{" "}
                           <code className="font-mono whitespace-pre-wrap">{t.input}</code>
@@ -565,51 +566,47 @@ export default function ProblemDetailsPage() {
 
             <TabsContent value="Results">
               {runResult ? (
-                <div className="mb-4">
-                  <p className="font-medium mb-3 text-xs sm:text-sm">
-                    Passed {runResult.passedTestcases} of {runResult.totalTestcases} visible testcases.
-                  </p>
+                <div className="mb-4 space-y-3">
+                  <Card className="border border-border bg-card">
+                    <CardContent className="p-3 text-xs sm:text-sm text-muted-foreground">
+                      Passed {runResult.passedTestcases} of {runResult.totalTestcases} visible testcases
+                    </CardContent>
+                  </Card>
 
-                  <div className="flex overflow-x-auto gap-3 max-h-[300px] pr-2">
+                  <div className="grid gap-3 sm:grid-cols-2 max-h-[300px] pr-2 overflow-auto">
                     {runResult.testResults.map((test, idx) => (
-                      <div
-                        key={idx}
-                        className={`rounded border px-3 py-2 shadow-sm min-w-[180px] sm:min-w-[200px] transition-all duration-300 ${
-                          test.passed
-                            ? "border-green-300 bg-green-50 text-green-800"
-                            : "border-red-300 bg-red-50 text-red-800"
-                        }`}
-                      >
-                        <div className="flex justify-between items-center mb-1">
-                          <h4 className="font-semibold text-xs sm:text-sm">Test Case #{idx + 1}</h4>
-                          <span className="text-xs sm:text-sm font-medium">
-                            {test.passed ? "✅ Passed" : "❌ Failed"}
-                          </span>
-                        </div>
-
-                        <div className="text-xs space-y-1">
-                          <div>
-                            <span className="font-semibold">Input:</span>{" "}
-                            <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+                      <Card key={idx} className="border border-border bg-card">
+                        <CardContent className="p-3">
+                          <div className="flex justify-between items-center mb-1">
+                            <h4 className="font-semibold text-xs sm:text-sm">Test Case #{idx + 1}</h4>
+                            <Badge variant={test.passed ? "success" : "destructive"} className="px-2 py-0.5 text-[10px] sm:text-xs">
+                              {test.passed ? "Passed" : "Failed"}
+                            </Badge>
                           </div>
-                          <div>
-                            <span className="font-semibold">Expected:</span>{" "}
-                            <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+                          <div className="text-xs space-y-1">
+                            <div>
+                              <span className="font-semibold">Input:</span>{" "}
+                              <code className="font-mono whitespace-pre-wrap">{test.input}</code>
+                            </div>
+                            <div>
+                              <span className="font-semibold">Expected:</span>{" "}
+                              <code className="font-mono whitespace-pre-wrap">{test.expectedOutput}</code>
+                            </div>
+                            <div>
+                              <span className="font-semibold">Actual:</span>{" "}
+                              <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
+                            </div>
                           </div>
-                          <div>
-                            <span className="font-semibold">Actual:</span>{" "}
-                            <code className="font-mono whitespace-pre-wrap">{test.actualOutput}</code>
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            ⏱ Time: {test.time}s &nbsp;&nbsp; 📦 Memory: {test.memory}KB
-                          </div>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="text-muted-foreground text-xs sm:text-sm">No test results available.</div>
+                <div className="text-muted-foreground text-xs sm:text-sm p-2">No test results available.</div>
               )}
             </TabsContent>
           </Tabs>

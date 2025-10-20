@@ -13,5 +13,11 @@ export default function LoginPage() {
     if (isAuthenticated) router.push("/dashboard");
   }, [isAuthenticated]);
 
-  return <Login/>;
+  return (
+    <div className="min-h-screen flex items-center justify-center ">
+      <div className="w-full max-w-md rounded-xl  p-8">
+        <Login />
+      </div>
+    </div>
+  );
 }
