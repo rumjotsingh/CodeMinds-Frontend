@@ -772,122 +772,23 @@ const router = useRouter();
                           >
                             {problem.difficulty}
                           </span>
-                          <Badge variant="outline" className="bg-muted text-muted-foreground">Unsolved</Badge>
+                          <Badge variant="outline" className={`bg-muted text-muted-foreground ${problem.solved ? "text-green-500" : "text-destructive"}`} >{problem.solved ? "Solved" : "Unsolved"}</Badge>
                         </div>
 
-                        <div className="flex space-x-2">
+                        <div className="flex gap-2">
+                          <Button
+      variant="secondary"
+      size="sm"
+      onClick={() => {
+        setSelectedProblem(problem);
+        setOpen(true);
+      }}
+  className="cursor-pointer border border-border bg-primary flex-1 bg-primary text-primary-foreground"
+    >
+      Add to Playlist
+    </Button>
 
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                className="flex-1 border-border bg-muted text-primary hover:bg-muted-foreground"
-                                onClick={() => setSelectedProblem(problem)}
-                              >
-                                Add to Playlist
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Add to Playlist</DialogTitle>
-                                <DialogDescription>
-                                  Add "{problem.title}" to an existing playlist or create a new one.
-                                </DialogDescription>
-                              </DialogHeader>
-
-                              {!isCreateMode ? (
-                                <>
-                                  <div className="space-y-4 py-4">
-                                    <div className="space-y-2">
-                                      <Label>Select Playlist</Label>
-                                      <Select
-                                        value={selectedPlaylistId}
-                                        onValueChange={(val) => setSelectedPlaylistId(val)}
-                                      >
-                                        <SelectTrigger className="w-full bg-gray-50 shadow-sm border rounded-md px-3 py-2 text-sm cursor-pointer">
-                                          <SelectValue placeholder="Select a playlist..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {playlists.map((playlist) => (
-                                            <SelectItem key={playlist._id} value={playlist._id}>
-                                              {playlist.title}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => setIsCreateMode(true)}
-                                    >
-                                      Create New Playlist
-                                    </Button>
-                                  </div>
-                                  <DialogFooter>
-                                    <Button
-                                      type="button"
-                                      onClick={handleAddToPlaylist}
-                                      disabled={playlistLoading || !selectedPlaylistId}
-                                    >
-                                      {playlistLoading ? (
-                                        <>
-                                          <span className="inline-block animate-spin h-4 w-4 border-b-2 border-current mr-2" />
-                                          Adding...
-                                        </>
-                                      ) : (
-                                        "Add to Playlist"
-                                      )}
-                                    </Button>
-                                  </DialogFooter>
-                                </>
-                              ) : (
-                                <>
-                                  <div className="space-y-4 py-4">
-                                    <div className="space-y-2">
-                                      <Label>Playlist Title</Label>
-                                      <Input
-                                        value={newPlaylist.title}
-                                        onChange={(e) => setNewPlaylist(prev => ({
-                                          ...prev,
-                                          title: e.target.value
-                                        }))}
-                                        placeholder="Enter playlist title"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <Label>Description</Label>
-                                      <Textarea
-                                        value={newPlaylist.description}
-                                        onChange={(e) => setNewPlaylist(prev => ({
-                                          ...prev,
-                                          description: e.target.value
-                                        }))}
-                                        placeholder="Enter playlist description"
-                                      />
-                                    </div>
-                                  </div>
-                                  <DialogFooter>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={() => setIsCreateMode(false)}
-                                    >
-                                      Back
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      onClick={handleCreatePlaylist}
-                                      disabled={!newPlaylist.title.trim()}
-                                    >
-                                      Create & Add
-                                    </Button>
-                                  </DialogFooter>
-                                </>
-                              )}
-                            </DialogContent>
-                          </Dialog>
+                          
                           <Button asChild size="sm" className="flex-1 bg-primary text-primary-foreground">
                             <a
                               href={`/problem/${problem._id}`}
