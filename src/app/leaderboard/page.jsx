@@ -28,26 +28,26 @@ export default function LeaderboardPage() {
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:
-        return <Trophy className="h-6 w-6 text-yellow-500" />;
+        return <Trophy className="h-6 w-6 text-primary" />;
       case 2:
-        return <Medal className="h-6 w-6 text-gray-400" />;
+        return <Medal className="h-6 w-6 text-muted-foreground" />;
       case 3:
         return <Award className="h-6 w-6 text-orange-500" />;
       default:
-        return <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">#{rank}</span>;
+        return <span className="text-sm font-semibold text-muted-foreground">#{rank}</span>;
     }
   };
 
   const getRankBadgeColor = (rank) => {
     switch (rank) {
       case 1:
-        return "bg-gradient-to-r from-[#6366F1] to-[#4F46E5] text-white";
+        return "bg-primary text-primary-foreground";
       case 2:
-        return "bg-gray-400 text-white";
+        return "bg-muted text-foreground";
       case 3:
         return "bg-orange-500 text-white";
       default:
-        return "bg-[#E5E7EB] dark:bg-[#1E293B] text-gray-800 dark:text-gray-200";
+        return "bg-muted text-foreground";
     }
   };
 
@@ -61,24 +61,24 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#0F172A] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-[1200px] mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-3">
-            <TrendingUp className="h-10 w-10 text-[#6366F1] mr-3" />
-            <h1 className="text-3xl md:text-4xl font-bold text-[#111827] dark:text-[#E2E8F0] tracking-tight">
+            <TrendingUp className="h-10 w-10 text-primary mr-3" />
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
               Leaderboard
             </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Top performers ranked by problems solved
           </p>
         </div>
 
         {/* Loading State */}
         {status === "loading" && (
-          <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-md">
+          <Card className="bg-card rounded-2xl shadow-md border-border">
             <CardContent className="p-5">
               <div className="space-y-4">
                 {[...Array(10)].map((_, idx) => (
@@ -98,9 +98,9 @@ export default function LeaderboardPage() {
 
         {/* Error State */}
         {status === "failed" && (
-          <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-red-200">
+          <Card className="bg-card rounded-2xl shadow-md border border-destructive">
             <CardContent className="p-5">
-              <div className="text-center text-red-600">
+              <div className="text-center text-destructive">
                 <p className="font-semibold">Failed to load leaderboard</p>
                 <p className="text-sm mt-2">{error}</p>
               </div>
@@ -115,21 +115,21 @@ export default function LeaderboardPage() {
             <div className="hidden md:grid grid-cols-3 gap-4 mb-8">
               {/* 2nd Place */}
               {users[1] && (
-                <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition mt-8">
+                <Card className="bg-card rounded-2xl shadow-md hover:shadow-lg transition mt-8 border-border">
                   <CardContent className="p-5 text-center">
                     <div className="flex justify-center mb-3">
-                      <Medal className="h-14 w-14 text-gray-400" />
+                      <Medal className="h-14 w-14 text-muted-foreground" />
                     </div>
-                    <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-gray-300">
-                      <AvatarFallback className="text-lg font-bold bg-[#E5E7EB] dark:bg-[#1E293B] text-[#111827] dark:text-[#E2E8F0]">
+                    <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-border">
+                      <AvatarFallback className="text-lg font-bold bg-muted text-foreground">
                         {getInitials(users[1].name)}
                       </AvatarFallback>
                     </Avatar>
-                    <h3 className="font-bold text-lg text-[#111827] dark:text-[#E2E8F0] tracking-tight mb-1">
+                    <h3 className="font-bold text-lg text-foreground tracking-tight mb-1">
                       {users[1].name}
                     </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{users[1].email}</p>
-                    <Badge className="bg-gray-400 text-white rounded-full px-4 py-2">
+                    <p className="text-xs text-muted-foreground mb-3">{users[1].email}</p>
+                    <Badge className="bg-muted text-foreground rounded-full px-4 py-2">
                       {users[1].problemsSolved} solved
                     </Badge>
                   </CardContent>
@@ -138,21 +138,21 @@ export default function LeaderboardPage() {
 
               {/* 1st Place */}
               {users[0] && (
-                <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg hover:shadow-xl transition border-2 border-[#6366F1]">
+                <Card className="bg-card rounded-2xl shadow-lg hover:shadow-xl transition border-2 border-primary">
                   <CardContent className="p-5 text-center">
                     <div className="flex justify-center mb-3">
-                      <Trophy className="h-16 w-16 text-[#6366F1]" />
+                      <Trophy className="h-16 w-16 text-primary" />
                     </div>
-                    <Avatar className="h-20 w-20 mx-auto mb-3 border-2 border-[#6366F1]">
-                      <AvatarFallback className="text-xl font-bold bg-gradient-to-r from-[#6366F1] to-[#4F46E5] text-white">
+                    <Avatar className="h-20 w-20 mx-auto mb-3 border-2 border-primary">
+                      <AvatarFallback className="text-xl font-bold bg-primary text-primary-foreground">
                         {getInitials(users[0].name)}
                       </AvatarFallback>
                     </Avatar>
-                    <h3 className="font-bold text-xl text-[#111827] dark:text-[#E2E8F0] tracking-tight mb-1">
+                    <h3 className="font-bold text-xl text-foreground tracking-tight mb-1">
                       {users[0].name}
                     </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{users[0].email}</p>
-                    <Badge className="bg-gradient-to-r from-[#6366F1] to-[#4F46E5] text-white rounded-full px-4 py-2">
+                    <p className="text-xs text-muted-foreground mb-3">{users[0].email}</p>
+                    <Badge className="bg-primary text-primary-foreground rounded-full px-4 py-2">
                       {users[0].problemsSolved} solved
                     </Badge>
                   </CardContent>
@@ -161,7 +161,7 @@ export default function LeaderboardPage() {
 
               {/* 3rd Place */}
               {users[2] && (
-                <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition mt-8">
+                <Card className="bg-card rounded-2xl shadow-md hover:shadow-lg transition mt-8 border-border">
                   <CardContent className="p-5 text-center">
                     <div className="flex justify-center mb-3">
                       <Award className="h-14 w-14 text-orange-500" />
@@ -171,10 +171,10 @@ export default function LeaderboardPage() {
                         {getInitials(users[2].name)}
                       </AvatarFallback>
                     </Avatar>
-                    <h3 className="font-bold text-lg text-[#111827] dark:text-[#E2E8F0] tracking-tight mb-1">
+                    <h3 className="font-bold text-lg text-foreground tracking-tight mb-1">
                       {users[2].name}
                     </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">{users[2].email}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{users[2].email}</p>
                     <Badge className="bg-orange-500 text-white rounded-full px-4 py-2">
                       {users[2].problemsSolved} solved
                     </Badge>
@@ -184,9 +184,9 @@ export default function LeaderboardPage() {
             </div>
 
             {/* Full Leaderboard Table */}
-            <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-md hover:shadow-lg transition">
+            <Card className="bg-card rounded-2xl shadow-md hover:shadow-lg transition border-border">
               <CardHeader>
-                <CardTitle className="text-xl font-bold text-[#111827] dark:text-[#E2E8F0] tracking-tight">Rankings</CardTitle>
+                <CardTitle className="text-xl font-bold text-foreground tracking-tight">Rankings</CardTitle>
               </CardHeader>
               <CardContent className="p-5">
                 {/* Desktop Table View */}
@@ -206,9 +206,7 @@ export default function LeaderboardPage() {
                         return (
                           <TableRow
                             key={user.userId}
-                            className={`${
-                              rank <= 3 ? "bg-gray-50" : ""
-                            } hover:bg-gray-100 transition-colors`}
+                            className="hover:bg-muted transition-colors"
                           >
                             <TableCell>
                               <div className="flex items-center justify-center">
@@ -218,16 +216,16 @@ export default function LeaderboardPage() {
                             <TableCell>
                               <div className="flex items-center space-x-3">
                                 <Avatar className="h-10 w-10">
-                                  <AvatarFallback className={`${rank <= 3 ? "font-bold" : ""} bg-[#E5E7EB] dark:bg-[#1E293B] text-[#111827] dark:text-[#E2E8F0]`}>
+                                  <AvatarFallback className={`${rank <= 3 ? "font-bold" : ""} bg-muted text-foreground`}>
                                     {getInitials(user.name)}
                                   </AvatarFallback>
                                 </Avatar>
-                                <span className={`${rank <= 3 ? "font-bold" : "font-medium"} text-[#111827] dark:text-[#E2E8F0]`}>
+                                <span className={`${rank <= 3 ? "font-bold" : "font-medium"} text-foreground`}>
                                   {user.name}
                                 </span>
                               </div>
                             </TableCell>
-                            <TableCell className="text-gray-600 dark:text-gray-400">
+                            <TableCell className="text-muted-foreground">
                               {user.email}
                             </TableCell>
                             <TableCell className="text-right">
@@ -251,15 +249,15 @@ export default function LeaderboardPage() {
                     return (
                       <div
                         key={user.userId}
-                        className={`p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-md hover:shadow-lg transition ${
-                          rank <= 3 ? "border-2 border-[#6366F1]" : "border border-[#CBD5E1] dark:border-[#1E293B]"
+                        className={`p-4 rounded-2xl bg-card shadow-md hover:shadow-lg transition ${
+                          rank <= 3 ? "border-2 border-primary" : "border border-border"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-3">
                             <div>{getRankIcon(rank)}</div>
                             <Avatar className="h-12 w-12">
-                              <AvatarFallback className={`${rank <= 3 ? "font-bold" : ""} bg-[#E5E7EB] dark:bg-[#1E293B] text-[#111827] dark:text-[#E2E8F0]`}>
+                              <AvatarFallback className={`${rank <= 3 ? "font-bold" : ""} bg-muted text-foreground`}>
                                 {getInitials(user.name)}
                               </AvatarFallback>
                             </Avatar>
@@ -269,10 +267,10 @@ export default function LeaderboardPage() {
                           </Badge>
                         </div>
                         <div>
-                          <h3 className={`${rank <= 3 ? "font-bold" : "font-medium"} text-[#111827] dark:text-[#E2E8F0]`}>
+                          <h3 className={`${rank <= 3 ? "font-bold" : "font-medium"} text-foreground`}>
                             {user.name}
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
                       </div>
                     );
@@ -285,13 +283,13 @@ export default function LeaderboardPage() {
 
         {/* Empty State */}
         {status === "succeeded" && users.length === 0 && (
-          <Card className="bg-white dark:bg-slate-800 rounded-2xl shadow-md">
+          <Card className="bg-card rounded-2xl shadow-md border-border">
             <CardContent className="p-8 text-center">
-              <Trophy className="h-16 w-16 text-[#6366F1] mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-[#111827] dark:text-[#E2E8F0] tracking-tight mb-2">
+              <Trophy className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-foreground tracking-tight mb-2">
                 No data available
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 The leaderboard will appear once users start solving problems
               </p>
             </CardContent>

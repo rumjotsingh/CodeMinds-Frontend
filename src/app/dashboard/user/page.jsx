@@ -136,7 +136,7 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Submissions */}
-      <div className="bg-card max-w-7xl border border-border rounded-xl shadow-sm text-foreground">
+      <div className="bg-card max-w-7xl border border-border rounded-xl shadow-sm text-foreground p-4">
         <h2 className="text-xl font-semibold mb-4 text-primary">Recent Submissions</h2>
         {loadingDashboard ? (
           <div className="space-y-3">

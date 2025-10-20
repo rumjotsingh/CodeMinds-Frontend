@@ -14,8 +14,9 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const commonNavItems = [
+     { label: "Leaderboard", href: "/leaderboard" },
     { label: "Problems", href: "/problem" },
-    { label: "Leaderboard", href: "/leaderboard" },
+   
   ];
 
   const guestNavItems = [
@@ -24,12 +25,13 @@ export default function Navbar() {
   ];
 
   const authNavItems = [
+    { label: "Profile", href: "/profile" },
+    { label: "Playlists", href: "/playlist" },
     {
       label: "Dashboard",
       href: user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user",
     },
-    { label: "Profile", href: "/profile" },
-    { label: "Playlists", href: "/playlist" },
+    
   ];
 
   const navItems = isAuthenticated

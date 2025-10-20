@@ -68,14 +68,53 @@ export const fetchProblemsByTags = createAsyncThunk(
   "problems/fetchProblemsByTags",
   async (tags, { rejectWithValue }) => {
     try {
-      const tagsParam = Array.isArray(tags) ? tags.join(",") : tags;
-      const response = await axiosInstance.get(
-        `/api/v1/problems/by-tags?tags=${tagsParam}`
-      );
+      let url = "/api/v1/problems/by-tags";
+      let params = {};
+      // Difficulty options
+      const difficulties = ["EASY", "MEDIUM", "HARD"];
+      const selectedDifficulty = Array.isArray(tags)
+        ? tags.find((t) => difficulties.includes(t))
+        : difficulties.includes(tags)
+        ? tags
+        : null;
+      const selectedTags = Array.isArray(tags)
+        ? tags.filter((t) => !difficulties.includes(t))
+        : difficulties.includes(tags)
+        ? []
+        : [tags];
+
+      if (selectedTags.length > 0 && selectedDifficulty) {
+        params.tags = selectedTags.join(",");
+        params.difficulty = selectedDifficulty;
+      } else if (selectedTags.length > 0) {
+        params.tags = selectedTags.join(",");
+      } else if (selectedDifficulty) {
+        params.difficulty = selectedDifficulty;
+      }
+
+      const response = await axiosInstance.get(url, { params });
       return response.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch problems by tags"
+      );
+    }
+  }
+);
+
+// Search problems
+export const searchProblems = createAsyncThunk(
+  "problems/searchProblems",
+  async (searchQuery, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/api/v1/problems/search?q=${encodeURIComponent(searchQuery)}`
+      );
+      // API returns { count, searchTerm, results }
+      return response.data.results || response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to search problems"
       );
     }
   }
@@ -196,6 +235,12 @@ const problemsSlice = createSlice({
     groupedTagsStatus: "idle",
     groupedTagsError: null,
 
+    // Search
+    searchStatus: "idle",
+    searchError: null,
+    searchCount: 0,
+    searchTerm: "",
+
     // Code run/submit
     runStatus: "idle",
     runError: null,
@@ -296,6 +341,21 @@ const problemsSlice = createSlice({
       .addCase(fetchProblemsByTags.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+
+      // Search problems
+      .addCase(searchProblems.pending, (state) => {
+        state.searchStatus = "loading";
+        state.searchError = null;
+      })
+      .addCase(searchProblems.fulfilled, (state, action) => {
+        state.searchStatus = "succeeded";
+        state.items = action.payload;
+        state.searchCount = action.payload.length;
+      })
+      .addCase(searchProblems.rejected, (state, action) => {
+        state.searchStatus = "failed";
+        state.searchError = action.payload;
       })
 
       .addCase(fetchAllSubmission.pending, (state) => {

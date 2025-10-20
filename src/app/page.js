@@ -188,14 +188,6 @@ export default function HomePage() {
           is powered by modern technology and an ever-improving library to keep
           you a step ahead, always!
         </p>
-        <Button
-          size="lg"
-          className="bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition"
-        >
-          <Link href="/register" className="block w-full">
-            Sign Up Free
-          </Link>
-        </Button>
       </motion.section>
 
       {/* TESTIMONIALS */}

@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import {
   getUserProfile,
   updateUserProfile,
+  getUserStats,
 } from "../../redux/slices/authSlice";
 import { toast } from "sonner";
 import { fetchDashboard } from "./../../redux/slices/DashbordSlice";
@@ -24,7 +25,7 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
-  const { profile, loading, error } = useSelector((state) => state.auth);
+  const { profile, loading, error, stats } = useSelector((state) => state.auth);
   const dashboard = useSelector((state) => state.dashboard.data);
 
   const {
@@ -42,6 +43,7 @@ const ProfilePage = () => {
   useEffect(() => {
     dispatch(fetchDashboard());
     dispatch(getUserProfile());
+    dispatch(getUserStats());
   }, [dispatch]);
 
   useEffect(() => {
@@ -82,16 +84,35 @@ const ProfilePage = () => {
         </section>
 
         {/* Stats Skeleton */}
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="bg-muted border border-border rounded-lg p-6 text-center"
-            >
-              <Skeleton className="h-10 w-20 mx-auto mb-2" />
-              <Skeleton className="h-5 w-24 mx-auto" />
-            </div>
-          ))}
+        <section className="space-y-4">
+          <Skeleton className="h-6 w-40" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-muted border border-border rounded-lg p-4 text-center"
+              >
+                <Skeleton className="h-10 w-16 mx-auto mb-2" />
+                <Skeleton className="h-4 w-20 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Dashboard Stats Skeleton */}
+        <section className="space-y-4">
+          <Skeleton className="h-6 w-40" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-muted border border-border rounded-lg p-6 text-center"
+              >
+                <Skeleton className="h-10 w-20 mx-auto mb-2" />
+                <Skeleton className="h-5 w-24 mx-auto" />
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     );
@@ -130,16 +151,61 @@ const ProfilePage = () => {
       </section>
 
       {/* Account Stats */}
-      <section>
+      <section className="mb-12">
         <h2 className="text-xl font-semibold mb-6 border-b border-primary pb-2 text-primary">
           Account Stats
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-primary">
+              {stats?.totalSolved || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Total Solved</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-green-600 dark:text-green-500">
+              {stats?.easy || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Easy</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-yellow-600 dark:text-yellow-500">
+              {stats?.medium || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Medium</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-red-600 dark:text-red-500">
+              {stats?.hard || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Hard</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-primary">
+              {stats?.totalAttempts || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Attempts</p>
+          </div>
+          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
+            <p className="text-3xl font-bold mb-1 text-orange-600 dark:text-orange-500">
+              {stats?.streak || 0}
+            </p>
+            <p className="text-sm font-medium text-muted-foreground">Streak 🔥</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Stats */}
+      <section>
+        <h2 className="text-xl font-semibold mb-6 border-b border-primary pb-2 text-primary">
+          Submission Stats
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="bg-muted border border-border rounded-lg p-6 text-center">
             <p className="text-3xl font-bold mb-1 text-primary">
               {dashboard?.totalProblemsSolved || 0}
             </p>
-            <p className="font-medium text-muted-foreground">Total Solved</p>
+            <p className="font-medium text-muted-foreground">Problems Solved</p>
           </div>
           <div className="bg-muted border border-border rounded-lg p-6 text-center">
             <p className="text-3xl font-bold mb-1 text-primary">
