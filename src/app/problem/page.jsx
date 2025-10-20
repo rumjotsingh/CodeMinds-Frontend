@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchProblems, fetchTags } from "../../redux/slices/problemSlice";
+import { fetchProblems, fetchGroupedTags, fetchProblemsByTags } from "../../redux/slices/problemSlice";
 import {
   fetchAllPlaylists,
   createPlaylist,
@@ -54,9 +54,10 @@ export default function ProblemsList() {
     const { isAuthenticated, loading: authLoading } = useAuth();
 const router = useRouter();
   
-  const { items: problems, status, tags, error } = useSelector(
+  const { items: problems, status, groupedTags, groupedTagsStatus, error } = useSelector(
     (state) => state.problem
   );
+  console.log(groupedTags, groupedTagsStatus, error);
   const { playlists = [], loading: playlistLoading = false } = useSelector(
     (state) => state.playlists || {}
   );
@@ -89,7 +90,7 @@ const router = useRouter();
 
   useEffect(() => {
      dispatch(fetchProblems());
-     dispatch(fetchTags());
+     dispatch(fetchGroupedTags());
     dispatch(fetchAllPlaylists());
   }, [ dispatch]);
 
@@ -97,15 +98,14 @@ const router = useRouter();
   const filteredAndPaginatedProblems = useMemo(() => {
     let filtered = problems || [];
 
-    // Search filter
+    // Search filter (keep frontend search for title)
     if (searchTerm) {
       filtered = filtered.filter(problem =>
-        problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        problem.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        problem.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Difficulty filter
+    // Difficulty filter (keep frontend difficulty filter)
     const activeDifficulties = Object.entries(difficultyFilter)
       .filter(([_, isActive]) => isActive)
       .map(([difficulty]) => difficulty);
@@ -113,13 +113,6 @@ const router = useRouter();
     if (activeDifficulties.length > 0) {
       filtered = filtered.filter(problem => 
         activeDifficulties.includes(problem.difficulty)
-      );
-    }
-
-    // Tags filter
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter(problem =>
-        selectedTags.some(tag => problem.tags?.includes(tag))
       );
     }
 
@@ -133,12 +126,21 @@ const router = useRouter();
       totalCount: filtered.length,
       totalPages: Math.ceil(filtered.length / itemsPerPage)
     };
-  }, [problems, searchTerm, difficultyFilter, selectedTags, currentPage, itemsPerPage]);
+  }, [problems, searchTerm, difficultyFilter, currentPage, itemsPerPage]);
+
+  // Fetch problems by tags when selected tags change
+  useEffect(() => {
+    if (selectedTags.length > 0) {
+      dispatch(fetchProblemsByTags(selectedTags));
+    } else {
+      dispatch(fetchProblems());
+    }
+  }, [selectedTags, dispatch]);
 
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, difficultyFilter, selectedTags]);
+  }, [searchTerm, difficultyFilter]);
 
   const handleTagToggle = (tag) => {
     setSelectedTags(prev => 
@@ -216,57 +218,30 @@ const router = useRouter();
 
 
   return (
-    <div className="flex flex-col min-h-screen max-w-7xl mx-auto">
-      <div className="flex flex-1 flex-col md:flex-row overflow-hidden ">
-        {/* Sidebar */}
-        {/* <aside className="border border-[#e3e3e3] p-4 mt-10 w-64 overflow-y-auto sticky top-0" >
-          <h2 className="text-lg font-semibold mb-4">Filters</h2>
-          <div className="mb-6">
-            <p className="font-medium mb-2">Difficulty</p>
-    {["EASY", "MEDIUM", "HARD"].map((level) => (
-      <label
-        key={level}
-        className="flex items-center space-x-2 mb-1 cursor-pointer select-none"
-      >
-        <Checkbox
-          checked={difficultyFilter[level]}
-          onCheckedChange={() => {
-            setDifficultyTouched(true);
-            setDifficultyFilter((prev) => ({
-              ...prev,
-              [level]: !prev[level],
-            }));
-          }}
-        />
-        <span>{level}</span>
-      </label>
-    ))}
-  </div>
-</aside> */}
-
-
+    <div className="flex flex-col min-h-screen max-w-7xl mx-auto bg-background text-foreground">
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {/* Main Content */}
-        <main className={`overflow-y-auto w-full p-4 md:p-6 transition-all duration-300 `}>
+        <main className="overflow-y-auto w-full p-4 md:p-6 transition-all duration-300 bg-card rounded-xl shadow-sm border border-border">
           {/* Header with Search and Filters */}
           <div className="mb-6 space-y-4">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900">Problems</h1>
+              <h1 className="text-2xl font-bold text-primary">Problems</h1>
               
               {/* Search and Filter Toggle */}
               <div className="flex gap-2 w-full sm:w-auto">
                 <div className="relative flex-1 sm:w-80">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
-                    placeholder="Search problems or tags..."
+                    placeholder="Search problems..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-[#e3e3e3]"
+                    className="pl-10 border-border bg-input text-foreground"
                   />
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="border-[#e3e3e3] hover:bg-gray-50"
+                  className="border-border hover:bg-muted"
                 >
                   <Filter className="h-4 w-4 mr-2" />
                   Filters
@@ -276,11 +251,11 @@ const router = useRouter();
 
             {/* Expandable Filters */}
             {showFilters && (
-              <div className="bg-white border border-[#e3e3e3] rounded-lg p-4 space-y-4">
+              <div className="bg-card border border-border rounded-lg p-4 space-y-4">
                 <div className="flex flex-wrap gap-6">
                   {/* Difficulty Filter */}
                   <div className="space-y-2">
-                    <h3 className="font-medium text-gray-900">Difficulty</h3>
+                    <h3 className="font-medium text-primary">Difficulty</h3>
                     <div className="flex flex-wrap gap-2">
                       {["EASY", "MEDIUM", "HARD"].map((level) => (
                         <label
@@ -303,35 +278,108 @@ const router = useRouter();
                   </div>
 
                   {/* Tags Filter */}
-                  {tags && tags.length > 0 && (
-                    <div className="space-y-2 flex-1">
-                      <h3 className="font-medium text-gray-900">Tags</h3>
-                      <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                        {tags.slice(0, 20).map((tag) => (
-                          <button
-                            key={tag}
-                            onClick={() => handleTagToggle(tag)}
-                            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                              selectedTags.includes(tag)
-                                ? "bg-blue-100 text-blue-800 border-blue-300"
-                                : "bg-gray-100 text-gray-700 border-[#e3e3e3] hover:bg-gray-200"
-                            }`}
-                          >
-                            {tag}
-                          </button>
-                        ))}
-                      </div>
+                  {groupedTagsStatus === "succeeded" && (
+                    <div className="space-y-4 flex-1">
+                      <h3 className="font-medium text-primary">Tags</h3>
+                      
+                      {/* Companies */}
+                      {groupedTags.companies?.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-muted-foreground">Companies</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {groupedTags.companies.map((tag) => (
+                              <button
+                                key={tag}
+                                onClick={() => handleTagToggle(tag)}
+                                className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                                  selectedTags.includes(tag)
+                                    ? "bg-blue-100 text-blue-800 border-blue-300"
+                                    : "bg-gray-100 text-gray-700 border-[#e3e3e3] hover:bg-gray-200"
+                                }`}
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Data Structures */}
+                      {groupedTags.dataStructures?.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-muted-foreground">Data Structures</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {groupedTags.dataStructures.map((tag) => (
+                              <button
+                                key={tag}
+                                onClick={() => handleTagToggle(tag)}
+                                className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                                  selectedTags.includes(tag)
+                                    ? "bg-green-100 text-green-800 border-green-300"
+                                    : "bg-gray-100 text-gray-700 border-[#e3e3e3] hover:bg-gray-200"
+                                }`}
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Algorithms */}
+                      {groupedTags.algorithms?.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-muted-foreground">Algorithms</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {groupedTags.algorithms.map((tag) => (
+                              <button
+                                key={tag}
+                                onClick={() => handleTagToggle(tag)}
+                                className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                                  selectedTags.includes(tag)
+                                    ? "bg-purple-100 text-purple-800 border-purple-300"
+                                    : "bg-gray-100 text-gray-700 border-[#e3e3e3] hover:bg-gray-200"
+                                }`}
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Topics */}
+                      {groupedTags.topics?.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-muted-foreground">Topics</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {groupedTags.topics.map((tag) => (
+                              <button
+                                key={tag}
+                                onClick={() => handleTagToggle(tag)}
+                                className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                                  selectedTags.includes(tag)
+                                    ? "bg-orange-100 text-orange-800 border-orange-300"
+                                    : "bg-gray-100 text-gray-700 border-[#e3e3e3] hover:bg-gray-200"
+                                }`}
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
 
                 {/* Clear Filters */}
-                <div className="pt-2 border-t border-[#e3e3e3]">
+                <div className="pt-2 border-t border-border">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={clearAllFilters}
-                    className="text-gray-600 hover:text-gray-900"
+                    className="text-muted-foreground hover:text-primary"
                   >
                     Clear All Filters
                   </Button>
@@ -340,13 +388,13 @@ const router = useRouter();
             )}
 
             {/* Results Summary */}
-            <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>
                 Showing {filteredAndPaginatedProblems.problems?.length || 0} of{" "}
                 {filteredAndPaginatedProblems.totalCount || 0} problems
               </span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
-                <SelectTrigger className="w-32 border-[#e3e3e3]">
+                <SelectTrigger className="w-32 border-border bg-input text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -378,7 +426,7 @@ const router = useRouter();
 
           {/* Error Message */}
           {status === "failed" && (
-            <p className="text-red-600 text-center">{error}</p>
+            <p className="text-destructive text-center">{error}</p>
           )}
 
           {/* Problems Display */}
@@ -388,7 +436,7 @@ const router = useRouter();
                 <>
                   {/* For larger screens, keep table */}
                   <div className="hidden md:block">
-                    <Table className="">
+                    <Table className="bg-card text-foreground">
                      
                       <TableHeader>
                         <TableRow>
@@ -407,7 +455,7 @@ const router = useRouter();
                               {problem.title}
                             </TableCell>
                              <TableCell className="font-medium gap-4 flex">
-                              {problem.tags.slice(0,3).map((tag)=><span key={tag} className="text-sm font-medium px-2 py-1 rounded bg-gray-100">{tag}</span>)}
+                              {problem.tags.slice(0,3).map((tag)=><span key={tag} className="text-sm font-medium px-2 py-1 rounded bg-muted text-muted-foreground">{tag}</span>)}
                             </TableCell>
                             <TableCell>
                               <span
@@ -427,7 +475,7 @@ const router = useRouter();
         setSelectedProblem(problem);
         setOpen(true);
       }}
-      className="cursor-pointer border border-[#e3e3e3] hover:bg-gray-100 hover:text-gray-900 transition-all"
+  className="cursor-pointer border border-border hover:bg-muted hover:text-primary transition-all"
     >
       Add to Playlist
     </Button>
@@ -439,7 +487,7 @@ const router = useRouter();
                              
                             </TableCell>
                             <TableCell>
-                              <Button asChild size="sm">
+                              <Button asChild size="sm" className="bg-primary text-primary-foreground">
                                 <a
                                   href={`/problem/${problem._id}`}
                                   target="_blank"
@@ -581,7 +629,7 @@ const router = useRouter();
                     {filteredAndPaginatedProblems.problems?.map((problem) => (
                       <div
                         key={problem._id}
-                        className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md"
+                        className="bg-card rounded-lg p-4 shadow-sm border border-border text-foreground"
                       >
                         <h3 className="text-lg font-semibold mb-1">
                           {problem.title}
@@ -594,7 +642,7 @@ const router = useRouter();
                           >
                             {problem.difficulty}
                           </span>
-                          <Badge variant="outline">Unsolved</Badge>
+                          <Badge variant="outline" className="bg-muted text-muted-foreground">Unsolved</Badge>
                         </div>
 
                         <div className="flex space-x-2">
@@ -604,7 +652,7 @@ const router = useRouter();
                               <Button
                                 variant="secondary"
                                 size="sm"
-                                className="flex-1"
+                                className="flex-1 border-border bg-muted text-primary hover:bg-muted-foreground"
                                 onClick={() => setSelectedProblem(problem)}
                               >
                                 Add to Playlist
@@ -710,7 +758,7 @@ const router = useRouter();
                               )}
                             </DialogContent>
                           </Dialog>
-                          <Button asChild size="sm" className="flex-1">
+                          <Button asChild size="sm" className="flex-1 bg-primary text-primary-foreground">
                             <a
                               href={`/problem/${problem._id}`}
                               target="_blank"

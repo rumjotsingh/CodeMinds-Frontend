@@ -59,7 +59,7 @@ const testimonials = [
 // ---- MAIN PAGE ----
 export default function HomePage() {
   return (
-    <main className="max-w-7xl mx-auto bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900 pb-36 px-6 sm:px-10 md:px-20 lg:px-24 xl:px-32 py-20 overflow-x-hidden">
+    <main className="max-w-7xl mx-auto bg-background text-foreground pb-36 px-6 sm:px-10 md:px-20 lg:px-24 xl:px-32 py-20 overflow-x-hidden">
       {/* HERO */}
       <motion.section
         className="max-w-4xl mx-auto text-center "
@@ -67,16 +67,16 @@ export default function HomePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2 }}
       >
-        <h1 className="text-6xl md:text-7xl font-extrabold text-yellow-400  tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
+        <h1 className="text-6xl md:text-7xl font-extrabold text-primary tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
           Welcome to CodeMinds
         </h1>
         <motion.p
-          className="text-gray-200 max-w-3xl mx-auto mb-16 text-xl md:text-2xl leading-relaxed"
+          className="text-muted-foreground max-w-3xl mx-auto mb-16 text-xl md:text-2xl leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
         >
-          <span className="font-semibold text-white">
+          <span className="font-semibold text-foreground">
             India’s most vibrant coding community
           </span>{" "}
           and platform to ace <b className="text-yellow-400">FAANG</b>{" "}
@@ -87,7 +87,7 @@ export default function HomePage() {
 
       {/* CIRCULAR LOGOS */}
       <section className="mb-24">
-        <h2 className="text-4xl font-bold text-white mb-16 text-center tracking-wide drop-shadow">
+        <h2 className="text-4xl font-bold text-primary mb-16 text-center tracking-wide drop-shadow">
           Used & loved by talent at
         </h2>
         <motion.div
@@ -103,7 +103,7 @@ export default function HomePage() {
                 width={100}
                 height={100}
                 layout="intrinsic"
-                className="transition duration-300"
+                className="transition duration-300 bg-card rounded-full p-2 border border-border"
               />
             </div>
           ))}
@@ -118,7 +118,7 @@ export default function HomePage() {
         transition={{ duration: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-white mb-16">
+        <h2 className="text-4xl font-bold text-primary mb-16">
           Why is CodeMinds Your #1 Interview & Coding Companion?
         </h2>
         <div className="grid grid-cols-1 gap-12 text-left">
@@ -150,14 +150,14 @@ export default function HomePage() {
           ].map(({ title, points }) => (
             <Card
               key={title}
-              className="bg-gray-800 border-yellow-500 border-opacity-60 shadow-xl hover:shadow-2xl p-8 rounded-lg transition-transform transform hover:-translate-y-1 duration-300"
+              className="bg-card border-primary border-opacity-60 shadow-xl hover:shadow-2xl p-8 rounded-lg transition-transform transform hover:-translate-y-1 duration-300 text-foreground"
             >
               <CardHeader>
-                <CardTitle className="text-yellow-400 text-2xl font-bold">
+                <CardTitle className="text-primary text-2xl font-bold">
                   {title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="mt-6 text-gray-200 text-lg">
+              <CardContent className="mt-6 text-muted-foreground text-lg">
                 <ul className="list-disc ml-6 space-y-2">
                   {points.map((point, i) => (
                     <li key={i}>{point}</li>
@@ -177,10 +177,10 @@ export default function HomePage() {
         transition={{ duration: 1, delay: 0.2 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-yellow-400 mb-10">
+        <h2 className="text-4xl font-bold text-primary mb-10">
           How CodeMinds is Different
         </h2>
-        <p className="text-lg md:text-xl text-gray-200 mb-10 leading-relaxed tracking-wide">
+        <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed tracking-wide">
           <strong>CodeMinds</strong> combines the{" "}
           <strong>rigor of FAANG prep</strong>, the patterns of Indian tech &
           startup interviews, and the support of a thriving community. Every
@@ -190,7 +190,7 @@ export default function HomePage() {
         </p>
         <Button
           size="lg"
-          className="bg-yellow-400 text-gray-900 font-semibold hover:bg-yellow-500 transition"
+          className="bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition"
         >
           <Link href="/register" className="block w-full">
             Sign Up Free
@@ -205,23 +205,23 @@ export default function HomePage() {
         transition={{ duration: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-white mb-14 text-center tracking-wide drop-shadow">
+        <h2 className="text-4xl font-bold text-primary mb-14 text-center tracking-wide drop-shadow">
           What Our Users Say
         </h2>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4  animate-slideUp">
           {testimonials.map(({ id, name, role, quote }) => (
             <Card
               key={id}
-              className="bg-gray-800 border-yellow-600 border-opacity-60 p-8 flex flex-col justify-between shadow-xl hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2"
+              className="bg-card border-primary border-opacity-60 p-8 flex flex-col justify-between shadow-xl hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2 text-foreground"
             >
               <CardContent className="flex-grow">
-                <p className="italic text-gray-300 text-lg  leading-relaxed">
+                <p className="italic text-muted-foreground text-lg  leading-relaxed">
                   “{quote}”
                 </p>
               </CardContent>
               <div className="">
-                <p className="font-semibold text-yellow-400 text-xl">{name}</p>
-                <p className="text-gray-400 text-sm">{role}</p>
+                <p className="font-semibold text-primary text-xl">{name}</p>
+                <p className="text-muted-foreground text-sm">{role}</p>
               </div>
             </Card>
           ))}
@@ -236,7 +236,7 @@ export default function HomePage() {
         transition={{ duration: 1 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold text-white mb-16 text-center tracking-wide">
+        <h2 className="text-4xl font-bold text-primary mb-16 text-center tracking-wide">
           Our Mission & Vision
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
@@ -252,14 +252,14 @@ export default function HomePage() {
           ].map(({ title, text }) => (
             <Card
               key={title}
-              className="bg-gray-800 border-yellow-600 border-opacity-60 p-8 rounded-lg shadow-lg"
+              className="bg-card border-primary border-opacity-60 p-8 rounded-lg shadow-lg text-foreground"
             >
               <CardHeader>
-                <CardTitle className="text-yellow-400 text-2xl font-bold">
+                <CardTitle className="text-primary text-2xl font-bold">
                   {title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-gray-300 text-xl mt-4">
+              <CardContent className="text-muted-foreground text-xl mt-4">
                 {text}
               </CardContent>
             </Card>

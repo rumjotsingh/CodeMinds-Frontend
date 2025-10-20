@@ -33,7 +33,7 @@ export const fetchProblemsById = createAsyncThunk(
   }
 );
 
-// Fetch tags
+// Fetch tags (legacy - kept for compatibility)
 export const fetchTags = createAsyncThunk(
   "problems/fetchTags",
   async (_, { rejectWithValue }) => {
@@ -43,6 +43,39 @@ export const fetchTags = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch tags"
+      );
+    }
+  }
+);
+
+// Fetch grouped tags (companies, dataStructures, algorithms, topics)
+export const fetchGroupedTags = createAsyncThunk(
+  "problems/fetchGroupedTags",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/api/v1/problems/tags/grouped");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch grouped tags"
+      );
+    }
+  }
+);
+
+// Fetch problems by tags
+export const fetchProblemsByTags = createAsyncThunk(
+  "problems/fetchProblemsByTags",
+  async (tags, { rejectWithValue }) => {
+    try {
+      const tagsParam = Array.isArray(tags) ? tags.join(",") : tags;
+      const response = await axiosInstance.get(
+        `/api/v1/problems/by-tags?tags=${tagsParam}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch problems by tags"
       );
     }
   }
@@ -153,6 +186,16 @@ const problemsSlice = createSlice({
     tagsStatus: "idle",
     tagsError: null,
 
+    // Grouped tags
+    groupedTags: {
+      companies: [],
+      dataStructures: [],
+      algorithms: [],
+      topics: [],
+    },
+    groupedTagsStatus: "idle",
+    groupedTagsError: null,
+
     // Code run/submit
     runStatus: "idle",
     runError: null,
@@ -226,6 +269,35 @@ const problemsSlice = createSlice({
         state.tagsStatus = "failed";
         state.tagsError = action.payload;
       })
+
+      // Fetch grouped tags
+      .addCase(fetchGroupedTags.pending, (state) => {
+        state.groupedTagsStatus = "loading";
+        state.groupedTagsError = null;
+      })
+      .addCase(fetchGroupedTags.fulfilled, (state, action) => {
+        state.groupedTagsStatus = "succeeded";
+        state.groupedTags = action.payload;
+      })
+      .addCase(fetchGroupedTags.rejected, (state, action) => {
+        state.groupedTagsStatus = "failed";
+        state.groupedTagsError = action.payload;
+      })
+
+      // Fetch problems by tags
+      .addCase(fetchProblemsByTags.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchProblemsByTags.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.items = action.payload;
+      })
+      .addCase(fetchProblemsByTags.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+
       .addCase(fetchAllSubmission.pending, (state) => {
         state.submitResulStatus = "loading";
         state.tagsError = null;

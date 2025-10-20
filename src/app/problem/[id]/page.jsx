@@ -185,7 +185,7 @@ export default function ProblemDetailsPage() {
 
   if (status === "failed")
     return (
-      <div className="p-4 md:p-8 text-destructive text-base md:text-lg flex items-center h-full justify-center">
+      <div className="p-4 md:p-8 text-destructive text-base md:text-lg flex items-center h-full justify-center bg-card rounded-xl shadow-sm border border-border">
         {error}
       </div>
     );
@@ -239,13 +239,13 @@ export default function ProblemDetailsPage() {
   }
 
   return (
-    <div className="max-w-full mx-auto px-2 sm:px-4 fixed w-full">
-      <div className=" w-full h-[calc(100vh-64px)] min-h-[400px] gap-4 md:flex">
+    <div className="max-w-full mx-auto px-2 sm:px-4 fixed w-full bg-background text-foreground">
+      <div className="w-full h-[calc(100vh-64px)] min-h-[400px] gap-4 md:flex">
         {/* LEFT SIDE */}
         <Tabs
           value={rightTab}
           onValueChange={setRightTab}
-          className="w-full md:w-[40%] flex flex-col"
+          className="w-full md:w-[40%] flex flex-col bg-card rounded-xl shadow-sm border border-border"
         >
           <TabsList className="w-full text-sm flex-wrap justify-start">
             <TabsTrigger value="problem">Problem</TabsTrigger>
@@ -256,7 +256,7 @@ export default function ProblemDetailsPage() {
           </TabsList>
 
           <TabsContent value="problem" className="flex-1 overflow-hidden">
-            <aside className="w-full min-w-[280px] mb-6 px-4 sm:px-6 py-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-5rem)]">
+            <aside className="w-full min-w-[280px] mb-6 px-4 sm:px-6 py-4 overflow-y-auto flex flex-col gap-3 h-[calc(100vh-5rem)] bg-card text-foreground">
               <div>
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-2 text-primary">
                   {problem?.title}
@@ -269,7 +269,7 @@ export default function ProblemDetailsPage() {
                       ? "warning"
                       : "destructive"
                   }
-                  className="font-semibold tracking-wide text-xs sm:text-sm"
+                  className="font-semibold tracking-wide text-xs sm:text-sm bg-muted text-muted-foreground"
                 >
                   {problem?.difficulty || ""}
                 </Badge>
@@ -277,7 +277,7 @@ export default function ProblemDetailsPage() {
 
               <div className="mb-3 flex gap-2 flex-wrap">
                 {problem?.tags?.map((tag) => (
-                  <Badge variant="secondary" key={tag} className="text-xs">
+                  <Badge variant="secondary" key={tag} className="text-xs bg-muted text-muted-foreground">
                     {tag}
                   </Badge>
                 ))}
@@ -288,8 +288,8 @@ export default function ProblemDetailsPage() {
               </section>
 
               <div className="mb-10">
-                <h2 className="font-semibold text-sm sm:text-base">Constraints</h2>
-                <ul className="list-disc list-inside text-xs sm:text-sm">
+                <h2 className="font-semibold text-sm sm:text-base text-primary">Constraints</h2>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-muted-foreground">
                   {problem?.constraints?.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -480,7 +480,7 @@ export default function ProblemDetailsPage() {
         </Tabs>
 
         {/* RIGHT SIDE */}
-        <main className="w-full md:w-[60%] p-2 sm:p-3 flex flex-col h-full overflow-auto border border-[#e3e3e3]">
+  <main className="w-full md:w-[60%] p-2 sm:p-3 flex flex-col h-full overflow-auto border border-border bg-card rounded-xl shadow-sm text-foreground">
           <div className="mb-4 flex items-center gap-3">
             <Button
               variant="outline"

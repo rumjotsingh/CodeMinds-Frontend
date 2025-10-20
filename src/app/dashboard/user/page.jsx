@@ -50,11 +50,11 @@ export default function Dashboard() {
   
 
   return (
-    <div className="p-4 md:p-8 space-y-10 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 space-y-10 max-w-7xl mx-auto bg-background text-foreground">
       {/* Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary">
             Coding Dashboard
           </h1>
           {loadingStreaks ? (
@@ -77,42 +77,42 @@ export default function Dashboard() {
           </>
         ) : (
           <>
-            <Card className="">
+            <Card className="bg-card border border-border text-foreground">
               <CardHeader>
-                <CardTitle>Total Solved</CardTitle>
+                <CardTitle className="text-primary">Total Solved</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-indigo-600">
+                <p className="text-3xl font-bold text-primary">
                   {dashboard?.totalProblemsSolved || 0}
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="">
+            <Card className="bg-card border border-border text-foreground">
               <CardHeader>
-                <CardTitle>Total Submissions</CardTitle>
+                <CardTitle className="text-primary">Total Submissions</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-purple-600">
+                <p className="text-3xl font-bold text-primary">
                   {dashboard?.totalSubmissions || 0}
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="">
+            <Card className="bg-card border border-border text-foreground">
               <CardHeader>
-                <CardTitle>Correct</CardTitle>
+                <CardTitle className="text-primary">Correct</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-3xl font-bold text-primary">
                   {dashboard?.totalCorrect || 0}
                 </p>
               </CardContent>
             </Card>
             {/* Streak card */}
-            <Card className="">
+            <Card className="bg-card border border-border text-foreground">
               <CardHeader>
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-primary">
                   <Sparkles className="size-5 text-yellow-500" /> Streak
                 </CardTitle>
               </CardHeader>
@@ -121,16 +121,13 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground mt-2">Keep the streak going — solve at least one problem every day.</p>
               </CardContent>
             </Card>
-
-            {/* GitHub card (light placeholder) */}
-         
           </>
         )}
       </div>
 
       {/* Calendar Heatmap */}
-      <div className=" max-w-7xl">
-        <h2 className="text-xl font-semibold mb-4">Activity</h2>
+      <div className="max-w-7xl">
+        <h2 className="text-xl font-semibold mb-4 text-primary">Activity</h2>
         {loadingStreaks ? (
           <Skeleton className="h-[150px] w-full rounded-xl" />
         ) : (
@@ -139,8 +136,8 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Submissions */}
-      <div className="bg-white  max-w-7xl ">
-        <h2 className="text-xl font-semibold mb-4">Recent Submissions</h2>
+      <div className="bg-card max-w-7xl border border-border rounded-xl shadow-sm text-foreground">
+        <h2 className="text-xl font-semibold mb-4 text-primary">Recent Submissions</h2>
         {loadingDashboard ? (
           <div className="space-y-3">
             <Skeleton className="h-12 w-full rounded-md" />
