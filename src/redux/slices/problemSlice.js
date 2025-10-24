@@ -175,7 +175,7 @@ export const updateProblem = createAsyncThunk(
   "problems/updateProblem",
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(
+      const response = await axiosInstance.put(
         `/api/v1/problems/${id}`,
         updatedData
       );

@@ -180,17 +180,17 @@ export default function ProblemForm({ initialValues, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 backdrop-blur-sm p-2 md:p-6 overflow-y-auto">
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-8 space-y-8"
+        className="bg-card max-w-2xl md:max-w-4xl w-full max-h-[95vh] overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8 border border-border"
         noValidate
       >
-        <h2 className="text-2xl font-semibold">{isEdit ? "Update" : "Create"} Problem</h2>
+        <h2 className="text-xl md:text-2xl font-semibold text-foreground">{isEdit ? "Update" : "Create"} Problem</h2>
 
         {/* Title */}
         <div>
-          <Label htmlFor="title" className="font-medium">Title</Label>
+          <Label htmlFor="title" className="font-medium text-foreground">Title</Label>
           <Input
             id="title"
             name="title"
@@ -198,13 +198,14 @@ export default function ProblemForm({ initialValues, onClose }) {
             onChange={handleChange}
             aria-invalid={errors.title ? "true" : "false"}
             required
+            className="bg-muted text-foreground border-border"
           />
-          {errors.title && <p className="text-sm text-red-600 mt-1">{errors.title}</p>}
+          {errors.title && <p className="text-sm text-destructive mt-1">{errors.title}</p>}
         </div>
 
         {/* Description */}
         <div>
-          <Label htmlFor="description" className="font-medium">Description</Label>
+          <Label htmlFor="description" className="font-medium text-foreground">Description</Label>
           <Textarea
             id="description"
             name="description"
@@ -213,19 +214,20 @@ export default function ProblemForm({ initialValues, onClose }) {
             rows={3}
             aria-invalid={errors.description ? "true" : "false"}
             required
+            className="bg-muted text-foreground border-border"
           />
-          {errors.description && <p className="text-sm text-red-600 mt-1">{errors.description}</p>}
+          {errors.description && <p className="text-sm text-destructive mt-1">{errors.description}</p>}
         </div>
 
         {/* Difficulty */}
         <div>
-          <Label htmlFor="difficulty" className="font-medium">Difficulty</Label>
+          <Label htmlFor="difficulty" className="font-medium text-foreground">Difficulty</Label>
           <select
             id="difficulty"
             name="difficulty"
             value={form.difficulty}
             onChange={handleChange}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full rounded-md border border-border px-3 py-2 bg-muted text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             aria-invalid={errors.difficulty ? "true" : "false"}
             required
           >
@@ -233,12 +235,12 @@ export default function ProblemForm({ initialValues, onClose }) {
             <option value="MEDIUM">MEDIUM</option>
             <option value="HARD">HARD</option>
           </select>
-          {errors.difficulty && <p className="text-sm text-red-600 mt-1">{errors.difficulty}</p>}
+          {errors.difficulty && <p className="text-sm text-destructive mt-1">{errors.difficulty}</p>}
         </div>
 
         {/* Tags */}
         <div>
-          <Label htmlFor="tags" className="font-medium">Tags (comma separated)</Label>
+          <Label htmlFor="tags" className="font-medium text-foreground">Tags (comma separated)</Label>
           <Input
             id="tags"
             name="tags"
@@ -247,13 +249,14 @@ export default function ProblemForm({ initialValues, onClose }) {
             aria-invalid={errors.tags ? "true" : "false"}
             placeholder="Example: Array, Greedy, DP"
             required
+            className="bg-muted text-foreground border-border"
           />
-          {errors.tags && <p className="text-sm text-red-600 mt-1">{errors.tags}</p>}
+          {errors.tags && <p className="text-sm text-destructive mt-1">{errors.tags}</p>}
         </div>
 
         {/* Constraints */}
-        <div>
-          <Label htmlFor="constraints" className="font-medium">Constraints (one per line)</Label>
+        <div >
+          <Label htmlFor="constraints" className="font-medium text-foreground">Constraints (one per line)</Label>
           <Textarea
             id="constraints"
             name="constraints"
@@ -263,13 +266,14 @@ export default function ProblemForm({ initialValues, onClose }) {
             aria-invalid={errors.constraints ? "true" : "false"}
             placeholder="- 2 &lt;= height.length &lt;= 10^5"
             required
+            className="bg-muted text-foreground border-border"
           />
-          {errors.constraints && <p className="text-sm text-red-600 mt-1">{errors.constraints}</p>}
+          {errors.constraints && <p className="text-sm text-destructive mt-1">{errors.constraints}</p>}
         </div>
 
         {/* Hints */}
         <div>
-          <Label htmlFor="hints" className="font-medium">Hints (one per line)</Label>
+          <Label htmlFor="hints" className="font-medium text-foreground">Hints (one per line)</Label>
           <Textarea
             id="hints"
             name="hints"
@@ -279,30 +283,19 @@ export default function ProblemForm({ initialValues, onClose }) {
             aria-invalid={errors.hints ? "true" : "false"}
             placeholder="One per line"
             required
+            className="bg-muted text-foreground border-border"
           />
-          {errors.hints && <p className="text-sm text-red-600 mt-1">{errors.hints}</p>}
+          {errors.hints && <p className="text-sm text-destructive mt-1">{errors.hints}</p>}
         </div>
 
         {/* Editorial */}
-        <div>
-          <Label htmlFor="editorial" className="font-medium">Editorial</Label>
-          <Textarea
-            id="editorial"
-            name="editorial"
-            value={form.editorial}
-            onChange={handleChange}
-            rows={4}
-            aria-invalid={errors.editorial ? "true" : "false"}
-            required
-          />
-          {errors.editorial && <p className="text-sm text-red-600 mt-1">{errors.editorial}</p>}
-        </div>
+       
 
         {/* Examples */}
         <div>
-          <Label className="font-medium mb-2 block">Examples</Label>
+          <Label className="font-medium mb-2 block text-foreground">Examples</Label>
           {form.examples.map((ex, idx) => (
-            <div key={idx} className="mb-4 border border-gray-200 rounded p-4 relative">
+            <div key={idx} className="mb-4 border border-border rounded-lg p-4 relative bg-muted">
               <Button
                 size="sm"
                 variant="destructive"
@@ -314,36 +307,39 @@ export default function ProblemForm({ initialValues, onClose }) {
                 Remove
               </Button>
               <div className="mb-2">
-                <Label htmlFor={`example-input-${idx}`}>Input</Label>
+                <Label htmlFor={`example-input-${idx}`} className="text-foreground">Input</Label>
                 <Textarea
                   id={`example-input-${idx}`}
                   value={ex.input}
                   onChange={(e) => updateExample(idx, "input", e.target.value)}
                   rows={2}
                   required
+                  className="bg-background text-foreground border-border"
                 />
               </div>
               <div className="mb-2">
-                <Label htmlFor={`example-output-${idx}`}>Output</Label>
+                <Label htmlFor={`example-output-${idx}`} className="text-foreground">Output</Label>
                 <Textarea
                   id={`example-output-${idx}`}
                   value={ex.output}
                   onChange={(e) => updateExample(idx, "output", e.target.value)}
                   rows={2}
                   required
+                  className="bg-background text-foreground border-border"
                 />
               </div>
               <div>
-                <Label htmlFor={`example-explanation-${idx}`}>Explanation (optional)</Label>
+                <Label htmlFor={`example-explanation-${idx}`} className="text-foreground">Explanation (optional)</Label>
                 <Textarea
                   id={`example-explanation-${idx}`}
                   value={ex.explanation}
                   onChange={(e) => updateExample(idx, "explanation", e.target.value)}
                   rows={2}
+                  className="bg-background text-foreground border-border"
                 />
               </div>
               {errors[`examples_${idx}`] && (
-                <p className="text-sm text-red-600 mt-1">{errors[`examples_${idx}`]}</p>
+                <p className="text-sm text-destructive mt-1">{errors[`examples_${idx}`]}</p>
               )}
             </div>
           ))}
@@ -354,9 +350,9 @@ export default function ProblemForm({ initialValues, onClose }) {
 
         {/* Testcases */}
         <div>
-          <Label className="font-medium mb-2 block">Testcases</Label>
+          <Label className="font-medium mb-2 block text-foreground">Testcases</Label>
           {form.testcases.map((tc, idx) => (
-            <div key={idx} className="mb-4 border border-gray-200 rounded p-4 relative">
+            <div key={idx} className="mb-4 border border-border rounded-lg p-4 relative bg-muted">
               <Button
                 size="sm"
                 variant="destructive"
@@ -368,23 +364,25 @@ export default function ProblemForm({ initialValues, onClose }) {
                 Remove
               </Button>
               <div className="mb-2">
-                <Label htmlFor={`testcase-input-${idx}`}>Input</Label>
+                <Label htmlFor={`testcase-input-${idx}`} className="text-foreground">Input</Label>
                 <Textarea
                   id={`testcase-input-${idx}`}
                   value={tc.input}
                   onChange={(e) => updateTestcase(idx, "input", e.target.value)}
                   rows={2}
                   required
+                  className="bg-background text-foreground border-border"
                 />
               </div>
               <div className="mb-2">
-                <Label htmlFor={`testcase-output-${idx}`}>Output</Label>
+                <Label htmlFor={`testcase-output-${idx}`} className="text-foreground">Output</Label>
                 <Textarea
                   id={`testcase-output-${idx}`}
                   value={tc.output}
                   onChange={(e) => updateTestcase(idx, "output", e.target.value)}
                   rows={2}
                   required
+                  className="bg-background text-foreground border-border"
                 />
               </div>
               <div className="flex items-center gap-3">
@@ -394,12 +392,13 @@ export default function ProblemForm({ initialValues, onClose }) {
                   checked={tc.isHidden}
                   onChange={(e) => updateTestcase(idx, "isHidden", e.target.checked)}
                   required
+                  className="accent-primary w-4 h-4"
                 />
-                <Label htmlFor={`testcase-hidden-${idx}`}>Hidden testcase</Label>
+                <Label htmlFor={`testcase-hidden-${idx}`} className="text-foreground">Hidden testcase</Label>
               </div>
 
               {errors[`testcases_${idx}`] && (
-                <p className="text-sm text-red-600 mt-1">{errors[`testcases_${idx}`]}</p>
+                <p className="text-sm text-destructive mt-1">{errors[`testcases_${idx}`]}</p>
               )}
             </div>
           ))}
@@ -410,19 +409,20 @@ export default function ProblemForm({ initialValues, onClose }) {
 
         {/* CodeSnippets */}
         <div>
-          <Label className="font-medium mb-2 block">Code Snippets (per language)</Label>
+          <Label className="font-medium mb-2 block text-foreground">Code Snippets (per language)</Label>
           {Object.entries(form.codeSnippets).map(([lang, code]) => (
             <div key={lang} className="mb-4">
-              <Label htmlFor={`codeSnippet-${lang}`} className="capitalize">{lang}</Label>
+              <Label htmlFor={`codeSnippet-${lang}`} className="capitalize text-foreground">{lang}</Label>
               <Textarea
                 id={`codeSnippet-${lang}`}
                 value={code}
                 onChange={(e) => updateCodeSnippet(lang, e.target.value)}
                 rows={4}
                 required
+                className="bg-background text-foreground border-border"
               />
               {errors[`codeSnippets_${lang}`] && (
-                <p className="text-sm text-red-600 mt-1">{errors[`codeSnippets_${lang}`]}</p>
+                <p className="text-sm text-destructive mt-1">{errors[`codeSnippets_${lang}`]}</p>
               )}
             </div>
           ))}
@@ -431,28 +431,29 @@ export default function ProblemForm({ initialValues, onClose }) {
 
         {/* ReferenceSolutions */}
         <div>
-          <Label className="font-medium mb-2 block">Reference Solutions (per language)</Label>
+          <Label className="font-medium mb-2 block text-foreground">Reference Solutions (per language)</Label>
           {Object.entries(form.referenceSolutions).map(([lang, code]) => (
             <div key={lang} className="mb-4">
-              <Label htmlFor={`referenceSolution-${lang}`} className="capitalize">{lang}</Label>
+              <Label htmlFor={`referenceSolution-${lang}`} className="capitalize text-foreground">{lang}</Label>
               <Textarea
                 id={`referenceSolution-${lang}`}
                 value={code}
                 onChange={(e) => updateReferenceSolution(lang, e.target.value)}
                 rows={4}
                 required
+                className="bg-background text-foreground border-border"
               />
               {errors[`referenceSolutions_${lang}`] && (
-                <p className="text-sm text-red-600 mt-1">{errors[`referenceSolutions_${lang}`]}</p>
+                <p className="text-sm text-destructive mt-1">{errors[`referenceSolutions_${lang}`]}</p>
               )}
             </div>
           ))}
           {/* Optionally add language addition feature */}
         </div>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-          <Button type="submit">{isEdit ? "Update" : "Create"}</Button>
+        <div className="flex flex-col md:flex-row justify-end gap-2 md:gap-4 mt-6">
+          <Button type="button" variant="outline" onClick={onClose} className="w-full md:w-auto">Cancel</Button>
+          <Button type="submit" className="w-full md:w-auto">{isEdit ? "Update" : "Create"}</Button>
         </div>
       </form>
     </div>
