@@ -49,7 +49,7 @@ export default function ProblemsManager() {
   }
   function onDeleteClick(id) {
     setToDeleteId(id);
-    toast("The Problem is Deleted ")
+    
   }
   function onCloseForm() {
     setOpenForm(false);
@@ -62,26 +62,26 @@ export default function ProblemsManager() {
 
   return (
     <div className="space-y-8 w-full">
-      {/* Enhanced Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-[#e3e3e3] w-full">
+      {/* Enhanced Header Section - Responsive & Theme */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-border w-full">
         <div>
-          <h2 className="text-3xl font-bold text-black mb-2">Problems Management</h2>
-          <p className="text-gray-600">Create, edit, and manage coding problems for your platform</p>
-          <div className="flex items-center gap-4 mt-3">
-            <div className="bg-gray-50 px-3 py-1 rounded-lg border border-[#e3e3e3]">
-              <span className="text-sm font-semibold text-black">{items.length} Total Problems</span>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Problems Management</h2>
+          <p className="text-muted-foreground">Create, edit, and manage coding problems for your platform</p>
+          <div className="flex items-center gap-3 mt-3">
+            <div className="bg-muted px-3 py-1 rounded-lg border border-border">
+              <span className="text-sm font-semibold text-foreground">{items.length} Total Problems</span>
             </div>
-            <div className="bg-green-50 px-3 py-1 rounded-lg border border-green-200">
-              <span className="text-sm font-semibold text-green-800">Active</span>
+            <div className="bg-green-100 dark:bg-green-900 px-3 py-1 rounded-lg border border-green-200 dark:border-green-800">
+              <span className="text-sm font-semibold text-green-800 dark:text-green-200">Active</span>
             </div>
           </div>
         </div>
-        <Button 
-          variant="default" 
+        <Button
+          variant="default"
           onClick={onCreateClick}
-          className="bg-black text-white hover:bg-gray-800 shadow-lg px-6 py-3 text-base font-semibold border border-[#e3e3e3]"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg px-6 py-3 text-base font-semibold border border-border"
         >
-          ✨ Create New Problem
+           Create New Problem
         </Button>
       </div>
 
@@ -91,34 +91,34 @@ export default function ProblemsManager() {
         <ProblemForm initialValues={editProblem} onClose={onCloseForm} />
       )}
 
-      {/* Enhanced Confirm Delete Dialog */}
+      {/* Confirm Delete Dialog - Theme & Responsive */}
       <Dialog open={!!toDeleteId} onOpenChange={() => setToDeleteId(null)}>
         <DialogPortal>
-          <DialogContent className="sm:max-w-lg border border-[#e3e3e3] shadow-xl">
+          <DialogContent className="sm:max-w-lg border border-border shadow-xl bg-card">
             <DialogHeader className="pb-4">
-              <DialogTitle className="text-2xl font-bold text-black flex items-center gap-3">
-                <span className="text-red-500">⚠️</span>
+              <DialogTitle className="text-xl md:text-2xl font-bold text-destructive flex items-center gap-3">
+                <span className="text-destructive">⚠️</span>
                 Delete Problem
               </DialogTitle>
-              <DialogDescription className="text-gray-600 text-base leading-relaxed">
+              <DialogDescription className="text-muted-foreground text-base leading-relaxed">
                 Are you sure you want to permanently delete this problem? This action cannot be undone and will remove all associated data.
               </DialogDescription>
             </DialogHeader>
 
-            <DialogFooter className="flex justify-end gap-3 pt-4 border-t border-[#e3e3e3]">
-              <Button 
-                variant="outline" 
+            <DialogFooter className="flex justify-end gap-3 pt-4 border-t border-border">
+              <Button
+                variant="outline"
                 onClick={() => setToDeleteId(null)}
-                className="border border-[#e3e3e3] text-black hover:bg-gray-50 px-6"
+                className="border border-border text-foreground hover:bg-muted px-6"
               >
                 Cancel
               </Button>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 onClick={handleConfirmDelete}
-                className="bg-red-600 hover:bg-red-700 px-6 shadow-sm"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 px-6 shadow-sm"
               >
-                🗑️ Delete Forever
+                 Delete Forever
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -131,11 +131,11 @@ export default function ProblemsManager() {
 function ProblemsTable({ items, onEdit, onDelete }) {
   if (!items.length)
     return (
-      <div className="text-center py-16 bg-gray-50 rounded-xl border border-[#e3e3e3]">
+      <div className="text-center py-12 md:py-16 bg-muted rounded-xl border border-border">
         <div className="max-w-md mx-auto">
           <div className="text-6xl mb-4">📝</div>
-          <h3 className="text-xl font-semibold text-black mb-2">No problems created yet</h3>
-          <p className="text-gray-600 mb-6">Start building your problem collection by creating your first coding challenge.</p>
+          <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">No problems created yet</h3>
+          <p className="text-muted-foreground mb-6">Start building your problem collection by creating your first coding challenge.</p>
         </div>
       </div>
     );
@@ -143,80 +143,80 @@ function ProblemsTable({ items, onEdit, onDelete }) {
   const getDifficultyStyle = (difficulty) => {
     switch (difficulty?.toUpperCase()) {
       case "EASY":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800";
       case "MEDIUM":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-800";
       case "HARD":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
 
   return (
-    <div className="rounded-xl border border-[#e3e3e3] shadow-sm bg-white overflow-hidden">
-      <Table className="w-full">
+    <div className="overflow-x-auto">
+      <Table className="w-full min-w-[600px]">
         <TableHeader>
-          <TableRow className="border-b border-[#e3e3e3] bg-gray-50">
-            <TableHead className="font-bold text-black px-6 py-4 text-base">Problem Title</TableHead>
-            <TableHead className="font-bold text-black px-6 py-4 text-base">Difficulty</TableHead>
-            <TableHead className="font-bold text-black px-6 py-4 text-base">Tags</TableHead>
-            <TableHead className="font-bold text-black px-6 py-4 text-base text-center">Actions</TableHead>
+          <TableRow className="border-b border-border bg-muted">
+            <TableHead className="font-bold text-foreground px-4 md:px-6 py-3 md:py-4 text-sm md:text-base">Problem Title</TableHead>
+            <TableHead className="font-bold text-foreground px-4 md:px-6 py-3 md:py-4 text-sm md:text-base">Difficulty</TableHead>
+            <TableHead className="font-bold text-foreground px-4 md:px-6 py-3 md:py-4 text-sm md:text-base">Tags</TableHead>
+            <TableHead className="font-bold text-foreground px-4 md:px-6 py-3 md:py-4 text-sm md:text-base text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {items.map((pb, index) => (
-            <TableRow 
-              key={pb._id || pb.id} 
-              className="hover:bg-gray-50 border-b border-[#e3e3e3] last:border-b-0 transition-colors"
+            <TableRow
+              key={pb._id || pb.id}
+              className="hover:bg-muted/60 border-b border-border last:border-b-0 transition-colors"
             >
-              <TableCell className="font-semibold text-black px-6 py-5 text-base">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-sm font-bold border border-[#e3e3e3]">
+              <TableCell className="font-semibold text-foreground px-4 md:px-6 py-4 md:py-5 text-sm md:text-base">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <span className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center text-xs md:text-sm font-bold border border-border">
                     {index + 1}
                   </span>
-                  {pb.title}
+                  <span className="line-clamp-1">{pb.title.length > 40 ? pb.title.slice(0, 40) + "..." : pb.title}</span>
                 </div>
               </TableCell>
-              <TableCell className="px-6 py-5">
-                <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold border ${getDifficultyStyle(pb.difficulty)}`}>
+              <TableCell className="px-4 md:px-6 py-4 md:py-5">
+                <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs md:text-sm font-semibold border ${getDifficultyStyle(pb.difficulty)}`}>
                   {pb.difficulty}
                 </span>
               </TableCell>
-              <TableCell className="px-6 py-5">
+              <TableCell className="px-4 md:px-6 py-4 md:py-5">
                 <div className="flex flex-wrap gap-2">
-                  {(pb.tags || []).slice(0, 3).map((tag) => (
+                  {(pb.tags || []).slice(0, 1).map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1 rounded-lg border border-blue-200"
+                      className="inline-flex items-center bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-xs font-medium px-3 py-1 rounded-lg border border-blue-200 dark:border-blue-800"
                     >
                       {tag}
                     </span>
                   ))}
-                  {(pb.tags || []).length > 3 && (
-                    <span className="inline-flex items-center bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-lg border border-gray-200">
-                      +{(pb.tags || []).length - 3}
+                  {(pb.tags || []).length > 1 && (
+                    <span className="inline-flex items-center bg-muted text-muted-foreground text-xs font-medium px-2 py-1 rounded-lg border border-border">
+                      +{(pb.tags || []).length - 1}
                     </span>
                   )}
                 </div>
               </TableCell>
-              <TableCell className="px-6 py-5">
-                <div className="flex justify-center gap-3">
+              <TableCell className="px-4 md:px-6 py-4 md:py-5">
+                <div className="flex justify-center gap-2 md:gap-3">
                   <Button
                     size="sm"
-                    variant="outline"
+                    
                     onClick={() => onEdit(pb)}
-                    className="border border-[#e3e3e3] text-black hover:bg-gray-50 shadow-sm px-4"
+                    className=""
                   >
-                    ✏️ Update
+                     Update
                   </Button>
                   <Button
                     size="sm"
-                    variant="destructive"
+                 
                     onClick={() => onDelete(pb._id)}
-                    className="shadow-sm px-4"
+                    className="border border-[#e3e3e3]"
                   >
-                    🗑️ Delete
+                     Delete
                   </Button>
                 </div>
               </TableCell>

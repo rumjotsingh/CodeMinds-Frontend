@@ -783,7 +783,7 @@ const router = useRouter();
         setSelectedProblem(problem);
         setOpen(true);
       }}
-  className="cursor-pointer border border-border bg-primary flex-1 bg-primary text-primary-foreground"
+  className="cursor-pointer border border-border  flex-1 bg-primary text-primary-foreground"
     >
       Add to Playlist
     </Button>
@@ -791,7 +791,7 @@ const router = useRouter();
                           
                           <Button asChild size="sm" className="flex-1 bg-primary text-primary-foreground">
                             <a
-                              href={`/problem/${problem._id}`}
+                              href={`/problem/${pbg-primaryroblem._id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
