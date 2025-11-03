@@ -38,6 +38,7 @@ const PlaylistPage = () => {
   const dispatch = useDispatch();
 
   const { currentPlaylist, loading } = useSelector((state) => state.playlists);
+  console.log("currentPlaylist", currentPlaylist);
 
   useEffect(() => {
     dispatch(getPlaylistById(id));

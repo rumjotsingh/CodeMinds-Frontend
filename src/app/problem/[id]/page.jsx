@@ -107,17 +107,19 @@ export default function ProblemDetailsPage() {
   const [sourceCode, setSourceCode] = useState("");
   const [hasRunProblem, setHasRunProblem] = useState(false);
   const [solutionLang, setSolutionLang] = useState(() => getDefaultLanguage(problem, availableLangs));
-
+ 
   useEffect(() => {
-    if (id) {
+
       dispatch(fetchProblemsById(id));
       dispatch(fetchComments(id));
-    }
+    
   }, [id, dispatch]);
+ console.log(comments)
 
   useEffect(() => {
     dispatch(fetchSubmissionsByProblemById(id));
   }, [dispatch]);
+
 
   useEffect(() => {
     if (!problem) return;

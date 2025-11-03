@@ -41,9 +41,10 @@ const PlaylistPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const playlists = useSelector((state) => state.playlists.playlists);
-  const loadingPlaylists = useSelector((state) => state.playlists.loading);
-
+  const playlists = useSelector((state) => state.playlists?.playlists || []);
+  const loadingPlaylists = useSelector((state) => state.playlists?.loading || false);
+  const error = useSelector((state) => state.playlists?.error);
+  console.log(playlists);
   useEffect(() => {
     dispatch(fetchAllPlaylists());
   }, [dispatch]);
@@ -93,6 +94,12 @@ const PlaylistPage = () => {
       </div>
 
       {/* Table */}
+      {error && (
+        <div className="border border-red-200 bg-red-50 text-red-800 px-4 py-3 rounded-lg mb-4">
+          <p className="font-medium">Error loading playlists:</p>
+          <p className="text-sm">{error.message || 'An unexpected error occurred'}</p>
+        </div>
+      )}
       {loadingPlaylists ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
@@ -109,6 +116,25 @@ const PlaylistPage = () => {
         </div>
       ) : (
         <>
+          {/* No playlists message */}
+          {playlists.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="mx-auto w-24 h-24 mb-4 text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">No playlists yet</h3>
+              <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                Create your first playlist to start organizing your coding problems into collections.
+              </p>
+              <Button onClick={() => router.push("/problem")} className="inline-flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Create Your First Playlist
+              </Button>
+            </div>
+          ) : (
+            <>
           {/* Desktop Table View */}
           <div className="hidden md:block border border-border rounded-xl overflow-hidden bg-card shadow-sm">
           <Table>
@@ -131,7 +157,7 @@ const PlaylistPage = () => {
                   </TableCell>
                   <TableCell className="text-foreground font-medium px-6 py-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      {playlist.problems.length}
+                      {playlist.problemCount} problem{playlist.problemCount !== 1 ? 's' : ''}
                     </span>
                   </TableCell>
                   <TableCell className="text-center px-6 py-4">
@@ -182,9 +208,9 @@ const PlaylistPage = () => {
               <div>
                 <h3 className="font-bold text-base text-foreground">{playlist.title}</h3>
                 <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{playlist.description}</p>
-                <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                  {playlist.problems.length} problem{playlist.problems.length !== 1 ? 's' : ''}
-                </div>
+                 <div className="mt-2 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                  {playlist.problemCount} problem{playlist.problemCount !== 1 ? 's' : ''}
+                </div> 
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <Button
@@ -222,6 +248,8 @@ const PlaylistPage = () => {
             </div>
           ))}
         </div>
+        </>
+          )}
         </>
       )}
 

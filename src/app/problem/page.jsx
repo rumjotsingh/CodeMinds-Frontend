@@ -47,6 +47,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "../../context/authContext";
 import { useRouter } from "next/navigation";
+import { pl } from "date-fns/locale";
 
 
 export default function ProblemsList() {
@@ -57,10 +58,11 @@ const router = useRouter();
   const { items: problems, status, groupedTags, groupedTagsStatus, error, searchCount } = useSelector(
     (state) => state.problem
   );
-  console.log(groupedTags, groupedTagsStatus, error);
+  
   const { playlists = [], loading: playlistLoading = false } = useSelector(
     (state) => state.playlists || {}
   );
+ 
 
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [isCreateMode, setIsCreateMode] = useState(false);
@@ -86,6 +88,7 @@ const router = useRouter();
      dispatch(fetchGroupedTags());
     dispatch(fetchAllPlaylists());
   }, [ dispatch]);
+ 
 
   // Debounce search term
   useEffect(() => {
@@ -116,7 +119,7 @@ const router = useRouter();
       dispatch(fetchProblems());
     }
   }, [selectedTags, dispatch, searchDebounce]);
-
+ 
   const handleTagToggle = (tag) => {
     setSelectedTags(prev => {
       const difficulties = ["EASY", "MEDIUM", "HARD"];
@@ -173,6 +176,7 @@ const router = useRouter();
   };
 
   const handleAddToPlaylist = async () => {
+   
     if (!selectedPlaylistId || !selectedProblem) return;
      if (!authLoading && !isAuthenticated) {
     toast("You must be logged in to view Create Playlist");
@@ -658,7 +662,7 @@ const router = useRouter();
                 <SelectValue placeholder="Select a playlist..." />
               </SelectTrigger>
               <SelectContent className="bg-card border border-border">
-                {playlists.map((item) => (
+                {playlists?.map((item) => (
                   <SelectItem key={item?._id} value={item?._id} className="text-foreground hover:bg-muted">
                     {item?.title}
                   </SelectItem>
@@ -791,7 +795,7 @@ const router = useRouter();
                           
                           <Button asChild size="sm" className="flex-1 bg-primary text-primary-foreground">
                             <a
-                              href={`/problem/${pbg-primaryroblem._id}`}
+                              href={`/problem/${problem._id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
