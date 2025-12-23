@@ -61,6 +61,7 @@ export const getPlaylistById = createAsyncThunk(
 export const addProblemToPlaylist = createAsyncThunk(
   "playlists/addProblem",
   async ({ playlistId, problemId }, { rejectWithValue }) => {
+    console.log(playlistId, problemId);
     try {
       const response = await axiosInstance.post(
         `/api/v1/playlists/${playlistId}/add`,
@@ -130,7 +131,8 @@ const playlistSlice = createSlice({
       })
       .addCase(fetchAllPlaylists.fulfilled, (state, action) => {
         state.loading = false;
-        state.playlists = action.payload;
+        console.log(action.payload.playlists);
+        state.playlists = action.payload.playlists;
       })
       .addCase(fetchAllPlaylists.rejected, (state, action) => {
         state.loading = false;

@@ -111,6 +111,7 @@ export default function AnnouncementsManager() {
         await dispatch(updateAnnouncement({ id: editData._id, updateData: form })).unwrap();
         toast("Announcement updated successfully.");
       } else {
+        console.log("form", form);
         await dispatch(createAnnouncement(form)).unwrap();
         toast("Announcement created successfully.");
       }

@@ -34,6 +34,7 @@ export const fetchSubmissionsByProblemById = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const res = await axiosInstance.get(`/api/v1/submissions/problem/${id}`);
+
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || err.message);
@@ -78,6 +79,7 @@ const submissionsSlice = createSlice({
       })
       .addCase(fetchSubmissionById.fulfilled, (state, action) => {
         state.loading = false;
+
         state.single = action.payload;
       })
       .addCase(fetchSubmissionById.rejected, (state, action) => {
@@ -92,7 +94,7 @@ const submissionsSlice = createSlice({
       })
       .addCase(fetchSubmissionsByProblemById.fulfilled, (state, action) => {
         state.loading = false;
-        state.problemSubmission = action.payload;
+        state.problemSubmission = action.payload.submissions;
       })
       .addCase(fetchSubmissionsByProblemById.rejected, (state, action) => {
         state.loading = false;

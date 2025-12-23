@@ -71,6 +71,7 @@ const contestSlice = createSlice({
       .addCase(createContest.fulfilled, (state, action) => {
         state.loading = false;
         state.createSuccess = true;
+
         state.contests.unshift(action.payload);
       })
       .addCase(createContest.rejected, (state, action) => {
@@ -86,7 +87,7 @@ const contestSlice = createSlice({
       .addCase(fetchContests.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.contests = action.payload;
+        state.contests = action.payload.contests;
       })
       .addCase(fetchContests.rejected, (state, action) => {
         state.loading = false;

@@ -24,6 +24,7 @@ export const fetchProblemsById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/api/v1/problems/${id}`);
+
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -175,7 +176,7 @@ export const updateProblem = createAsyncThunk(
   "problems/updateProblem",
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.patch(
+      const response = await axiosInstance.put(
         `/api/v1/problems/${id}`,
         updatedData
       );
@@ -280,7 +281,7 @@ const problemsSlice = createSlice({
       })
       .addCase(fetchProblems.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = action.payload;
+        state.items = action.payload.problems;
       })
       .addCase(fetchProblems.rejected, (state, action) => {
         state.status = "failed";
@@ -294,6 +295,7 @@ const problemsSlice = createSlice({
       })
       .addCase(fetchProblemsById.fulfilled, (state, action) => {
         state.status = "succeeded";
+        console.log("fetched problem by id", action.payload);
         state.getById = action.payload;
       })
       .addCase(fetchProblemsById.rejected, (state, action) => {
