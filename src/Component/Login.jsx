@@ -71,22 +71,22 @@ export default function LoginPage() {
     }
   };
   return (
-    <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center">
+    <div className="min-h-screen max-w-7xl mx-auto flex items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl text-[#eff1f6]">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Email Field */}
             <Input
-               className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg border border-[#303030] px-4 py-3 bg-[#1a1a1a] text-[#eff1f6] placeholder:text-[#eff1f6bf] focus:outline-none focus:ring-2 focus:ring-[#00b8a3]"
               type="email"
               placeholder="Email"
               {...register('email', { required: 'Email is required' })}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+              <p className="text-[#ff375f] text-sm">{errors.email.message}</p>
             )}
 
             {/* Password Field with Toggle */}
@@ -94,26 +94,37 @@ export default function LoginPage() {
               <Input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
-                 className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full rounded-lg border border-[#303030] px-4 py-3 bg-[#1a1a1a] text-[#eff1f6] placeholder:text-[#eff1f6bf] focus:outline-none focus:ring-2 focus:ring-[#00b8a3]"
                 {...register('password', { required: 'Password is required' })}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-2.5 text-gray-500 "
-                
+                className="absolute right-3 top-2.5 text-[#eff1f6bf]"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password.message}</p>
+              <p className="text-[#ff375f] text-sm">{errors.password.message}</p>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
-             <div className="w-full text-center">
+
+            <div className="text-sm text-[#eff1f6bf] text-center">
+              Don&apos;t have an account?{" "}
+              <button
+                type="button"
+                onClick={() => router.push("/register")}
+                className="text-[#00b8a3] hover:underline cursor-pointer"
+              >
+                Register
+              </button>
+            </div>
+
+            <div className="w-full text-center">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => toast.error("Google login failed")}

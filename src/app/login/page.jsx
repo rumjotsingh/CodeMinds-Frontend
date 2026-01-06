@@ -14,10 +14,8 @@ export default function LoginPage() {
   }, [isAuthenticated]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center ">
-      <div className="w-full max-w-md rounded-xl  p-8">
-        <Login />
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a]">
+      <Login />
     </div>
   );
 }

@@ -1,44 +1,22 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { useParams, useRouter } from "next/navigation";
 import {
   getPlaylistById,
   removeProblemFromPlaylist,
 } from "../../../redux/slices/playlistSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft, Plus, Code2, Trash2, X } from "lucide-react";
 
-const PlaylistPage = () => {
+const PlaylistDetailPage = () => {
   const { id } = useParams();
   const router = useRouter();
   const dispatch = useDispatch();
+  const [removeModal, setRemoveModal] = useState(null);
 
   const { currentPlaylist, loading } = useSelector((state) => state.playlists);
-  console.log("currentPlaylist", currentPlaylist);
 
   useEffect(() => {
     dispatch(getPlaylistById(id));
@@ -52,309 +30,273 @@ const PlaylistPage = () => {
           problemId: problemId,
         })
       );
-      // Refresh the playlist data after removal
+      setRemoveModal(null);
       setTimeout(() => {
         dispatch(getPlaylistById(id));
       }, 500);
     } catch (error) {
-      console.error('Error removing problem:', error);
+      console.error("Error removing problem:", error);
+    }
+  };
+
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty?.toUpperCase()) {
+      case "EASY":
+        return "text-[#00b8a3] bg-[#00b8a320]";
+      case "MEDIUM":
+        return "text-[#ffc01e] bg-[#ffc01e20]";
+      case "HARD":
+        return "text-[#ff375f] bg-[#ff375f20]";
+      default:
+        return "text-[#eff1f6bf] bg-[#303030]";
     }
   };
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto py-10 space-y-8 min-h-screen bg-background px-4 sm:px-8 text-foreground">
-        <Skeleton className="h-8 w-1/3" />
-        <Skeleton className="h-6 w-2/3" />
-        <Separator className="border-border" />
-        <Skeleton className="h-9 w-40" />
-        <Card className="rounded-xl border border-border shadow-sm bg-card overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-border bg-muted">
-                <TableHead className="w-[220px] font-semibold px-6 py-4">Title</TableHead>
-                <TableHead className="font-semibold px-6 py-4">Tags</TableHead>
-                <TableHead className="font-semibold px-6 py-4">Difficulty</TableHead>
-                <TableHead className="text-center font-semibold px-6 py-4">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[...Array(3)].map((_, i) => (
-                <TableRow key={i} className="border-b border-border last:border-b-0">
-                  <TableCell className="px-6 py-5">
-                    <Skeleton className="h-6 w-40" />
-                  </TableCell>
-                  <TableCell className="px-6 py-5">
-                    <Skeleton className="h-6 w-24" />
-                  </TableCell>
-                  <TableCell className="px-6 py-5">
-                    <Skeleton className="h-6 w-20" />
-                  </TableCell>
-                  <TableCell className="flex justify-end gap-3 px-6 py-5">
-                    <Skeleton className="h-9 w-20" />
-                    <Skeleton className="h-9 w-20" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+      <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6]">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <Skeleton className="h-8 w-64 bg-[#303030] mb-4" />
+          <Skeleton className="h-5 w-96 bg-[#303030] mb-8" />
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-16 w-full bg-[#303030] rounded-lg" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!currentPlaylist) {
     return (
-      <div className="flex justify-center items-center h-[60vh] bg-background text-foreground">
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground text-lg">Playlist not found</p>
-          <Button 
-            onClick={() => router.push('/playlist')}
-            variant="outline"
-            className="border border-border"
+      <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-[#eff1f6bf] text-lg mb-4">Playlist not found</p>
+          <button
+            onClick={() => router.push("/playlist")}
+            className="px-4 py-2 bg-[#282828] hover:bg-[#303030] border border-[#303030] rounded-lg transition"
           >
             Back to Playlists
-          </Button>
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-8 space-y-6 min-h-screen bg-background px-4 sm:px-8 text-foreground">
-      {/* Playlist Info */}
-      <Card className="shadow-sm border border-border bg-card">
-        <CardHeader className="pb-6">
-          <CardTitle className="text-2xl font-bold mb-2">
-            {currentPlaylist?.title}
-          </CardTitle>
-          <CardContent className="p-0">
-            <p className="text-muted-foreground">
-              {currentPlaylist?.description}
-            </p>
-            <div className="mt-4 flex items-center gap-4">
-              <div className="px-3 py-1.5 rounded-md border border-border bg-muted">
-                <span className="text-xs font-medium">
-                  {currentPlaylist?.problems?.length || 0} Problem{(currentPlaylist?.problems?.length || 0) !== 1 ? 's' : ''}
-                </span>
-              </div>
-              <Button
-                onClick={() => router.push('/playlist')}
-                variant="outline"
-                className="border border-border"
-              >
-                ← Back to Playlists
-              </Button>
-            </div>
-          </CardContent>
-        </CardHeader>
-      </Card>
-
-      <Separator className="border-border" />
-
-      {/* Problems List */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold">
-              Problems in this Playlist
-            </h2>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {currentPlaylist?.problems?.length || 0} problem{(currentPlaylist?.problems?.length || 0) !== 1 ? 's' : ''} total
-            </p>
-          </div>
-          <Button
-            onClick={() => router.push('/problem')}
-            className="shadow-sm"
+    <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6]">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <button
+            onClick={() => router.push("/playlist")}
+            className="flex items-center gap-2 text-[#eff1f6bf] hover:text-[#eff1f6] mb-4 transition"
           >
-            Add More Problems
-          </Button>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Playlists
+          </button>
+          <div className="flex items-start justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-2xl font-bold mb-2">{currentPlaylist?.title}</h1>
+              <p className="text-[#eff1f6bf]">{currentPlaylist?.description}</p>
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-[#282828] border border-[#303030] rounded-lg text-sm">
+                <Code2 className="w-4 h-4 text-[#00b8a3]" />
+                {currentPlaylist?.problems?.length || 0} Problem
+                {(currentPlaylist?.problems?.length || 0) !== 1 ? "s" : ""}
+              </div>
+            </div>
+            <button
+              onClick={() => router.push("/problem")}
+              className="flex items-center gap-2 px-4 py-2 bg-[#00b8a3] hover:bg-[#00a392] text-white rounded-lg font-medium transition"
+            >
+              <Plus className="w-4 h-4" />
+              Add Problems
+            </button>
+          </div>
         </div>
-  {!currentPlaylist?.problems?.length ? (
-          <Card className="text-center py-12 bg-card rounded-xl border border-border">
-            <CardContent className="max-w-md mx-auto">
-              <div className="text-5xl mb-4">📚</div>
-              <h3 className="text-lg font-semibold mb-2">No problems in this playlist yet</h3>
-              <p className="text-muted-foreground mb-6">Start building your collection by adding some coding problems to practice.</p>
-              <Button
-                onClick={() => router.push('/problem')}
-                className="px-6"
-              >
-                Browse Problems to Add
-              </Button>
-            </CardContent>
-          </Card>
+
+        {/* Problems List */}
+        {!currentPlaylist?.problems?.length ? (
+          <div className="text-center py-16 bg-[#282828] border border-[#303030] rounded-xl">
+            <div className="text-5xl mb-4">📚</div>
+            <h3 className="text-lg font-semibold mb-2">No problems in this playlist yet</h3>
+            <p className="text-[#eff1f6bf] mb-6 max-w-md mx-auto">
+              Start building your collection by adding some coding problems to practice.
+            </p>
+            <button
+              onClick={() => router.push("/problem")}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#00b8a3] hover:bg-[#00a392] text-white rounded-lg font-medium transition"
+            >
+              Browse Problems to Add
+            </button>
+          </div>
         ) : (
           <>
-          <Card className="hidden md:block rounded-xl border border-border shadow-sm bg-card overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b border-border bg-muted">
-                  <TableHead className="w-[250px] font-semibold px-6 py-4">Problem Title</TableHead>
-                  <TableHead className="font-semibold px-6 py-4">Tags</TableHead>
-                  <TableHead className="font-semibold px-6 py-4">Difficulty</TableHead>
-                  <TableHead className="text-center font-semibold px-6 py-4">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(currentPlaylist?.problems ?? []).map((play) => {
-                  const getDifficultyColor = (difficulty) => {
-                    switch (difficulty) {
-                      case "EASY":
-                        return "bg-green-100 text-green-800 border-green-200";
-                      case "MEDIUM":
-                        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-                      case "HARD":
-                        return "bg-red-100 text-red-800 border-red-200";
-                      default:
-                        return "bg-gray-100 text-gray-800 border-gray-200";
-                    }
-                  };
-                  
-                  return (
-                    <TableRow key={play._id} className="hover:bg-muted border-b border-border last:border-b-0">
-                      <TableCell className="font-semibold px-6 py-5">{play.title}</TableCell>
-                      <TableCell className="px-6 py-5">
-                        <div className="flex flex-wrap gap-2">
-                          {play?.tags?.slice(0, 3)?.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="border border-border">
+            {/* Desktop Table */}
+            <div className="hidden md:block bg-[#282828] border border-[#303030] rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[#303030] bg-[#1a1a1a]">
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-[#eff1f6bf]">
+                      Problem Title
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-[#eff1f6bf]">
+                      Tags
+                    </th>
+                    <th className="text-left px-6 py-4 text-sm font-semibold text-[#eff1f6bf]">
+                      Difficulty
+                    </th>
+                    <th className="text-center px-6 py-4 text-sm font-semibold text-[#eff1f6bf]">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentPlaylist.problems.map((problem, idx) => (
+                    <tr
+                      key={problem._id}
+                      className={`border-b border-[#303030] last:border-b-0 hover:bg-[#303030]/50 transition ${
+                        idx % 2 === 0 ? "bg-[#282828]" : "bg-[#262626]"
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <span 
+                          onClick={() => router.push(`/problem/${problem._id}`)}
+                          className="font-medium hover:text-[#00b8a3] cursor-pointer transition"
+                        >
+                          {problem.title}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-1.5">
+                          {problem?.tags?.slice(0, 3)?.map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-2 py-0.5 text-xs bg-[#303030] text-[#eff1f6bf] rounded"
+                            >
                               {tag}
-                            </Badge>
+                            </span>
                           ))}
                         </div>
-                      </TableCell>
-                      <TableCell className="px-6 py-5">
-                        <Badge variant={play.difficulty === 'EASY' ? 'success' : play.difficulty === 'MEDIUM' ? 'warning' : 'destructive'} className="border font-medium">
-                          {play.difficulty}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center px-6 py-5">
-                        <div className="flex justify-center gap-3">
-                          <Button
-                            size="sm"
-                            onClick={() => router.push(`/problem/${play._id}`)}
-                            className="shadow-sm"
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2.5 py-1 text-xs font-medium rounded ${getDifficultyColor(
+                            problem.difficulty
+                          )}`}
+                        >
+                          {problem.difficulty}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => router.push(`/problem/${problem._id}`)}
+                            className="px-4 py-1.5 bg-[#00b8a3] hover:bg-[#00a392] text-white text-sm font-medium rounded-lg transition"
                           >
                             Solve
-                          </Button>
-
-                          {/* Remove Button with AlertDialog */}
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                className="shadow-sm"
-                              >
-                                Remove
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="border border-border shadow-lg">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle className="text-xl font-bold">
-                                  Remove Problem from Playlist?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription className="text-muted-foreground text-base">
-                                  This action cannot be undone. The problem will be
-                                  removed from <strong>{currentPlaylist.title}</strong>.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="border border-border hover:bg-muted">
-                                  Cancel
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleRemoveProblem(play._id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  {loading ? (
-                                    <>
-                                      <span className="inline-block animate-spin h-4 w-4 border-b-2 border-current mr-2" />
-                                      Removing...
-                                    </>
-                                  ) : (
-                                    "Yes, Remove"
-                                  )}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          </button>
+                          <button
+                            onClick={() => setRemoveModal(problem)}
+                            className="p-2 bg-[#ff375f20] hover:bg-[#ff375f30] text-[#ff375f] rounded-lg transition"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </Card>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* Mobile View */}
-          <div className="md:hidden space-y-3">
-            {(currentPlaylist?.problems ?? []).map((play) => (
-              <Card key={play._id} className="border border-border bg-card shadow-sm">
-                <CardContent className="p-4 space-y-3">
-                  <div>
-                    <h3 className="font-semibold text-base mb-1">{play.title}</h3>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {play?.tags?.slice(0, 3)?.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+              {currentPlaylist.problems.map((problem) => (
+                <div
+                  key={problem._id}
+                  className="p-4 bg-[#282828] border border-[#303030] rounded-xl"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-medium">{problem.title}</h3>
+                    <span
+                      className={`px-2 py-0.5 text-xs font-medium rounded ${getDifficultyColor(
+                        problem.difficulty
+                      )}`}
+                    >
+                      {problem.difficulty}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <Badge variant={play.difficulty === 'EASY' ? 'success' : play.difficulty === 'MEDIUM' ? 'warning' : 'destructive'} className="text-xs">
-                      {play.difficulty}
-                    </Badge>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {problem?.tags?.slice(0, 3)?.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-0.5 text-xs bg-[#303030] text-[#eff1f6bf] rounded"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => router.push(`/problem/${play._id}`)}
+                    <button
+                      onClick={() => router.push(`/problem/${problem._id}`)}
+                      className="flex-1 py-2 bg-[#00b8a3] hover:bg-[#00a392] text-white text-sm font-medium rounded-lg transition"
                     >
                       Solve
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="destructive" className="flex-1">
-                          Remove
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="border border-border shadow-lg">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle className="text-lg font-bold">
-                            Remove Problem?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription className="text-muted-foreground text-sm">
-                            Remove <strong>{play.title}</strong> from <strong>{currentPlaylist.title}</strong>?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel className="border border-border">
-                            Cancel
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleRemoveProblem(play._id)}
-                            className="bg-destructive hover:bg-destructive/90"
-                          >
-                            {loading ? "Removing..." : "Yes, Remove"}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    </button>
+                    <button
+                      onClick={() => setRemoveModal(problem)}
+                      className="px-4 py-2 bg-[#ff375f20] hover:bg-[#ff375f30] text-[#ff375f] text-sm font-medium rounded-lg transition"
+                    >
+                      Remove
+                    </button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              ))}
+            </div>
           </>
+        )}
+
+        {/* Remove Modal */}
+        {removeModal && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#282828] border border-[#303030] rounded-xl p-6 max-w-md w-full">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold">Remove Problem</h2>
+                <button
+                  onClick={() => setRemoveModal(null)}
+                  className="p-1 hover:bg-[#303030] rounded"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-[#eff1f6bf] mb-6">
+                Remove <strong className="text-white">{removeModal.title}</strong> from{" "}
+                <strong className="text-white">{currentPlaylist.title}</strong>? This action
+                cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setRemoveModal(null)}
+                  className="flex-1 px-4 py-2 bg-[#303030] hover:bg-[#404040] rounded-lg font-medium transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleRemoveProblem(removeModal._id)}
+                  disabled={loading}
+                  className="flex-1 px-4 py-2 bg-[#ff375f] hover:bg-[#e02f52] text-white rounded-lg font-medium transition disabled:opacity-50"
+                >
+                  {loading ? "Removing..." : "Yes, Remove"}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-export default PlaylistPage;
-    
+export default PlaylistDetailPage;

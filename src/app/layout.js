@@ -9,9 +9,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/Component/Navbar";
 import FooterWrapper from "@/Component/FooterWrapper";
-import { ThemeProvider } from "next-themes";
-
-// custom theme file
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,28 +22,22 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1a1a] text-[#eff1f6]`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
         >
-          <GoogleOAuthProvider
-            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-          >
-            <Provider store={store}>
-              <AuthProvider>
-                <Navbar />
-                <Toaster position="top-center" />
-                {children}
-                <FooterWrapper />
-              </AuthProvider>
-            </Provider>
-          </GoogleOAuthProvider>
-        </ThemeProvider>
+          <Provider store={store}>
+            <AuthProvider>
+              <Navbar />
+              <Toaster position="top-center" />
+              {children}
+              <FooterWrapper />
+            </AuthProvider>
+          </Provider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

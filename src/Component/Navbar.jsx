@@ -1,42 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../context/authContext";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
+import { Menu, X, Search, User, Award, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated, logout, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
-  const commonNavItems = [
-     { label: "Leaderboard", href: "/leaderboard" },
+  // LeetCode-style navigation items
+  const mainNavItems = [
+    { label: "Explore", href: "/" },
     { label: "Problems", href: "/problem" },
-   
+    { label: "Contest", href: "/contest" },
+    { label: "Leaderboard", href: "/leaderboard" },
+    { label: "Discuss", href: "/about-us" },
   ];
-
-  const guestNavItems = [
-    { label: "Login", href: "/login" },
-    { label: "Register", href: "/register" },
-  ];
-
-  const authNavItems = [
-    { label: "Profile", href: "/profile" },
-    { label: "Playlists", href: "/playlist" },
-    {
-      label: "Dashboard",
-      href: user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user",
-    },
-    
-  ];
-
-  const navItems = isAuthenticated
-    ? [...commonNavItems, ...authNavItems]
-    : [...commonNavItems, ...guestNavItems];
 
   const handleLogout = () => {
     logout();
@@ -44,87 +36,228 @@ export default function Navbar() {
     setIsOpen(false);
   };
 
-  const renderNavLink = (item) => (
-    <Link
-      key={item.href}
-      href={item.href}
-      onClick={() => setIsOpen(false)}
-      className={`block px-4 py-2 text-base font-medium transition-colors rounded-xl ${
-        pathname === item.href 
-          ? "text-[#6366F1] dark:text-[#818CF8] bg-[#EEF2FF] dark:bg-[#312E81] font-semibold" 
-          : "text-[#111827] dark:text-[#E2E8F0] hover:text-[#6366F1] dark:hover:text-[#818CF8] hover:bg-[#F3F4F6] dark:hover:bg-[#1E293B]"
-      }`}
-    >
-      {item.label}
-    </Link>
-  );
+  const getUserInitials = () => {
+    if (user?.name) {
+      return user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    return user?.email?.[0]?.toUpperCase() || "U";
+  };
 
   return (
-    <nav className="bg-white dark:bg-[#1E293B] shadow-md border-b border-[#CBD5E1] dark:border-[#334155] sticky top-0 z-50 backdrop-blur-lg bg-opacity-90 dark:bg-opacity-90 transition-colors">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-[#1a1a1a] border-b border-[#303030] sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center h-[56px]">
           {/* Logo */}
-          <div className="text-xl font-bold tracking-tight">
+          <div className="flex items-center gap-8">
             <Link
               href="/"
-              className="flex items-center space-x-2 text-[#6366F1] dark:text-[#818CF8] hover:text-[#4F46E5] dark:hover:text-[#6366F1] transition-colors"
+              className="text-lg font-bold text-[#eff1f6] hover:text-[#00b8a3]"
             >
-              <span>CodeMinds</span>
+              CodeMinds
             </Link>
+
+            {/* Main Navigation Tabs - Desktop */}
+            <div className="hidden md:flex items-center gap-1">
+              {mainNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-3 py-2 text-sm font-medium rounded transition-colors ${
+                    pathname === item.href
+                      ? "text-[#00b8a3] bg-[#00b8a320]"
+                      : "text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030]"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex gap-2 items-center">
-            {navItems.map(renderNavLink)}
-            {isAuthenticated && (
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-base font-medium text-[#111827] dark:text-[#E2E8F0] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-              >
-                Logout
-              </button>
+          {/* Right Section */}
+          <div className="flex items-center gap-3">
+            {/* Search - Desktop */}
+            <div className="hidden md:block">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#eff1f6bf] w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search problems..."
+                  className="w-64 pl-10 pr-4 py-1.5 text-sm bg-[#282828] border border-[#303030] rounded text-[#eff1f6] placeholder-[#eff1f6bf] focus:outline-none focus:ring-1 focus:ring-[#00b8a3] focus:border-[#00b8a3]"
+                  onFocus={() => router.push("/problem")}
+                />
+              </div>
+            </div>
+
+            {/* User Menu or Login */}
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="hidden md:flex items-center gap-2 hover:opacity-80">
+                  <Avatar className="w-8 h-8 border border-[#303030]">
+                    <AvatarFallback className="bg-[#00b8a3] text-white text-xs font-semibold">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-[#282828] border-[#303030]">
+                  <div className="px-2 py-1.5 text-sm font-semibold text-[#eff1f6]">{user?.name || user?.email}</div>
+                  <DropdownMenuSeparator className="bg-[#303030]" />
+                  <DropdownMenuItem asChild className="text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030] focus:bg-[#303030]">
+                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                      <User className="w-4 h-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030] focus:bg-[#303030]">
+                    <Link href="/playlist" className="flex items-center gap-2 cursor-pointer">
+                      <Award className="w-4 h-4" />
+                      Playlists
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030] focus:bg-[#303030]">
+                    <Link
+                      href={user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user"}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-[#303030]" />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-[#ff375f] cursor-pointer hover:bg-[#303030] focus:bg-[#303030]"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="hidden md:flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="px-4 py-1.5 text-sm font-medium text-[#eff1f6] hover:text-[#00b8a3]"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-4 py-1.5 text-sm font-medium text-white bg-[#00b8a3] hover:bg-[#00a392] rounded"
+                >
+                  Register
+                </Link>
+              </div>
             )}
-            <ThemeToggle />
-          </div>
 
-          {/* Mobile menu button and theme toggle */}
-          <div className="md:hidden flex items-center gap-2">
-            <ThemeToggle />
-            <button 
+            {/* Mobile menu button */}
+            <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl hover:bg-[#F3F4F6] dark:hover:bg-[#334155] transition-colors"
+              className="md:hidden p-2 rounded hover:bg-[#303030]"
             >
-              {isOpen ? <X size={24} className="text-[#111827] dark:text-[#E2E8F0]" /> : <Menu size={24} className="text-[#111827] dark:text-[#E2E8F0]" />}
+              {isOpen ? (
+                <X size={20} className="text-[#eff1f6]" />
+              ) : (
+                <Menu size={20} className="text-[#eff1f6]" />
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile slide-in nav */}
-        {isOpen && (
-          <div className="md:hidden fixed top-0 right-0 w-64 h-[100vh]  bg-white dark:bg-[#1E293B] shadow-2xl z-50 animate-slide-in border-l border-[#CBD5E1] dark:border-[#334155]">
-            <div className="flex justify-between items-center px-4 py-4 border-b border-[#CBD5E1] dark:border-[#334155]">
-              <span className="text-[#6366F1] dark:text-[#818CF8] font-bold text-lg">Menu</span>
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="p-2 rounded-xl hover:bg-[#F3F4F6] dark:hover:bg-[#334155] transition-colors"
-              >
-                <X size={24} className="text-[#111827] dark:text-[#E2E8F0]" />
-              </button>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden border-t border-[#303030] bg-[#1a1a1a]">
+          <div className="px-4 py-3 space-y-2">
+            {/* Search Mobile */}
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#eff1f6bf] w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search problems..."
+                className="w-full pl-10 pr-4 py-2 text-sm bg-[#282828] border border-[#303030] rounded text-[#eff1f6] placeholder-[#eff1f6bf] focus:outline-none focus:ring-1 focus:ring-[#00b8a3]"
+                onFocus={() => {
+                  router.push("/problem");
+                  setIsOpen(false);
+                }}
+              />
             </div>
-            <div className="flex flex-col px-2 py-4 space-y-2">
-              {navItems.map(renderNavLink)}
-              {isAuthenticated && (
+
+            {/* Main Nav Items */}
+            {mainNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsOpen(false)}
+                className={`block px-3 py-2 text-sm font-medium rounded ${
+                  pathname === item.href
+                    ? "text-[#00b8a3] bg-[#00b8a320]"
+                    : "text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030]"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            {/* Auth Section */}
+            {isAuthenticated ? (
+              <>
+                <div className="border-t border-[#303030] my-2"></div>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030] rounded"
+                >
+                  Profile
+                </Link>
+                <Link
+                  href="/playlist"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030] rounded"
+                >
+                  Playlists
+                </Link>
+                <Link
+                  href={user?.role === "admin" ? "/dashboard/admin" : "/dashboard/user"}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-[#eff1f6bf] hover:text-[#eff1f6] hover:bg-[#303030] rounded"
+                >
+                  Dashboard
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-left px-4 py-2 text-base font-medium text-[#111827] dark:text-[#E2E8F0] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                  className="w-full text-left px-3 py-2 text-sm font-medium text-[#ff375f] hover:bg-[#303030] rounded"
                 >
                   Logout
                 </button>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                <div className="border-t border-[#303030] my-2"></div>
+                <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-[#00b8a3] hover:bg-[#00b8a320] rounded"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-white bg-[#00b8a3] hover:bg-[#00a392] rounded text-center"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
-        )}
+        </div>
+      )}
     </nav>
   );
 }

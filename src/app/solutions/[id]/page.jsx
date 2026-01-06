@@ -29,7 +29,11 @@ export default function SolutionPage() {
   }, [id, dispatch]);
 
   if (loading || !submission) {
-    return <Skeleton className="h-[80vh] w-full rounded-xl" />;
+    return (
+      <div className="min-h-screen bg-[#1a1a1a] p-6">
+        <Skeleton className="h-[80vh] w-full rounded-xl bg-[#303030]" />
+      </div>
+    );
   }
 
   const {
@@ -43,13 +47,13 @@ export default function SolutionPage() {
   } = submission;
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6] p-6 max-w-6xl mx-auto space-y-8">
       {/* Header */}
       <h1 className="text-3xl font-bold tracking-tight">Submission Result</h1>
 
       {/* Verdict Summary */}
-      <Card className="border border-[#e3e3e3]">
-        <CardContent className=" flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <Card className="border border-[#303030] bg-[#282828]">
+        <CardContent className="pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="space-y-2">
             <Badge
               variant={isCorrect ? "default" : "destructive"}
@@ -57,7 +61,7 @@ export default function SolutionPage() {
             >
               {verdict}
             </Badge>
-            <p className="text-muted-foreground">
+            <p className="text-[#eff1f6bf]">
               Your solution was {isCorrect ? "accepted 🎉" : "rejected ❌"}.
             </p>
           </div>
@@ -71,13 +75,13 @@ export default function SolutionPage() {
       </Card>
 
       {/* Submitted Code */}
-      <Card className="border border-[#e3e3e3]  ">
-        <CardHeader className="flex flex-row items-center ">
-          <Code2 className="h-5 w-5 text-muted-foreground" />
+      <Card className="border border-[#303030] bg-[#282828]">
+        <CardHeader className="flex flex-row items-center gap-2">
+          <Code2 className="h-5 w-5 text-[#eff1f6bf]" />
           <CardTitle>Submitted Code</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[300px] border rounded-xl">
+          <ScrollArea className="h-[300px] border border-[#303030] rounded-xl">
             <SyntaxHighlighter
               language="cpp"
               style={vscDarkPlus}
@@ -97,38 +101,37 @@ export default function SolutionPage() {
           {testResults?.map((test, index) => (
             <Card
               key={test._id}
-              className="p-4 border shadow-sm hover:shadow-md transition"
+              className="p-4 border border-[#303030] bg-[#282828] shadow-sm hover:bg-[#303030]/30 transition"
             >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-start">
                 <div>
-                  <p className="text-xs uppercase text-muted-foreground mb-1">
+                  <p className="text-xs uppercase text-[#eff1f6bf] mb-1">
                     Input
                   </p>
-                  <p className="font-mono text-sm p-2 bg-muted rounded">
+                  <p className="font-mono text-sm p-2 bg-[#1a1a1a] rounded border border-[#303030]">
                     {test.input}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase text-muted-foreground mb-1">
+                  <p className="text-xs uppercase text-[#eff1f6bf] mb-1">
                     Expected
                   </p>
-                  <p className="font-mono text-sm p-2 bg-muted rounded">
+                  <p className="font-mono text-sm p-2 bg-[#1a1a1a] rounded border border-[#303030]">
                     {test.expectedOutput}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase text-muted-foreground mb-1">
+                  <p className="text-xs uppercase text-[#eff1f6bf] mb-1">
                     Output
                   </p>
-                  <p className="font-mono text-sm p-2 bg-muted rounded">
+                  <p className="font-mono text-sm p-2 bg-[#1a1a1a] rounded border border-[#303030]">
                     {test.actualOutput}
                   </p>
                 </div>
                 <div className="flex items-center">
                   {test.passed ? (
                     <Badge
-                      variant="success"
-                      className="flex items-center gap-1 text-base px-3"
+                      className="flex items-center gap-1 text-base px-3 bg-[#00b8a3] text-white"
                     >
                       <CheckCircle className="h-4 w-4" /> Passed
                     </Badge>

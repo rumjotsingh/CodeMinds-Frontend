@@ -31,100 +31,107 @@ const Contest = () => {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen py-12 px-4 bg-background text-foreground">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-10 flex flex-col md:flex-row items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-primary mb-2">Contests</h1>
-            <p className="text-muted-foreground text-lg">
-              Browse upcoming and ongoing programming contests.
-            </p>
-          </div>
-          <Badge className="mt-4 md:mt-0 text-base px-4 py-2 bg-primary text-primary-foreground">
-            {contests?.length ?? 0} Contest{contests?.length !== 1 ? 's' : ''}
-          </Badge>
+    <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <header className="mb-8">
+          <h1 className="text-2xl font-semibold mb-2">Contests</h1>
+          <p className="text-sm text-[#eff1f6bf]">
+            Participate in programming contests to test your skills
+          </p>
         </header>
+
         {contests?.length === 0 ? (
-          <div className="text-center text-muted-foreground py-20 text-xl">
+          <div className="text-center text-[#eff1f6bf] py-20">
             No contests available.
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-4">
             {contests.map((contest, index) => {
               const status = getContestStatus(contest.startTime, contest.endTime);
 
               return (
-                <Card key={index} className="hover:shadow-lg transition-shadow bg-card border border-border text-foreground">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{contest.title}</span>
-                      <Badge
-                        className={
-                          status === 'Upcoming'
-                            ? 'bg-green-100 text-green-700'
-                            : status === 'Ongoing'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-muted text-muted-foreground'
-                        }
-                      >
-                        {status}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription className="mt-2 text-muted-foreground">
-                      {contest.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm text-muted-foreground mb-2">
-                      <span className="mr-4">
-                        <strong>Start:</strong> {new Date(contest.startTime).toLocaleString()}
+                <div
+                  key={index}
+                  className="border border-[#303030] rounded-lg bg-[#282828] hover:bg-[#303030]/50 transition"
+                >
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-semibold">{contest.title}</h3>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded ${
+                              status === 'Upcoming'
+                                ? 'bg-[#00b8a3]/20 text-[#00b8a3]'
+                                : status === 'Ongoing'
+                                ? 'bg-[#ffc01e]/20 text-[#ffc01e]'
+                                : 'bg-[#303030] text-[#eff1f6bf]'
+                            }`}
+                          >
+                            {status}
+                          </span>
+                        </div>
+                        <p className="text-sm text-[#eff1f6bf]">{contest.description}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-6 text-xs text-[#eff1f6bf] mb-3">
+                      <span>
+                        <strong className="text-[#eff1f6]">Start:</strong> {new Date(contest.startTime).toLocaleString()}
                       </span>
                       <span>
-                        <strong>End:</strong> {new Date(contest.endTime).toLocaleString()}
+                        <strong className="text-[#eff1f6]">End:</strong> {new Date(contest.endTime).toLocaleString()}
                       </span>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-primary mb-2 mt-3">Problems</h4>
-                      <ul className="space-y-2">
-                        {contest.problems.map((problem, idx) => (
-                          <li
-                            key={idx}
-                            className="rounded bg-muted px-3 py-1 flex justify-between items-center hover:bg-primary/10 transition cursor-pointer"
-                          >
-                            <span className="font-medium text-foreground">
-                              {problem.title}
-                            </span>
-                            {problem.difficulty && (
-                              <Badge
-                                className={`ml-2 ${problem.difficulty === 'EASY'
-                                  ? 'bg-green-200 text-green-800'
-                                  : problem.difficulty === 'MEDIUM'
-                                  ? 'bg-yellow-200 text-yellow-800'
-                                  : 'bg-red-200 text-red-800'
+
+                    {/* Problems */}
+                    {contest.problems && contest.problems.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium mb-2">Problems ({contest.problems.length})</h4>
+                        <div className="space-y-1">
+                          {contest.problems.map((problem, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between px-3 py-2 rounded bg-[#1a1a1a] hover:bg-[#303030] text-sm"
+                            >
+                              <span>{problem.title}</span>
+                              {problem.difficulty && (
+                                <span
+                                  className={`text-xs px-2 py-0.5 rounded ${
+                                    problem.difficulty === 'EASY'
+                                      ? 'bg-[#00b8a3]/20 text-[#00b8a3]'
+                                      : problem.difficulty === 'MEDIUM'
+                                      ? 'bg-[#ffc01e]/20 text-[#ffc01e]'
+                                      : 'bg-[#ff375f]/20 text-[#ff375f]'
                                   }`}
-                              >
-                                {problem.difficulty}
-                              </Badge>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="mt-4 flex justify-end">
+                                >
+                                  {problem.difficulty}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mt-4 flex gap-2">
                       <Button
-                        disabled={status !== 'Ongoing'}
-                        variant={status === 'Ongoing' ? 'default' : 'outline'}
-                        className={status === 'Ongoing' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground border-border'}
+                        size="sm"
+                        disabled={status === 'Ended'}
+                        className="h-8"
                       >
-                        {status === 'Upcoming'
-                          ? 'Not Started Yet'
-                          : status === 'Ongoing'
-                          ? 'Participate'
-                          : 'Ended'}
+                        {status === 'Ongoing' ? 'Join Contest' : status === 'Upcoming' ? 'Register' : 'View Results'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8"
+                      >
+                        View Details
                       </Button>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
             })}
           </div>
