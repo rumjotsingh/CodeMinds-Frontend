@@ -68,52 +68,31 @@ const ProfilePage = () => {
   /** ---------- SKELETON LOADER ---------- */
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10 bg-background text-foreground">
-        {/* Header Skeleton */}
-        <div>
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="h-4 w-32" />
+      <div className="min-h-screen bg-[#1a1a1a]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Skeleton className="h-8 w-32 mb-6 bg-[#303030]" />
+
+          <div className="space-y-6">
+            <div className="border border-[#303030] rounded-lg bg-[#282828] p-5">
+              <Skeleton className="h-6 w-40 mb-4 bg-[#303030]" />
+              <Skeleton className="h-4 w-64 mb-2 bg-[#303030]" />
+              <Skeleton className="h-4 w-52 mb-3 bg-[#303030]" />
+              <Skeleton className="h-9 w-28 bg-[#303030]" />
+            </div>
+
+            <div className="border border-[#303030] rounded-lg bg-[#282828] p-5">
+              <Skeleton className="h-6 w-40 mb-4 bg-[#303030]" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a]">
+                    <Skeleton className="h-8 w-12 mb-2 bg-[#303030]" />
+                    <Skeleton className="h-3 w-16 bg-[#303030]" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* User Info Skeleton */}
-        <section className="space-y-3">
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-5 w-64" />
-          <Skeleton className="h-5 w-52" />
-          <Skeleton className="h-10 w-32 rounded-md" />
-        </section>
-
-        {/* Stats Skeleton */}
-        <section className="space-y-4">
-          <Skeleton className="h-6 w-40" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div
-                key={i}
-                className="bg-muted border border-border rounded-lg p-4 text-center"
-              >
-                <Skeleton className="h-10 w-16 mx-auto mb-2" />
-                <Skeleton className="h-4 w-20 mx-auto" />
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Dashboard Stats Skeleton */}
-        <section className="space-y-4">
-          <Skeleton className="h-6 w-40" />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-muted border border-border rounded-lg p-6 text-center"
-              >
-                <Skeleton className="h-10 w-20 mx-auto mb-2" />
-                <Skeleton className="h-5 w-24 mx-auto" />
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     );
   }
@@ -121,163 +100,168 @@ const ProfilePage = () => {
   /** ---------- ERROR ---------- */
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-card rounded-xl shadow-sm border border-border">
-        <p className="text-destructive text-center text-lg">Error: {error}</p>
+      <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center">
+        <div className="max-w-6xl mx-auto px-4">
+          <p className="text-[#ff375f] text-center">Error: {error}</p>
+        </div>
       </div>
     );
   }
 
   /** ---------- MAIN CONTENT ---------- */
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 bg-background text-foreground">
-      {/* User Information */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 border-b border-primary pb-2 text-primary">
-          User Information
-        </h2>
-        <p className="text-muted-foreground mb-2">
-          <span className="font-medium">Email:</span> {profile?.email || "N/A"}
-        </p>
-        <p className="text-muted-foreground mb-2">
-          <span className="font-medium">Name:</span> {profile?.name || "N/A"}
-        </p>
-        <Button
-          variant="outline"
-          onClick={() => setOpen(true)}
-          className="mt-3 border-border text-foreground hover:bg-muted"
-        >
-          Edit Profile
-        </Button>
-      </section>
+    <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-2xl font-semibold mb-6">Profile</h1>
 
-      {/* Account Stats */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-6 border-b border-primary pb-2 text-primary">
-          Account Stats
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
-            <p className="text-3xl font-bold mb-1 text-primary">
-              {stats?.totalSolved || 0}
-            </p>
-            <p className="text-sm font-medium text-muted-foreground">Total Solved</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
-            <p className="text-3xl font-bold mb-1 text-green-600 dark:text-green-500">
-              {stats?.easy || 0}
-            </p>
-            <p className="text-sm font-medium text-muted-foreground">Easy</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
-            <p className="text-3xl font-bold mb-1 text-yellow-600 dark:text-yellow-500">
-              {stats?.medium || 0}
-            </p>
-            <p className="text-sm font-medium text-muted-foreground">Medium</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
-            <p className="text-3xl font-bold mb-1 text-red-600 dark:text-red-500">
-              {stats?.hard || 0}
-            </p>
-            <p className="text-sm font-medium text-muted-foreground">Hard</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
-            <p className="text-3xl font-bold mb-1 text-primary">
-              {stats?.totalAttempts || 0}
-            </p>
-            <p className="text-sm font-medium text-muted-foreground">Attempts</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-4 text-center hover:shadow-lg transition-shadow">
-            <p className="text-3xl font-bold mb-1 text-orange-600 dark:text-orange-500">
-              {stats?.streak || 0}
-            </p>
-            <p className="text-sm font-medium text-muted-foreground">Streak 🔥</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Dashboard Stats */}
-      <section>
-        <h2 className="text-xl font-semibold mb-6 border-b border-primary pb-2 text-primary">
-          Submission Stats
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-muted border border-border rounded-lg p-6 text-center">
-            <p className="text-3xl font-bold mb-1 text-primary">
-              {dashboard?.totalProblemsSolved || 0}
-            </p>
-            <p className="font-medium text-muted-foreground">Problems Solved</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-6 text-center">
-            <p className="text-3xl font-bold mb-1 text-primary">
-              {dashboard?.totalSubmissions || 0}
-            </p>
-            <p className="font-medium text-muted-foreground">Total Submissions</p>
-          </div>
-          <div className="bg-muted border border-border rounded-lg p-6 text-center">
-            <p className="text-3xl font-bold mb-1 text-primary">
-              {dashboard?.totalCorrect || 0}
-            </p>
-            <p className="font-medium text-muted-foreground">Correct</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Edit Profile Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild></DialogTrigger>
-        <DialogContent className="max-w-lg bg-card text-foreground border border-border">
-          <DialogHeader>
-            <DialogTitle className="text-primary">Edit Profile</DialogTitle>
-          </DialogHeader>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="grid gap-4 mt-4"
-            autoComplete="off"
-          >
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium mb-1 text-primary"
-              >
-                Name <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Your full name"
-                {...register("name", { required: "Name is required" })}
-                className="bg-input text-foreground border border-border"
-              />
+        <div className="space-y-6 max-w-5xl">
+          {/* User Information */}
+          <div className="border border-[#303030] rounded-lg bg-[#282828] p-5">
+            <h2 className="text-sm font-medium mb-4">User Information</h2>
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="text-[#eff1f6bf]">Email:</span>{" "}
+                <span className="font-medium">{profile?.email || "N/A"}</span>
+              </div>
+              <div>
+                <span className="text-[#eff1f6bf]">Name:</span>{" "}
+                <span className="font-medium">{profile?.name || "N/A"}</span>
+              </div>
             </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium mb-1 text-primary"
-              >
-                Email <span className="text-destructive">*</span>
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Your email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Invalid email address",
-                  },
-                })}
-                className="bg-input text-foreground border border-border"
-              />
-            </div>
-
-            <Button type="submit" disabled={isSubmitting} className="mt-2 bg-primary text-primary-foreground">
-              {isSubmitting ? "Saving..." : "Save Changes"}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOpen(true)}
+              className="mt-4 h-9"
+            >
+              Edit Profile
             </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
+          </div>
+
+          {/* Account Stats */}
+          <div className="border border-[#303030] rounded-lg bg-[#282828] p-5">
+            <h2 className="text-sm font-medium mb-4">Account Stats</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold mb-1">
+                  {stats?.totalSolved || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Total Solved</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold text-[#00b8a3] mb-1">
+                  {stats?.easy || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Easy</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold text-[#ffc01e] mb-1">
+                  {stats?.medium || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Medium</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold text-[#ff375f] mb-1">
+                  {stats?.hard || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Hard</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold mb-1">
+                  {stats?.totalAttempts || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Attempts</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-3 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold text-[#ff9500] mb-1">
+                  {stats?.streak || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Streak 🔥</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submission Stats */}
+          <div className="border border-[#303030] rounded-lg bg-[#282828] p-5">
+            <h2 className="text-sm font-medium mb-4">Submission Stats</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="border border-[#303030] rounded-lg p-4 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold mb-1">
+                  {dashboard?.totalProblemsSolved || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Problems Solved</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-4 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold mb-1">
+                  {dashboard?.totalSubmissions || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Total Submissions</div>
+              </div>
+              <div className="border border-[#303030] rounded-lg p-4 bg-[#1a1a1a] hover:bg-[#303030]/50 transition">
+                <div className="text-2xl font-semibold text-[#00b8a3] mb-1">
+                  {dashboard?.totalCorrect || 0}
+                </div>
+                <div className="text-xs text-[#eff1f6bf]">Accepted</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Edit Profile Dialog */}
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild></DialogTrigger>
+          <DialogContent className="max-w-md bg-[#282828] border-[#303030] text-[#eff1f6]">
+            <DialogHeader>
+              <DialogTitle>Edit Profile</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4 mt-4"
+              autoComplete="off"
+            >
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium mb-1.5">
+                  Name <span className="text-[#ff375f]">*</span>
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your full name"
+                  {...register("name", { required: "Name is required" })}
+                  className="h-9"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-1.5">
+                  Email <span className="text-[#ff375f]">*</span>
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Your email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email address",
+                    },
+                  })}
+                  className="h-9"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-9"
+              >
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

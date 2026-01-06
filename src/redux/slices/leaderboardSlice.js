@@ -38,7 +38,8 @@ const leaderboardSlice = createSlice({
       })
       .addCase(fetchLeaderboard.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.users = action.payload;
+        state.users = action.payload.leaderboard;
+        console.log("fetched leaderboard", action.payload);
       })
       .addCase(fetchLeaderboard.rejected, (state, action) => {
         state.status = "failed";

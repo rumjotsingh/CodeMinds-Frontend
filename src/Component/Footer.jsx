@@ -1,11 +1,11 @@
 'use client'
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-[#1E293B] border-t border-[#CBD5E1] dark:border-[#334155] py-8 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-[1200px] mx-auto">
+    <footer className="bg-[#1a1a1a] border-t border-[#303030] py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
         {/* Brand */}
         <div className="text-center mb-6">
-          <h3 className="font-bold text-xl text-[#6366F1] dark:text-[#818CF8] tracking-tight">
+          <h3 className="font-bold text-xl text-[#00b8a3] tracking-tight">
             CodeMinds
           </h3>
         </div>
@@ -15,7 +15,7 @@ export default function Footer() {
           <li>
             <a 
               href="/about-us" 
-              className="text-[#111827] dark:text-[#E2E8F0] hover:text-[#6366F1] dark:hover:text-[#818CF8] transition-colors font-medium"
+              className="text-[#eff1f6bf] hover:text-[#00b8a3] transition-colors font-medium"
             >
               About Us
             </a>
@@ -23,7 +23,7 @@ export default function Footer() {
           <li>
             <a 
               href="/carrer" 
-              className="text-[#111827] dark:text-[#E2E8F0] hover:text-[#6366F1] dark:hover:text-[#818CF8] transition-colors font-medium"
+              className="text-[#eff1f6bf] hover:text-[#00b8a3] transition-colors font-medium"
             >
               Careers
             </a>
@@ -31,7 +31,7 @@ export default function Footer() {
           <li>
             <a 
               href="/privacy" 
-              className="text-[#111827] dark:text-[#E2E8F0] hover:text-[#6366F1] dark:hover:text-[#818CF8] transition-colors font-medium"
+              className="text-[#eff1f6bf] hover:text-[#00b8a3] transition-colors font-medium"
             >
               Privacy Policy
             </a>
@@ -39,7 +39,7 @@ export default function Footer() {
           <li>
             <a 
               href="/contact" 
-              className="text-[#111827] dark:text-[#E2E8F0] hover:text-[#6366F1] dark:hover:text-[#818CF8] transition-colors font-medium"
+              className="text-[#eff1f6bf] hover:text-[#00b8a3] transition-colors font-medium"
             >
               Contact
             </a>
@@ -47,7 +47,7 @@ export default function Footer() {
         </ul>
 
         {/* Copyright */}
-        <div className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+        <div className="text-center text-sm text-[#eff1f6bf] mt-6">
           © {new Date().getFullYear()} CodeMinds. All rights reserved.
         </div>
       </div>

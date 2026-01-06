@@ -50,103 +50,91 @@ export default function Dashboard() {
   
 
   return (
-    <div className="p-4 md:p-8 space-y-10 max-w-7xl mx-auto bg-background text-foreground">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary">
-            Coding Dashboard
-          </h1>
-          {loadingStreaks ? (
-            <Skeleton className="h-6 w-40 mt-2" />
+    <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-2xl font-semibold">Dashboard</h1>
+            {!loadingStreaks && (
+              <div className="flex items-center gap-1.5 text-sm">
+                <span className="text-[#ff9500]">🔥</span>
+                <span className="font-medium">{streakDays}</span>
+                <span className="text-[#eff1f6bf]">day streak</span>
+              </div>
+            )}
+          </div>
+          <p className="text-sm text-[#eff1f6bf]">
+            Track your progress and recent activity
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          {loadingDashboard ? (
+            <>
+              <Skeleton className="h-24 w-full rounded bg-[#303030]" />
+              <Skeleton className="h-24 w-full rounded bg-[#303030]" />
+              <Skeleton className="h-24 w-full rounded bg-[#303030]" />
+              <Skeleton className="h-24 w-full rounded bg-[#303030]" />
+            </>
           ) : (
-            <p className="text-lg text-orange-600 mt-1">
-              🔥 Current Streak: {streakDays} days
-            </p>
+            <>
+              <div className="border border-[#303030] rounded-lg bg-[#282828] p-4 hover:bg-[#303030]/50 transition">
+                <div className="text-xs text-[#eff1f6bf] mb-1">Problems Solved</div>
+                <div className="text-2xl font-semibold">
+                  {dashboard?.totalProblemsSolved || 0}
+                </div>
+              </div>
+
+              <div className="border border-[#303030] rounded-lg bg-[#282828] p-4 hover:bg-[#303030]/50 transition">
+                <div className="text-xs text-[#eff1f6bf] mb-1">Total Submissions</div>
+                <div className="text-2xl font-semibold">
+                  {dashboard?.totalSubmissions || 0}
+                </div>
+              </div>
+
+              <div className="border border-[#303030] rounded-lg bg-[#282828] p-4 hover:bg-[#303030]/50 transition">
+                <div className="text-xs text-[#eff1f6bf] mb-1">Accepted</div>
+                <div className="text-2xl font-semibold text-[#00b8a3]">
+                  {dashboard?.totalCorrect || 0}
+                </div>
+              </div>
+
+              <div className="border border-[#303030] rounded-lg bg-[#282828] p-4 hover:bg-[#303030]/50 transition">
+                <div className="text-xs text-[#eff1f6bf] mb-1 flex items-center gap-1">
+                  <span>Streak</span>
+                  <span className="text-[#ff9500]">🔥</span>
+                </div>
+                <div className="text-2xl font-semibold text-[#ff9500]">{streakDays}</div>
+              </div>
+            </>
+          )}
+      </div>
+
+        {/* Calendar Heatmap */}
+        <div className="border border-[#303030] rounded-lg bg-[#282828] p-4">
+          <h2 className="text-sm font-medium mb-4">Activity</h2>
+          {loadingStreaks ? (
+            <Skeleton className="h-[150px] w-full rounded bg-[#303030]" />
+          ) : (
+            <CalendarHeatmap data={streaks} />
           )}
         </div>
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 space-x-1.5 space-y-1.5">
-        {loadingDashboard ? (
-          <>
-            <Skeleton className="h-28 w-full rounded-xl" />
-            <Skeleton className="h-28 w-full rounded-xl" />
-            <Skeleton className="h-28 w-full rounded-xl" />
-          </>
-        ) : (
-          <>
-            <Card className="bg-card border border-border text-foreground">
-              <CardHeader>
-                <CardTitle className="text-primary">Total Solved</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-primary">
-                  {dashboard?.totalProblemsSolved || 0}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border border-border text-foreground">
-              <CardHeader>
-                <CardTitle className="text-primary">Total Submissions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-primary">
-                  {dashboard?.totalSubmissions || 0}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card border border-border text-foreground">
-              <CardHeader>
-                <CardTitle className="text-primary">Correct</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-primary">
-                  {dashboard?.totalCorrect || 0}
-                </p>
-              </CardContent>
-            </Card>
-            {/* Streak card */}
-            <Card className="bg-card border border-border text-foreground">
-              <CardHeader>
-                <CardTitle className="flex items-center text-primary">
-                  <Sparkles className="size-5 text-yellow-500" /> Streak
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold text-orange-600">{streakDays} days</p>
-                <p className="text-sm text-muted-foreground mt-2">Keep the streak going — solve at least one problem every day.</p>
-              </CardContent>
-            </Card>
-          </>
-        )}
-      </div>
-
-      {/* Calendar Heatmap */}
-      <div className="max-w-7xl">
-        <h2 className="text-xl font-semibold mb-4 text-primary">Activity</h2>
-        {loadingStreaks ? (
-          <Skeleton className="h-[150px] w-full rounded-xl" />
-        ) : (
-          <CalendarHeatmap data={streaks} />
-        )}
-      </div>
-
-      {/* Recent Submissions */}
-      <div className="bg-card max-w-7xl border border-border rounded-xl shadow-sm text-foreground p-4">
-        <h2 className="text-xl font-semibold mb-4 text-primary">Recent Submissions</h2>
-        {loadingDashboard ? (
-          <div className="space-y-3">
-            <Skeleton className="h-12 w-full rounded-md" />
-            <Skeleton className="h-12 w-full rounded-md" />
-            <Skeleton className="h-12 w-full rounded-md" />
-          </div>
-        ) : (
-          <RecentSubmissions submissions={dashboard?.recentSubmissions || []} />
-        )}
+        {/* Recent Submissions */}
+        <div className="border border-[#303030] rounded-lg bg-[#282828] p-4 mt-6">
+          <h2 className="text-sm font-medium mb-4">Recent Submissions</h2>
+          {loadingDashboard ? (
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full rounded bg-[#303030]" />
+              <Skeleton className="h-10 w-full rounded bg-[#303030]" />
+              <Skeleton className="h-10 w-full rounded bg-[#303030]" />
+            </div>
+          ) : (
+            <RecentSubmissions submissions={dashboard?.recentSubmissions || []} />
+          )}
+        </div>
       </div>
     </div>
   );

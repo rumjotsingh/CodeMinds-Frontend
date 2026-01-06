@@ -2,262 +2,356 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
-import AnnouncementsList from "@/Component/AnnouncementsList";
+import { Code2, Trophy, Users, Target, ArrowRight, Star } from "lucide-react";
 
-// LOGOS (use your real paths!)
-const faangLogos = [
-  { name: "Adidas", src: "/images/adidas-2-logo-svgrepo-com.svg" },
-  { name: "Apple", src: "/images/apple-black-logo-svgrepo-com.svg" },
-  { name: "AirBnb", src: "/images/airbnb-2-logo-svgrepo-com.svg" },
-  {
-    name: "MasterCard",
-    src: "/images/mastercard-6-logo-svgrepo-com.svg",
-  },
-  { name: "PayPal", src: "/images/paypal-logo-svgrepo-com.svg" },
-  { name: "NetFlix", src: "/images/netflix-2-logo-svgrepo-com.svg" },
-
+const companyLogos = [
   { name: "Google", src: "/images/google-icon-logo-svgrepo-com.svg" },
+  { name: "Apple", src: "/images/apple-black-logo-svgrepo-com.svg" },
+  { name: "Netflix", src: "/images/netflix-2-logo-svgrepo-com.svg" },
+  { name: "Airbnb", src: "/images/airbnb-2-logo-svgrepo-com.svg" },
+  { name: "PayPal", src: "/images/paypal-logo-svgrepo-com.svg" },
+  { name: "MasterCard", src: "/images/mastercard-6-logo-svgrepo-com.svg" },
+];
+
+const stats = [
+  { value: "3000+", label: "Coding Problems" },
+  { value: "100K+", label: "Active Users" },
+  { value: "500+", label: "Weekly Contests" },
+  { value: "50+", label: "Companies" },
+];
+
+const features = [
+  {
+    icon: Code2,
+    title: "Practice Problems",
+    desc: "Master algorithms and data structures with our curated problem sets.",
+    color: "#00b8a3",
+  },
+  {
+    icon: Trophy,
+    title: "Weekly Contests",
+    desc: "Compete globally and climb the leaderboard rankings.",
+    color: "#ffc01e",
+  },
+  {
+    icon: Users,
+    title: "Community",
+    desc: "Learn from solutions and discuss with fellow developers.",
+    color: "#3b82f6",
+  },
+  {
+    icon: Target,
+    title: "Interview Prep",
+    desc: "Company-specific questions from FAANG and top startups.",
+    color: "#ff375f",
+  },
 ];
 
 const testimonials = [
   {
-    id: 1,
-    name: "Sarah J.",
-    role: "Software Engineer",
+    name: "Sarah Johnson",
+    role: "Software Engineer @ Google",
     quote:
-      "CodeMinds helped me sharpen my problem-solving skills with real-world style challenges. The community and contests are amazing!",
+      "CodeMinds helped me crack my Google interview. The problem quality is exceptional.",
+    avatar: "S",
   },
   {
-    id: 2,
-    name: "Alex P.",
-    role: "Computer Science Student",
+    name: "Alex Chen",
+    role: "CS Student @ MIT",
     quote:
-      "I love how intuitive and user-friendly CodeMinds is. The platform keeps me motivated and ready for my technical interviews!",
+      "The best platform for competitive programming. Weekly contests keep me sharp.",
+    avatar: "A",
   },
   {
-    id: 3,
-    name: "Maria G.",
+    name: "Maria Garcia",
     role: "Full-Stack Developer",
     quote:
-      "The variety of problems and helpful hints make CodeMinds my go-to place for daily coding practice and improvement.",
+      "From beginner to confident coder in 6 months. The community support is amazing.",
+    avatar: "M",
   },
 ];
 
-// ---- CIRCULAR LOGO CAROUSEL COMPONENT ----
-
-// ---- MAIN PAGE ----
 export default function HomePage() {
   return (
-    <main className="max-w-7xl mx-auto bg-background text-foreground pb-36 px-6 sm:px-10 md:px-20 lg:px-24 xl:px-32 py-20 overflow-x-hidden">
-      {/* HERO */}
-      <motion.section
-        className="max-w-4xl mx-auto text-center "
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2 }}
-      >
-        <h1 className="text-6xl md:text-7xl font-extrabold text-primary tracking-tight leading-tight drop-shadow-glow animate-fadeIn">
-          Welcome to CodeMinds
-        </h1>
-        <motion.p
-          className="text-muted-foreground max-w-3xl mx-auto mb-16 text-xl md:text-2xl leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
-        >
-          <span className="font-semibold text-foreground">
-            India’s most vibrant coding community
-          </span>{" "}
-          and platform to ace <b className="text-yellow-400">FAANG</b>{" "}
-          interviews, get placed at top Indian IT and startups, and grow your
-          skills with premium coding challenges{" "}
-        </motion.p>
-      </motion.section>
-
-      {/* CIRCULAR LOGOS */}
-      <section className="mb-24">
-        <h2 className="text-4xl font-bold text-primary mb-16 text-center tracking-wide drop-shadow">
-          Used & loved by talent at
-        </h2>
-        <motion.div
-          className="flex gap-16 min-w-max px-6"
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-        >
-          {[...faangLogos, ...faangLogos].map((logo, index) => (
-            <div key={index} className="flex-shrink-0">
-              <Image
-                src={logo.src}
-                alt={logo.name}
-                width={100}
-                height={100}
-                layout="intrinsic"
-                className="transition duration-300 bg-card rounded-full p-2 border border-border"
-              />
+    <div className="min-h-screen bg-[#1a1a1a] text-[#eff1f6]">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00b8a3]/10 via-transparent to-[#3b82f6]/10"></div>
+        <div className="max-w-6xl mx-auto px-6 pt-20 pb-32 relative">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#282828] border border-[#303030] text-sm mb-8">
+              <span className="w-2 h-2 bg-[#00b8a3] rounded-full animate-pulse"></span>
+              <span className="text-[#eff1f6bf]">
+                Join 100,000+ developers worldwide
+              </span>
             </div>
-          ))}
-        </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              Level Up Your
+              <span className="block bg-gradient-to-r from-[#00b8a3] via-[#3b82f6] to-[#00b8a3] bg-clip-text text-transparent">
+                Coding Skills
+              </span>
+            </h1>
+
+            <p className="text-xl text-[#eff1f6bf] max-w-2xl mx-auto mb-10 leading-relaxed">
+              Master algorithms, ace technical interviews, and compete with
+              developers globally. Your journey to becoming a better programmer
+              starts here.
+            </p>
+
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <Link href="/problem">
+                <button className="px-8 py-3.5 bg-[#00b8a3] hover:bg-[#00a392] text-white font-semibold rounded-lg transition flex items-center gap-2">
+                  Start Practicing
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </Link>
+              <Link href="/contest">
+                <button className="px-8 py-3.5 bg-[#282828] hover:bg-[#303030] border border-[#404040] rounded-lg transition font-medium">
+                  View Contests
+                </button>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            {stats.map((stat, idx) => (
+              <div
+                key={idx}
+                className="text-center p-6 rounded-xl bg-[#282828]/50 border border-[#303030]"
+              >
+                <div className="text-3xl md:text-4xl font-bold text-[#00b8a3] mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-[#eff1f6bf]">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
       </section>
 
-      {/* DETAILED FEATURES */}
-      <motion.section
-        className="mb-24 text-center max-w-6xl mx-auto"
-        initial={{ opacity: 0, y: 70 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold text-primary mb-16">
-          Why is CodeMinds Your #1 Interview & Coding Companion?
-        </h2>
-        <div className="grid grid-cols-1 gap-12 text-left">
-          {[
-            {
-              title: "FAANG-Level Questions",
-              points: [
-                "Curated by experts and top coders",
-                "Difficulty levels from beginner to advanced",
-                "Exact company-specific topics for Facebook, Google, Amazon, and more",
-              ],
-            },
-            {
-              title: "Real Indian & Startup Patterns",
-              points: [
-                "Popular TCS/Infosys, Flipkart/Oyo, Zomato-style questions",
-                "Campus placement, coding rounds, and hackathon archives",
-                "Tons of language support (C++, Java, Python, JS...)",
-              ],
-            },
-            {
-              title: "Vibrant Community & Growth",
-              points: [
-                "Weekly contests, rank ladders, and advanced analytics",
-                "100,000+ active users and mentors",
-                "Peer review, hints, and solution discussion",
-              ],
-            },
-          ].map(({ title, points }) => (
-            <Card
-              key={title}
-              className="bg-card border-primary border-opacity-60 shadow-xl hover:shadow-2xl p-8 rounded-lg transition-transform transform hover:-translate-y-1 duration-300 text-foreground"
-            >
-              <CardHeader>
-                <CardTitle className="text-primary text-2xl font-bold">
-                  {title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="mt-6 text-muted-foreground text-lg">
-                <ul className="list-disc ml-6 space-y-2">
-                  {points.map((point, i) => (
-                    <li key={i}>{point}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* EXTRA LARGE ABOUT SECTION */}
-      <motion.section
-        className="mb-24 max-w-4xl mx-auto text-center"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.2 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold text-primary mb-10">
-          How CodeMinds is Different
-        </h2>
-        <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed tracking-wide">
-          <strong>CodeMinds</strong> combines the{" "}
-          <strong>rigor of FAANG prep</strong>, the patterns of Indian tech &
-          startup interviews, and the support of a thriving community. Every
-          coder—from beginners to ICPC medalists—finds their place. Our platform
-          is powered by modern technology and an ever-improving library to keep
-          you a step ahead, always!
-        </p>
-      </motion.section>
-
-      {/* TESTIMONIALS */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold text-primary mb-14 text-center tracking-wide drop-shadow">
-          What Our Users Say
-        </h2>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4  animate-slideUp">
-          {testimonials.map(({ id, name, role, quote }) => (
-            <Card
-              key={id}
-              className="bg-card border-primary border-opacity-60 p-8 flex flex-col justify-between shadow-xl hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2 text-foreground"
-            >
-              <CardContent className="flex-grow">
-                <p className="italic text-muted-foreground text-lg  leading-relaxed">
-                  “{quote}”
-                </p>
-              </CardContent>
-              <div className="">
-                <p className="font-semibold text-primary text-xl">{name}</p>
-                <p className="text-muted-foreground text-sm">{role}</p>
+      {/* Company Logos */}
+      <section className="py-16 border-y border-[#303030] bg-[#282828]/30">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="text-center text-sm text-[#eff1f6bf] mb-8 uppercase tracking-wider">
+            Trusted by engineers at top companies
+          </p>
+          <div className="flex items-center justify-center gap-12 flex-wrap opacity-60">
+            {companyLogos.map((logo, idx) => (
+              <div
+                key={idx}
+                className="grayscale hover:grayscale-0 transition-all duration-300"
+              >
+                <Image
+                  src={logo.src}
+                  alt={logo.name}
+                  width={48}
+                  height={48}
+                  className="invert"
+                />
               </div>
-            </Card>
-          ))}
+            ))}
+          </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* MISSION & VISION */}
-      <motion.section
-        className="mt-32 max-w-7xl mx-auto"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold text-primary mb-16 text-center tracking-wide">
-          Our Mission & Vision
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-5xl mx-auto">
-          {[
-            {
-              title: "Our Mission",
-              text: "To empower developers with accessible, world-class coding education, powerful practice tools, and a motivating community so everyone can achieve their software career dreams, globally and locally.",
-            },
-            {
-              title: "Our Vision",
-              text: "To be the go-to destination for aspiring engineers, students, and professionals preparing for coding jobs—regardless of background. We believe in real skill, endless learning, and community success.",
-            },
-          ].map(({ title, text }) => (
-            <Card
-              key={title}
-              className="bg-card border-primary border-opacity-60 p-8 rounded-lg shadow-lg text-foreground"
-            >
-              <CardHeader>
-                <CardTitle className="text-primary text-2xl font-bold">
-                  {title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground text-xl mt-4">
-                {text}
-              </CardContent>
-            </Card>
-          ))}
+      {/* Features */}
+      <section className="py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Everything You Need to Excel
+            </h2>
+            <p className="text-[#eff1f6bf] max-w-xl mx-auto">
+              From learning fundamentals to acing FAANG interviews, we&apos;ve
+              got you covered.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, idx) => (
+              <motion.div
+                key={idx}
+                className="p-6 rounded-xl bg-[#282828] border border-[#303030] hover:border-[#404040] transition group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <div
+                  className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+                  style={{ backgroundColor: `${feature.color}20` }}
+                >
+                  <feature.icon
+                    className="w-6 h-6"
+                    style={{ color: feature.color }}
+                  />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                <p className="text-sm text-[#eff1f6bf]">{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </motion.section>
-    </main>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-24 bg-[#282828]/30">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Start Your Journey
+            </h2>
+            <p className="text-[#eff1f6bf]">
+              Three simple steps to becoming a better developer
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Choose a Problem",
+                desc: "Browse 3000+ problems sorted by difficulty and topic",
+              },
+              {
+                step: "02",
+                title: "Write & Test Code",
+                desc: "Use our powerful editor with real-time feedback",
+              },
+              {
+                step: "03",
+                title: "Track Progress",
+                desc: "Monitor your growth with detailed analytics",
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                className="relative"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.15 }}
+              >
+                <div className="text-6xl font-bold text-[#303030] mb-4">
+                  {item.step}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-[#eff1f6bf]">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Loved by Developers
+            </h2>
+            <p className="text-[#eff1f6bf]">
+              See what our community has to say
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((t, idx) => (
+              <motion.div
+                key={idx}
+                className="p-6 rounded-xl bg-[#282828] border border-[#303030]"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-[#ffc01e] text-[#ffc01e]"
+                    />
+                  ))}
+                </div>
+                <p className="text-[#eff1f6bf] mb-6 leading-relaxed">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#00b8a3] to-[#3b82f6] flex items-center justify-center font-semibold">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <div className="font-medium">{t.name}</div>
+                    <div className="text-sm text-[#eff1f6bf]">{t.role}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24">
+        <div className="max-w-4xl mx-auto px-6">
+          <motion.div
+            className="text-center p-12 rounded-2xl bg-gradient-to-br from-[#282828] to-[#1a1a1a] border border-[#303030]"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to Start Coding?
+            </h2>
+            <p className="text-[#eff1f6bf] mb-8 max-w-lg mx-auto">
+              Join thousands of developers improving their skills every day.
+              It&apos;s free to get started.
+            </p>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <Link href="/register">
+                <button className="px-8 py-3.5 bg-[#00b8a3] hover:bg-[#00a392] text-white font-semibold rounded-lg transition flex items-center gap-2">
+                  Create Free Account
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </Link>
+              <Link href="/problem">
+                <button className="px-8 py-3.5 bg-[#282828] hover:bg-[#303030] border border-[#404040] rounded-lg transition font-medium">
+                  Explore Problems
+                </button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </div>
   );
 }

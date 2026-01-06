@@ -66,31 +66,31 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen  max-w-7xl mx-auto flex items-center justify-center  px-4">
+    <div className="min-h-screen max-w-7xl mx-auto flex items-center justify-center px-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
-          <h1 className="text-2xl font-bold text-center">Register</h1>
+          <h1 className="text-2xl font-bold text-center text-[#eff1f6]">Register</h1>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" className="text-[#eff1f6]">Name</Label>
               <Input 
-          className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full rounded-lg border border-[#303030] px-4 py-3 bg-[#1a1a1a] text-[#eff1f6] focus:outline-none focus:ring-2 focus:ring-[#00b8a3]"
          {...register("name")} id="name" />
-              {errors.name && <p className="text-sm text-red-600">{errors.name.message}</p>}
+              {errors.name && <p className="text-sm text-[#ff375f]">{errors.name.message}</p>}
             </div>
 
             <div>
-              <Label htmlFor="email">Email</Label>
-              <Input   className="w-full rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary" type="email" {...register("email")} id="email" />
-              {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+              <Label htmlFor="email" className="text-[#eff1f6]">Email</Label>
+              <Input className="w-full rounded-lg border border-[#303030] px-4 py-3 bg-[#1a1a1a] text-[#eff1f6] focus:outline-none focus:ring-2 focus:ring-[#00b8a3]" type="email" {...register("email")} id="email" />
+              {errors.email && <p className="text-sm text-[#ff375f]">{errors.email.message}</p>}
             </div>
 
             <div className="relative">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-[#eff1f6]">Password</Label>
               <Input
-                className="w-full pr-10 rounded-lg border border-border px-4 py-3 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full pr-10 rounded-lg border border-[#303030] px-4 py-3 bg-[#1a1a1a] text-[#eff1f6] focus:outline-none focus:ring-2 focus:ring-[#00b8a3]"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 id="password"
@@ -99,12 +99,12 @@ export default function RegisterForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-6 text-gray-500"
+                className="absolute right-3 top-8 text-[#eff1f6bf]"
                 tabIndex={-1}
               >
                 {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
               </button>
-              {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+              {errors.password && <p className="text-sm text-[#ff375f]">{errors.password.message}</p>}
             </div>
 
             
@@ -115,12 +115,12 @@ export default function RegisterForm() {
               {loading ? "Registering..." : "Register"}
             </Button>
 
-            <div className="text-sm text-gray-600 text-center">
+            <div className="text-sm text-[#eff1f6bf] text-center">
               Already have an account?{" "}
               <button
                 type="button"
                 onClick={() => router.push("/login")}
-                className="text-blue-600 hover:underline cursor-pointer"
+                className="text-[#00b8a3] hover:underline cursor-pointer"
               >
                 Login
               </button>
